@@ -4,7 +4,7 @@
         {{- $introDescription := $s.introDescription }} {{- with .Params.introDescription }} {{- $introDescription = . }} {{- end }} {{- if $introDescription }} {{- $author := $s.Author }} {{- $showAuthorPhoto := false }} {{- $fullAuthor := reflect.IsMap $author
         }} {{- if $fullAuthor }} {{- if $author.photo }} {{- $showAuthorPhoto = true }} {{- end }} {{- end }} {{- if $showAuthorPhoto }}
         <div class="author_header">
-            <img src="{{ absURL $author.photo }}" alt="{{ $author.name }} photo" style="margin: 2rem 0rem 0rem 0rem;">
+            <img src="{{ absURL $author.photo }}" alt="{{ $author.name }} photo" style="margin:2rem 0rem 0rem 0rem;">
             <h2>{{ $author.name }}</h2>
         </div>
 
