@@ -1,0 +1,70 @@
+[[main]]
+  name = "Home"
+  url = ""
+  weight = -110
+
+[[main]]
+  name = "Arquivo"
+  url = "post/"
+  weight = -109
+
+# Submenus are done this way: parent -> identifier
+[[main]]
+  name = "Links"
+  identifier = "Links"
+  weight = -108
+[[main]]
+  parent = "Links"
+  name = "Curriculum Vitae"
+  url = "https://datamares.netlify.app/files/cv.pdf"
+
+[[main]]
+  name = "Sobre"
+  url = "about/"
+  weight = -107
+
+[[social]]
+  name = "github"
+  type = "social"
+  weight = 1
+  url = "https://github.com/albersonmiranda"
+[[social]]
+  name = "twitter"
+  weight = 2
+  url = "https://twitter.com/AlbersonMiranda"
+[[social]]
+  name = "linkedin"
+  weight = 3
+  url = "https://www.linkedin.com/in/albersonmiranda/"
+[[social]]
+  name = "facebook"
+  weight = 3
+  url = "https://www.facebook.com/alberson.miranda"
+[[social]]
+  name = "instagram"
+  weight = 3
+  url = "https://www.instagram.com/alberson.miranda/"
+[[social]]
+  name = "stackoverflow"
+  weight = 3
+  url = "https://stackoverflow.com/users/8430277/alberson-miranda"
+[[social]]
+  name = "gitlab"
+  weight = 3
+  url = "https://gitlab.com/albersonmiranda"
+#[[social]]
+#  name = "rss"
+#  weight = 4
+#  url = "index.xml"
+
+# other supported social links
+# name = "youtube"
+# url = "https://www.youtube.com/#"
+# name = "facebook"
+# url = "https://facebook.com/#"
+# name = "instagram"
+# url = "https://instagram.com/#"
+# name = "stackoverflow"
+# url = "https://stackoverflow.com/#"
+# name = "gitlab"
+# url = "https://gitlab.com/#"
