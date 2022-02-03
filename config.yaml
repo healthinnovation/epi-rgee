@@ -1,8 +1,0 @@
-baseurl: https://epi-rgee.netlify.app
-copyright: Copyright © 2022, Antony Barja; all rights reserved.
-paginate: 10
-theme: hugo-clarity
-disqusShortname: 'https-ambarja-github-io-page-workshop'
-DefaultContentLanguage: en
-taxonomies:
-  tag: tags
