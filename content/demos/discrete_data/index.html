@@ -1,0 +1,156 @@
+---
+title: "2. Zonal statistic in discrete data"
+author: "Gabriel Carrasco & Antony Barja"
+date: 2020-12-01T21:13:14-05:00
+tags: ["statisticzonal","discrete"]
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/htmlwidgets/htmlwidgets.js"></script>
+<script src="{{< blogdown/postref >}}index_files/plotly-binding/plotly.js"></script>
+<script src="{{< blogdown/postref >}}index_files/typedarray/typedarray.min.js"></script>
+<script src="{{< blogdown/postref >}}index_files/jquery/jquery.min.js"></script>
+<link href="{{< blogdown/postref >}}index_files/crosstalk/css/crosstalk.min.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/crosstalk/js/crosstalk.min.js"></script>
+<link href="{{< blogdown/postref >}}index_files/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/plotly-main/plotly-latest.min.js"></script>
+
+
+<p>The objective of this demo is cuantify the categories of landcover inside the region
+the city of <a href="https://es.wikipedia.org/wiki/Lima_Metropolitana">Lima</a>, the dataset used
+is of Copernicus Global Land Service (CGLS) that provides a series of bio-geophysical
+products on the status and evolution of land surface at global scale to a spatial resolution of 100m,
+more information <a href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global#description">click here</a></p>
+<table>
+<tbody>
+<tr class="odd">
+<td><img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b></td>
+</tr>
+<tr class="even">
+<td>- For this demo we need to have install the packages of <code>rgee</code>, <code>sf</code>, <code>tidyverse</code> and <code>plotly</code>.</td>
+</tr>
+</tbody>
+</table>
+<div id="requeriments" class="section level4">
+<h4>1. Requeriments</h4>
+<pre class="r"><code>library(rgee)
+library(tidyverse)
+library(sf)
+library(plotly)
+ee_Initialize()</code></pre>
+<pre><code>&gt; ee_Initialize()
+── rgee 1.1.2 ────────────────────────── earthengine-api 0.1.292 ── 
+ ✓ user: not_defined
+ ✓ Initializing Google Earth Engine:  DONE!
+ ✓ Earth Engine account: users/ambarja 
+─────────────────────────────────────────────────────────────────── </code></pre>
+</div>
+<div id="reading-vector-layer-of-study-area" class="section level4">
+<h4>2. Reading vector layer of study area</h4>
+<pre class="r"><code>lima &lt;- st_read(
+  &quot;https://github.com/ambarja/gpkg-pe/raw/main/Lima_distritos.gpkg&quot;
+) %&gt;%
+  select(NOMBDIST) 
+head(lima)</code></pre>
+<pre><code>&gt; head(lima)
+Simple feature collection with 6 features and 1 field
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -77.08842 ymin: -12.14016 xmax: -76.64668 ymax: -11.87454
+Geodetic CRS:  WGS 84
+           NOMBDIST                           geom
+1        LURIGANCHO MULTIPOLYGON (((-76.7268 -1...
+2       JESUS MARIA MULTIPOLYGON (((-77.03762 -...
+3              LIMA MULTIPOLYGON (((-77.00972 -...
+4             LINCE MULTIPOLYGON (((-77.02807 -...
+5        MIRAFLORES MULTIPOLYGON (((-77.02739 -...
+6 MAGDALENA DEL MAR MULTIPOLYGON (((-77.07179 -...</code></pre>
+</div>
+<div id="cooking-data-with-rgee" class="section level4">
+<h4>3. Cooking data with rgee</h4>
+<pre class="r"><code>lulc &lt;- ee$Image(&quot;COPERNICUS/Landcover/100m/Proba-V-C3/Global/2019&quot;)$
+  select(&quot;discrete_classification&quot;)</code></pre>
+</div>
+<div id="a-function-that-extracts-the-area-of-vegetation-cover-in-hectares." class="section level4">
+<h4>4. A function that extracts the area of vegetation cover in hectares.</h4>
+<pre class="r"><code>ee_area_lulc &lt;- function(img, region, scale = 1000) {
+  lista_histo &lt;- list()
+  for (i in 1:nrow(region)) {
+    region_ee &lt;- region[i, ] %&gt;% sf_as_ee()
+    ee_histo &lt;- img$reduceRegion(
+      reducer = ee$Reducer$frequencyHistogram(),
+      geometry = region_ee,
+      scale = scale
+    )
+    lista_histo[[i]] &lt;- ee_histo$getInfo() %&gt;%
+      map_df(., .f = as.data.frame) %&gt;%
+      mutate(DISTRITO = region[[i, 1]] %&gt;% as.vector())
+  }
+  histo_df &lt;- map_df(lista_histo, .f = as.data.frame) %&gt;%
+    mutate_if(is.numeric, .funs = function(x) {
+      x * 1000 * 1000 / 10000
+    }) %&gt;%
+    replace(is.na(.), 0) %&gt;%
+    rename_with(~ paste0(&quot;Pi&quot;, sub(&quot;X&quot;, &quot;&quot;, .), &quot;_Ha&quot;), -DISTRITO)
+  return(histo_df)
+}</code></pre>
+</div>
+<div id="use-of-ee_area_lulc-rgee-as-backend" class="section level4">
+<h4>5. Use of ee_area_lulc (rgee as backend)</h4>
+<pre class="r"><code>area_Ha &lt;- ee_area_lulc(img = lulc, region = lima)</code></pre>
+</div>
+<div id="identifying-the-type-of-vegetation-cover-according-to-the-following-table" class="section level4">
+<h4>6. identifying the type of vegetation cover according to the following table</h4>
+<center>
+<a href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global#bands">
+<img src="https://user-images.githubusercontent.com/23284899/152642180-ca0d6501-bad9-44bc-a862-42597c04a4bf.png" width="100%">
+</a>
+</center>
+<pre class="r"><code>area_Ha &lt;- area_Ha %&gt;% 
+  select(DISTRITO, ends_with(&quot;Ha&quot;)) %&gt;% 
+  gather(Category, values, Pi20_Ha:Pi40_Ha) %&gt;% 
+  mutate(
+    Category = case_when(
+      Category == &quot;Pi20_Ha&quot; ~ &quot;Shrubs&quot;,
+      Category == &quot;Pi30_Ha&quot; ~ &quot;Herbaceous vegetation&quot;,
+      Category == &quot;Pi40_Ha&quot; ~ &quot;Herbaceous vegetation&quot;,
+      Category == &quot;Pi50_Ha&quot; ~ &quot;agriculture&quot;,
+      Category == &quot;Pi60_Ha&quot; ~ &quot;Bare&quot;,
+      Category == &quot;Pi80_Ha&quot; ~ &quot;Permanent water bodies&quot;,
+      Category == &quot;Pi116_Ha&quot; ~ &quot;Closed forest&quot;,
+      Category == &quot;Pi126_Ha&quot; ~ &quot;Open forest&quot;,
+      Category == &quot;Pi200_Ha&quot; ~ &quot;Oceans&quot;,
+    ),
+    Unit = &quot;Ha&quot;
+    ) %&gt;% 
+  as_tibble()</code></pre>
+<pre><code>&gt; area_Ha
+# A tibble: 450 × 4
+   DISTRITO          Category values Unit 
+   &lt;chr&gt;             &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;
+ 1 LURIGANCHO        Shrubs    1282. Ha   
+ 2 JESUS MARIA       Shrubs       0  Ha   
+ 3 LIMA              Shrubs       0  Ha   
+ 4 LINCE             Shrubs       0  Ha   
+ 5 MIRAFLORES        Shrubs       0  Ha   
+ 6 MAGDALENA DEL MAR Shrubs       0  Ha   
+ 7 PUEBLO LIBRE      Shrubs       0  Ha   
+ 8 SAN BORJA         Shrubs       0  Ha   
+ 9 SAN LUIS          Shrubs       0  Ha   
+10 SAN MIGUEL        Shrubs     100  Ha   
+# … with 440 more rows</code></pre>
+</div>
+<div id="bar-plot-for-a-district-lurin" class="section level4">
+<h4>7. Bar plot for a district (LURIN)</h4>
+<pre class="r"><code>g1 &lt;- area_Ha %&gt;%
+  filter(DISTRITO == &quot;LURIN&quot; &amp; values != 0) %&gt;% 
+  ggplot(aes(x = Category, y = values, fill = Category)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  scale_fill_viridis_d() +
+  theme_minimal() + 
+  labs(x = &quot;&quot;, y = &quot;&quot;)
+ggplotly(g1) %&gt;% 
+  config(displayModeBar = F)</code></pre>
+<div id="htmlwidget-1" style="width:672px;height:336px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"data":[{"orientation":"v","width":0.9,"base":0,"x":[1],"y":[1654.11764705882],"text":"Category: Agriculture<br />values: 1654.11765<br />Category: Agriculture","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(68,1,84,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Agriculture","legendgroup":"Agriculture","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":0.9,"base":0,"x":[2],"y":[8362.74509803922],"text":"Category: Bare<br />values: 8362.74510<br />Category: Bare","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(68,58,131,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Bare","legendgroup":"Bare","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":0.9,"base":0,"x":[3],"y":[499.21568627451],"text":"Category: Cultivated<br />values:  499.21569<br />Category: Cultivated","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(49,104,142,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Cultivated","legendgroup":"Cultivated","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":0.9,"base":0,"x":[4],"y":[5620],"text":"Category: Herbaceous<br />values: 5620.00000<br />Category: Herbaceous","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(33,144,140,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Herbaceous","legendgroup":"Herbaceous","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":0.9,"base":0,"x":[5],"y":[258.43137254902],"text":"Category: Oceans<br />values:  258.43137<br />Category: Oceans","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(53,183,121,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Oceans","legendgroup":"Oceans","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":0.9,"base":0,"x":[6],"y":[81.1764705882353],"text":"Category: Open forest<br />values:   81.17647<br />Category: Open forest","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(143,215,68,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Open forest","legendgroup":"Open forest","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":0.9,"base":0,"x":[7],"y":[3361.17647058823],"text":"Category: Shrubs<br />values: 3361.17647<br />Category: Shrubs","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(253,231,37,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Shrubs","legendgroup":"Shrubs","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":30.6118721461187,"r":7.30593607305936,"b":29.9543378995434,"l":34.337899543379},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,7.6],"tickmode":"array","ticktext":["Agriculture","Bare","Cultivated","Herbaceous","Oceans","Open forest","Shrubs"],"tickvals":[1,2,3,4,5,6,7],"categoryorder":"array","categoryarray":["Agriculture","Bare","Cultivated","Herbaceous","Oceans","Open forest","Shrubs"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-418.137254901961,8780.88235294118],"tickmode":"array","ticktext":["0","2000","4000","6000","8000"],"tickvals":[0,2000,4000,6000,8000],"categoryorder":"array","categoryarray":["0","2000","4000","6000","8000"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"title":{"text":"Category","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displayModeBar":false},"source":"A","attrs":{"88e12069818b":{"x":{},"y":{},"fill":{},"type":"bar"}},"cur_data":"88e12069818b","visdat":{"88e12069818b":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>

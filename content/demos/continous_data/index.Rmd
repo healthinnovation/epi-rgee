@@ -1,0 +1,167 @@
+---
+title: "1. Zonal statistic in continous data"
+author: "Gabriel Carrasco & Antony Barja"
+date: 2020-12-01T21:13:14-05:00
+tags: ["statisticzonal","SO2"]
+---
+
+The objective of this demo is identitfy the regions that has high concentration of 
+SO2 emmision inside of the city of [Lima](https://es.wikipedia.org/wiki/Lima_Metropolitana) and [Huancayo](https://es.wikipedia.org/wiki/Provincia_de_Huancayo) - Peru.
+
+---
+<img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
+- For this demo we need to have install the packages of `rgee`, `sf`, `viridis` and `ggplot2` and `ggspatial`.
+---
+
+#### 1. Requeriments
+
+```{r,eval = FALSE}
+library(rgee)
+library(sf)
+library(viridis)   
+library(tidyverse)
+library(ggspatial)
+library(patchwork)
+ee_Initialize()
+```
+
+```
+> ee_Initialize()
+── rgee 1.1.2 ────────────────────────── earthengine-api 0.1.292 ── 
+ ✓ user: not_defined
+ ✓ Initializing Google Earth Engine:  DONE!
+ ✓ Earth Engine account: users/ambarja 
+─────────────────────────────────────────────────────────────────── 
+```
+
+#### 2. Vector layer reading of our study area 
+```{r,eval = FALSE}
+lima <- st_read(
+  "https://github.com/ambarja/gpkg-pe/raw/main/lima_distritos.gpkg",
+  quiet = TRUE) %>% 
+  select(NOMBDIST,UBIGEO)
+hcyo <- st_read(
+  "https://github.com/ambarja/gpkg-pe/raw/main/prov_huancayo.gpkg",
+  quiet = TRUE) %>% 
+  select(NOMBDIST,IDDIST)
+```
+#### 3. Transformation of sf object to a featurecollection 
+
+```{r,eval = FALSE}
+lima_ee <-  lima %>% 
+  sf_as_ee()
+
+hcyo_ee <- hcyo %>% 
+  sf_as_ee()
+```
+
+#### 4. Cooking data with rgee
+
+```{r,eval = FALSE}
+# 1DU(Dobson units = 4,4615 x 10 -4 mol/m 2 molecules)
+# source:https://sacs.aeronomie.be/info/dobson.php
+
+so2 <- ee$ImageCollection$Dataset$COPERNICUS_S5P_NRTI_L3_SO2$
+  select("SO2_column_number_density_15km")$
+  filter(ee$Filter$calendarRange(2021,2021,"year"))$
+  filter(ee$Filter$calendarRange(1,12,"month"))$
+  median()$
+  divide(0.00044615)$
+  rename("so2")
+
+# Extracting data
+so2_to_lima <- ee_extract(
+  x = so2,
+  y = lima_ee,
+  fun = ee$Reducer$mean(),
+  sf = TRUE
+)
+so2_to_hcyo <- ee_extract(
+  x = so2,
+  y = hcyo_ee,
+  fun = ee$Reducer$mean(),
+  sf = TRUE
+)
+head(so2_to_lima)
+# head(so2_to_hcyo)
+```
+
+```
+Simple feature collection with 50 features and 3 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -77.1988 ymin: -12.51993 xmax: -76.62082 ymax: -11.57241
+Geodetic CRS:  WGS 84
+First 10 features:
+            NOMBDIST UBIGEO       so2                       geometry
+1         LURIGANCHO 150118 0.0089653 MULTIPOLYGON (((-76.7268 -1...
+2        JESUS MARIA 150113 0.0050146 MULTIPOLYGON (((-77.03762 -...
+3               LIMA 150101 0.0050673 MULTIPOLYGON (((-77.00972 -...
+4              LINCE 150116 0.0066919 MULTIPOLYGON (((-77.02807 -...
+5         MIRAFLORES 150122 0.0064254 MULTIPOLYGON (((-77.02739 -...
+6  MAGDALENA DEL MAR 150120 0.0060677 MULTIPOLYGON (((-77.07179 -...
+7       PUEBLO LIBRE 150121 0.0049854 MULTIPOLYGON (((-77.05433 -...
+8          SAN BORJA 150130 0.0067893 MULTIPOLYGON (((-76.9872 -1...
+9           SAN LUIS 150134 0.0063101 MULTIPOLYGON (((-76.99876 -...
+10        SAN MIGUEL 150136 0.0048452 MULTIPOLYGON (((-77.0791 -1...
+```
+
+
+#### 5. Mapping with ggplot and ggspatial 
+```{r,eval = FALSE}
+p1 <- so2_to_lima %>% 
+  ggplot() + 
+  geom_sf(aes(fill = so2),color = NA) +
+  scale_fill_viridis("SO2[DU]",option = "F",direction = -1) + 
+  theme_minimal() + 
+  labs(
+    title = "SO2 emission in Lima-2021",
+    ) +
+  annotation_north_arrow(
+    height = unit(0.3,"cm"),
+    width = unit(0.3,"cm"),
+    location = "tr"
+    ) + 
+  annotation_scale(line_width = 0.05,height = unit(0.1,"cm"))
+
+p2 <- so2_to_hcyo %>% 
+  ggplot() + 
+  geom_sf(aes(fill = so2),color = NA) +
+  scale_fill_viridis("SO2[DU]",option = "F",direction = -1) + 
+  theme_minimal() + 
+  labs(
+    title = "SO2 emission in Huancayo-2021"
+  ) +
+  annotation_north_arrow(
+    height = unit(0.3,"cm"),
+    width = unit(0.3,"cm"),
+    location = "tl"
+  ) + 
+  annotation_scale(line_width = 0.05,height = unit(0.2,"cm"),
+                   pad_x = unit(1.5,"cm"))
+
+# Violin plot
+v1 <-  so2_to_lima %>% 
+  st_set_geometry(NULL) %>%
+  mutate(name = "Lima Metropolitana") %>% 
+  ggplot(aes(x = name ,y = so2)) + 
+  geom_violin(width=1, size=0.5, alpha = 0.8,trim=FALSE) +
+  geom_jitter(color = "darkgrey", alpha = 0.8, cex = 0.5) +
+  theme_minimal() +
+  labs(x = "")
+
+v2 <-  so2_to_hcyo %>% 
+  st_set_geometry(NULL) %>%
+  mutate(name = "Huancayo") %>% 
+  ggplot(aes(x = name ,y = so2)) + 
+  geom_violin(width=1, size=0.5, alpha = 0.8,trim=FALSE) +
+  geom_jitter(color = "darkgrey", alpha = 0.8, cex = 0.5) +
+  theme_minimal() +
+  labs(
+    x = "",
+    caption = "Source:Sentinel-5P Near Real-Time Sulphur Dioxide")+
+  theme(plot.caption = element_text(hjust = 1, face = "italic"))
+  
+(p1 | v1)/(p2 | v2)
+```
+<center><img src="https://user-images.githubusercontent.com/23284899/152630940-c5bc9ac7-f51a-478c-b759-f2bf924db179.png" width="100%"></center>

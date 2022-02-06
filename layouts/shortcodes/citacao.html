@@ -1,0 +1,14 @@
+Para citar esse post, use:
+
+<p>{{$.Page.Params.author}}. {{dateFormat "Jan 2, 2006" $.Page.Params.date }}. <em>"{{$.Page.Params.title}}"</em>. {{ $.Page.Permalink }}.</p>
+
+<p>Ou a entrada em BibTex:</p>
+
+<code><pre>
+  @misc&#123;{{"datamares"}},
+    title = {{$title_str := $.Page.Params.title}}{{printf "{%s}" $title_str}},
+    author = {{$author_str := $.Page.Params.author}}{{printf "{%s}" $author_str}},
+    year = {{$year_str := dateFormat "2006" $.Page.Params.date }}{{printf "{%s}" $year_str}},
+    url = {{$url_str := $.Page.Permalink}}{{printf "{%s}" $url_str}}
+  &#125;
+</pre></code>

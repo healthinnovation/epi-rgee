@@ -1,0 +1,108 @@
+---
+title: "3. Extraction of a large time series of meteorological variables"
+author: "Gabriel Carrasco & Antony Barja"
+date: 2020-12-01T21:13:14-05:00
+tags: ["statisticzonal"]
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>The objective of this demo is extract a time series of meteorological variables like the
+temperatura and precipitation in <a href="https://es.wikipedia.org/wiki/Lima_Metropolitana">Lima</a>
+using the dataset of <a href="https://developers.google.com/earth-engine/datasets/catalog/IDAHO_EPSCOR_TERRACLIMATE?hl=en">Terraclim</a>.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td><img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b></td>
+</tr>
+<tr class="even">
+<td>- For this demo we need to have install the packages of <code>rgee</code>, <code>sf</code>, <code>tidyverse</code> ,<code>lubridate</code> and <code>patchwork</code>.</td>
+</tr>
+</tbody>
+</table>
+<div id="requeriments" class="section level4">
+<h4>1. Requeriments</h4>
+<pre class="r"><code>library(rgee)
+library(sf)  
+library(tidyverse)
+library(lubridate)
+library(patchwork)
+ee_Initialize()</code></pre>
+<pre><code>&gt; ee_Initialize()
+── rgee 1.1.2 ────────────────────────── earthengine-api 0.1.292 ── 
+ ✓ user: not_defined
+ ✓ Initializing Google Earth Engine:  DONE!
+ ✓ Earth Engine account: users/ambarja 
+─────────────────────────────────────────────────────────────────── </code></pre>
+</div>
+<div id="reading-vector-layer-of-study-area" class="section level4">
+<h4>2. Reading vector layer of study area</h4>
+<pre class="r"><code>lima &lt;- st_read(
+  &quot;https://github.com/ambarja/gpkg-pe/raw/main/Lima_provincia.gpkg&quot;,
+  quiet = TRUE) %&gt;%
+  summarise()</code></pre>
+</div>
+<div id="transformation-of-sf-object-to-a-featurecollection" class="section level4">
+<h4>3. Transformation of sf object to a featurecollection</h4>
+<pre class="r"><code>lima_ee &lt;-  lima %&gt;% 
+  sf_as_ee()</code></pre>
+</div>
+<div id="cooking-data-with-rgee" class="section level4">
+<h4>4. Cooking data with rgee</h4>
+<pre class="r"><code>terraclim &lt;-  ee$ImageCollection$Dataset$IDAHO_EPSCOR_TERRACLIMATE$
+  select(c(&quot;tmmx&quot;,&quot;pr&quot;))$
+  filterDate(&quot;1990-01-01&quot;,&quot;2021-12-31&quot;)$
+  toBands()
+# Extracting data
+data &lt;- ee_extract(
+  x = terraclim,
+  y = lima_ee,
+  fun = ee$Reducer$mean(),
+  sf = FALSE)</code></pre>
+</div>
+<div id="cooking-data-for-mapping" class="section level4">
+<h4>5. Cooking data for mapping</h4>
+<pre class="r"><code>newdata &lt;- data %&gt;% as_tibble() %&gt;% 
+  mutate(region = &quot;LIMA&quot;) %&gt;% 
+  pivot_longer(X199001_pr:X202012_tmmx) %&gt;% 
+  separate(col = name,into = c(&quot;date&quot;,&quot;variable&quot;),sep = &quot;_&quot;) %&gt;% 
+  mutate(date = ym(gsub(&quot;X&quot;,&quot;&quot;,date))) %&gt;% 
+  separate(col = date,into = c(&quot;year&quot;,&quot;month&quot;),sep = &quot;-&quot;) %&gt;% 
+  mutate(month = factor(month,labels = month.abb)) %&gt;%
+  group_by(month,variable) %&gt;% 
+  summarise(value = mean(value,na.rm = TRUE)) %&gt;% 
+  spread(variable,value) %&gt;% 
+  rename(temp = pr,
+         pp = tmmx) </code></pre>
+</div>
+<div id="plots-of-temperatura-and-precipitation" class="section level4">
+<h4>6. Plots of temperatura and precipitation</h4>
+<pre class="r"><code>pp &lt;- ggplot(newdata,aes(x = month,y = pp)) +
+  geom_bar(stat = &quot;identity&quot;,fill = &quot;blue&quot;,alpha=0.5) +
+  theme_minimal() +
+  labs(x = &quot;&quot;,
+       y = &quot;Precipitation [mm]&quot;,
+       caption = &quot;Source: TerraClimate&quot;)
+
+temp &lt;- ggplot(newdata,aes(x = month,y = temp,group = 1)) + 
+  geom_line(color = &quot;red&quot;) + 
+  theme_minimal() + 
+  labs(
+    x = &quot;&quot;,
+    y = &quot;Temperature[C°]&quot;
+  )
+
+mapa &lt;-  lima %&gt;% 
+  ggplot() +
+  geom_sf(fill = NA,color = &quot;black&quot;,lwd=0.5) +
+  annotation_map_tile(zoom = 10) +
+  geom_sf(fill = NA,color = &quot;black&quot;,lwd=0.5) +
+  theme(axis.text = element_text(size = 6))
+g1 &lt;- pp 
+g2 &lt;- temp 
+mapa | g2/g1</code></pre>
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/152646926-bf1e1aef-47a3-4134-9ebf-5c367b81c735.png" width="100%">
+</center>
+</div>

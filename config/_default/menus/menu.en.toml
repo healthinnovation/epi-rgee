@@ -1,0 +1,61 @@
+[[main]]
+  name = "Home"
+  url = "/"
+  weight = -111
+
+[[main]]
+  name = "Installation"
+  url = "installation"
+  weight = -110
+  
+[[main]]
+  name = "Demos"
+  url = "demos/"
+  weight = -109  
+
+[[main]]
+  name = "rgeeExtra"
+  url = "rgee_extra"
+  weight = -108  
+
+[[main]]
+  name = "About"
+  url = "about/"
+  weight = -106
+
+# social menu links
+
+[[social]]
+  name = "github"
+  type = "social"
+  weight = 1
+  url = "https://github.com/healthinnovation"
+[[social]]
+  name = "twitter"
+  weight = 2
+  url = "https://twitter.com/innovalab_imt"
+[[social]]
+  name = "facebook"
+  weight = 3
+  url = "https://www.facebook.com/imt.innovalab"
+[[social]]
+  name = "instagram"
+  weight = 4
+  url = "https://www.instagram.com/innovalab_imt/"
+
+#[[social]]
+#  name = "rss"
+#  weight = 4
+#  url = "index.xml"
+
+# other supported social links
+# name = "youtube"
+# url = "https://www.youtube.com/#"
+# name = "facebook"
+# url = "https://facebook.com/#"
+# name = "instagram"
+# url = "https://instagram.com/#"
+# name = "stackoverflow"
+# url = "https://stackoverflow.com/#"
+# name = "gitlab"
+# url = "https://gitlab.com/#"
