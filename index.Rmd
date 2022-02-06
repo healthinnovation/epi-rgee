@@ -14,7 +14,8 @@ In this post, you going to learn to install rgee in the different Operative Syst
 - *Rtools only is necesarry for the Operative Systen Windows.*
 ---
 
-<center><iframe width="90%" height="350" src="https://www.youtube.com/embed/h2IPWVXaUuU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></center>
+
+[![installation of R, Rtools and Rstudio](https://img.youtube.com/vi/h2IPWVXaUuU/0.jpg)](https://www.youtube.com/watch?v=h2IPWVXaUuU)
 
 </br>
 
@@ -176,7 +177,7 @@ install.packages("geojsonio")
 rgee::install_ee()
 ````
 <center>
-<img src="https://user-images.githubusercontent.com/23284899/152569835-3f2841fb-e889-459c-927d-6d8288e5633f.png " width="100%">
+<img src="https://user-images.githubusercontent.com/23284899/152569835-3f2841fb-e889-459c-927d-6d8288e5633f.png" width="100%">
 </center>
 <center>
 <img src="https://user-images.githubusercontent.com/23284899/152569946-5c264487-b132-4e8a-af37-8e2dfb5434dc.png" width="100%">
