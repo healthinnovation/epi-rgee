@@ -1,8 +1,10 @@
 ---
+title: Installation of rgee step by step in the differents Operative System
 author: Gabriel Carrasco y Antony Barja
-date: "2019-03-10"
-description: Installation of rgee step by step in the differents Operative System
-title: Installation of rgee 
+date: "`r Sys.Date()`"
+output:
+  rmdformats::robobook:
+    highlight: kate
 ---
 
 In this post, you going to learn to install rgee in the different Operative Systems steps by steps. Remind is necessary to have previously install R, Rtools and Rstudio in your desktop, here in the following video show the steps to be taken for a proper installation. 
