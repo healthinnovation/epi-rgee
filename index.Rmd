@@ -5,21 +5,21 @@ date: "`r Sys.Date()`"
 output:
   rmdformats::robobook:
     highlight: kate
+    toc_depth: 4
+          
 ---
 
-In this post, you going to learn to install rgee in the different Operative Systems steps by steps. Remind is necessary to have previously install R, Rtools and Rstudio in your desktop, here in the following video show the steps to be taken for a proper installation. 
+In this post, you going to learn to install rgee in the different Operative Systems steps by steps. Remind is necessary to have previously install R, Rtools and Rstudio in your desktop.
+
 
 ---
 <img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
-- *Rtools only is necesarry for the Operative Systen Windows.*
+- *Rtools only is necesarry for the Operative Systen Windows. To install Rtools you can download it [here 📥.](https://cran.r-project.org/bin/windows/Rtools/rtools40.html)*
 ---
-
-
-[![installation of R, Rtools and Rstudio](https://img.youtube.com/vi/h2IPWVXaUuU/0.jpg)](https://www.youtube.com/watch?v=h2IPWVXaUuU)
 
 </br>
 
-### 🔴 **1. rgee in a Linux distribution**
+### 🔴 **1. Installation on a Linux distribution**
 
 For a distribution like **Ubuntu** and theirs derivatives is necesarry to have set-up and installed some dependences of spatial libs our Operative System. The following bash commands should install key geographic R packages on **Ubuntu 20.10**.
 
@@ -117,7 +117,7 @@ numpy_version:  1.20.3
 - The function <mark style="background-color: blue;color:white;">py_config()</mark> we allow list all version of python discovered in our System.
 ---
 
-Having identified the python version, the next step is to set the path as the new Python environment for rgee, for this we use the following function <mark style="background-color: blue;color:white;">use_python("PUT-HERE-THE-PYTHON3-VERSION-PATH")<mark>
+Having identified the python version, the next step is to set the path as the new Python environment for rgee, for this we use the following function <mark style="background-color: blue;color:white;">use_python("PUT-HERE-THE-PYTHON3-VERSION-PATH")</mark>
 
 ```
 use_python("C:/Users/Windows 10/anaconda3/python.exe")
@@ -163,7 +163,7 @@ Finally, we set up our rgee environment, install the necessary python dependenci
 </center>
 <br>
 
-### 🔴 **2. Instalacion on Mac OS**
+### 🔴 **3. Instalacion on Mac OS**
 
 Installation on Mac OS is very similar to a GNU/Linux distribution, in the following code section, we share the codes and some screenshots of some key points to consider.
 
