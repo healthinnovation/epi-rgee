@@ -2,9 +2,6 @@
 author: Gabriel Carrasco y Antony Barja
 date: "2019-03-10"
 description: Installation of rgee step by step in the differents Operative System
-tags:
-- installation
-thumbnail: images/dollar.png
 title: Installation of rgee 
 ---
 
@@ -44,7 +41,7 @@ makepkg -si
 ```
 # Starting with R
 R
-# Install of rgee:
+# Installation of rgee and geojsonio:
 install.packages("rgee")
 install.packages("geojsonio")
 ```
@@ -78,6 +75,7 @@ Finally with your acount of gmail registered, you can authenticate and initializ
     <source src="https://user-images.githubusercontent.com/23284899/151863010-c37708a5-a23c-4cb3-a7ab-7fe1daeea3c5.mp4">
  </video>
 </center>
+<br>
 
 ### 🔴 **2. Instalacion on Windows**
 
@@ -86,13 +84,13 @@ For a perfect installation on Windows is necessary activate the reticulate libra
 
 
 ```{r,eval = FALSE}
-# Installation of rgee and some dependences
+# Installation of rgee and geojsonio:
 install.packages("rgee")
 install.packages("geojsonio")
 ```
 
 ```{r,eval = FALSE}
-# Activation of packages
+# Activation of packages:
 library(rgee)
 library(reticulate)
 ```
@@ -140,17 +138,60 @@ NOTE: Python version was forced by use_python function
 Finally, we set up our rgee environment, install the necessary python dependencies, then initialise Google Earth Engine from R and save our credentials.
 
 <center>
-<img src="https://user-images.githubusercontent.com/23284899/151891145-20fe5dab-3515-47f6-ade3-ca5891931b49.png" width="90%">
+<img src="https://user-images.githubusercontent.com/23284899/151891145-20fe5dab-3515-47f6-ade3-ca5891931b49.png" width="100%">
 </center>
 <center>
-<img src="https://user-images.githubusercontent.com/23284899/151892441-1ed646ea-763a-4ac4-98cb-6750a07934bc.png" width="90%">
+<img src="https://user-images.githubusercontent.com/23284899/151892441-1ed646ea-763a-4ac4-98cb-6750a07934bc.png" width="100%">
 </center>
 <center>
-<img src="https://user-images.githubusercontent.com/23284899/151892339-0b02eddb-4ce9-451e-bf82-7f7a43c09022.png" width="90%">
+<img src="https://user-images.githubusercontent.com/23284899/151892339-0b02eddb-4ce9-451e-bf82-7f7a43c09022.png" width="100%">
 </center>
 <center>
-<img src="https://user-images.githubusercontent.com/23284899/151892817-4a2f05cb-ed2d-4f89-86fe-d7691439e818.png" width="90%">
+<img src="https://user-images.githubusercontent.com/23284899/151892817-4a2f05cb-ed2d-4f89-86fe-d7691439e818.png" width="100%">
 </center>
 <center>
-<img src="https://user-images.githubusercontent.com/23284899/151893123-f8ae3fae-c950-40a0-83fb-7dc2e144a4e5.png" width="90%">
+<img src="https://user-images.githubusercontent.com/23284899/152574104-afb0e2d6-ae9c-4db6-b229-404d4b572def.png" width="100%">
 </center>
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/152574130-b394f43a-8cf2-48f4-b61f-8587fd170a3b.png" width="100%">
+</center>
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/152574150-58118849-5f34-46c0-96ef-6ce182f9407d.png" width="100%">
+</center>
+<br>
+
+### 🔴 **2. Instalacion on Mac OS**
+
+Installation on Mac OS is very similar to a GNU/Linux distribution, in the following code section, we share the codes and some screenshots of some key points to consider.
+
+```{r, eval=FALSE}
+# Installation of rgee and geojsonio:
+install.packages("sf")
+install.packages("geojsonio")
+```
+````{r, eval = FALSE}
+# Installation of Python dependence libraries:
+rgee::install_ee()
+````
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/152569835-3f2841fb-e889-459c-927d-6d8288e5633f.png " width="100%">
+</center>
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/152569946-5c264487-b132-4e8a-af37-8e2dfb5434dc.png" width="100%">
+</center>
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/152569973-c55e9633-6b7a-4217-ad7f-c9a9d056e9ad.png" width="100%">
+</center>
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/152569999-0f29eeb6-6bb7-4193-9e98-47a4fa1933cf.png" width="100%">
+</center>
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/152570037-1e6b30cb-4db6-4955-9346-576c06f51a2d.png" width="100%">
+</center>
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/152570558-23ba8513-a956-4b78-8a8a-2c445272dbcf.png" width="100%">
+</center>
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/152570578-87421f32-638a-4be9-a658-bb6dffbe2d69.png" width="100%">
+</center>
+<br>
