@@ -77,52 +77,20 @@ data_prev <- data %>% as_tibble() %>%
 
 ```{r,eval = FALSE}
 data_prev %>% 
-  filter(variable == "tmmx") %>% 
-  ggplot(aes(x = as.integer(year),y = value*0.1, group = year, fill =  year)) + 
-  geom_boxplot(color = "black",lwd=0.5,alpha=0.8) + 
-  theme_minimal(8) + 
-  theme(legend.position = "none") + 
-  scale_fill_viridis_d(option = "inferno") +
-  labs(x = "", y = "Temp")
+  pivot_wider(names_from = variable,
+              values_from = value) %>% 
+  mutate(date = ymd(paste(year, month, "01", sep = "/"))) %>%
+  ggplot(aes(x = date, y = tmmx, col = tmmx)) +
+  geom_line() + 
+  scale_x_date(date_breaks = "6 months", 
+               date_minor_breaks = "6 months",
+               date_labels = "%B %Y") +
+  scale_color_viridis_c(option = "magma") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        legend.position = "top")
 ```
 
 <center>
-  <img src="https://user-images.githubusercontent.com/23284899/154715567-5a9ff726-8fe6-466e-bd30-fb636e1800bc.png" width="100%">
+  <img src="https://user-images.githubusercontent.com/23284899/154769578-e7345afa-6ba9-4ccc-898f-5b7235fc9d9d.png" width="100%">
 </center>
-
-#### 7. Plots of temperature and precipitation
-
-```{r,eval = FALSE}
-newdata <- data_prev %>% 
-  group_by(month,variable) %>% 
-  summarise(value = mean(value,na.rm = TRUE)) %>% 
-  spread(variable,value) %>% 
-  rename(temp = pr,
-         pp = tmmx) 
-
-pp <- ggplot(newdata,aes(x = month,y = pp)) +
-  geom_bar(stat = "identity",fill = "blue",alpha=0.5) +
-  theme_minimal() +
-  labs(x = "",
-       y = "Precipitation [mm]",
-       caption = "Source: TerraClimate")
-
-temp <- ggplot(newdata,aes(x = month,y = temp,group = 1)) + 
-  geom_line(color = "red") + 
-  theme_minimal() + 
-  labs(
-    x = "",
-    y = "Temperature[C°]"
-  )
-
-mapa <-  lima %>% 
-  ggplot() +
-  geom_sf(fill = NA,color = "black",lwd=0.5) +
-  annotation_map_tile(zoom = 10) +
-  geom_sf(fill = NA,color = "black",lwd=0.5) +
-  theme(axis.text = element_text(size = 6))
-g1 <- pp 
-g2 <- temp 
-mapa | g2/g1
-```
-<center><img src="https://user-images.githubusercontent.com/23284899/152646926-bf1e1aef-47a3-4134-9ebf-5c367b81c735.png" width="100%"></center>

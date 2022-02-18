@@ -73,51 +73,19 @@ data &lt;- ee_extract(
 <div id="time-series-plot" class="section level4">
 <h4>6. Time series plot</h4>
 <pre class="r"><code>data_prev %&gt;% 
-  filter(variable == &quot;tmmx&quot;) %&gt;% 
-  ggplot(aes(x = as.integer(year),y = value*0.1, group = year, fill =  year)) + 
-  geom_boxplot(color = &quot;black&quot;,lwd=0.5,alpha=0.8) + 
-  theme_minimal(8) + 
-  theme(legend.position = &quot;none&quot;) + 
-  scale_fill_viridis_d(option = &quot;inferno&quot;) +
-  labs(x = &quot;&quot;, y = &quot;Temp&quot;)</code></pre>
-<center>
-<img src="https://user-images.githubusercontent.com/23284899/154715567-5a9ff726-8fe6-466e-bd30-fb636e1800bc.png" width="100%">
-</center>
-</div>
-<div id="plots-of-temperature-and-precipitation" class="section level4">
-<h4>7. Plots of temperature and precipitation</h4>
-<pre class="r"><code>newdata &lt;- data_prev %&gt;% 
-  group_by(month,variable) %&gt;% 
-  summarise(value = mean(value,na.rm = TRUE)) %&gt;% 
-  spread(variable,value) %&gt;% 
-  rename(temp = pr,
-         pp = tmmx) 
-
-pp &lt;- ggplot(newdata,aes(x = month,y = pp)) +
-  geom_bar(stat = &quot;identity&quot;,fill = &quot;blue&quot;,alpha=0.5) +
+  pivot_wider(names_from = variable,
+              values_from = value) %&gt;% 
+  mutate(date = ymd(paste(year, month, &quot;01&quot;, sep = &quot;/&quot;))) %&gt;%
+  ggplot(aes(x = date, y = tmmx, col = tmmx)) +
+  geom_line() + 
+  scale_x_date(date_breaks = &quot;6 months&quot;, 
+               date_minor_breaks = &quot;6 months&quot;,
+               date_labels = &quot;%B %Y&quot;) +
+  scale_color_viridis_c(option = &quot;magma&quot;) +
   theme_minimal() +
-  labs(x = &quot;&quot;,
-       y = &quot;Precipitation [mm]&quot;,
-       caption = &quot;Source: TerraClimate&quot;)
-
-temp &lt;- ggplot(newdata,aes(x = month,y = temp,group = 1)) + 
-  geom_line(color = &quot;red&quot;) + 
-  theme_minimal() + 
-  labs(
-    x = &quot;&quot;,
-    y = &quot;Temperature[C°]&quot;
-  )
-
-mapa &lt;-  lima %&gt;% 
-  ggplot() +
-  geom_sf(fill = NA,color = &quot;black&quot;,lwd=0.5) +
-  annotation_map_tile(zoom = 10) +
-  geom_sf(fill = NA,color = &quot;black&quot;,lwd=0.5) +
-  theme(axis.text = element_text(size = 6))
-g1 &lt;- pp 
-g2 &lt;- temp 
-mapa | g2/g1</code></pre>
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        legend.position = &quot;top&quot;)</code></pre>
 <center>
-<img src="https://user-images.githubusercontent.com/23284899/152646926-bf1e1aef-47a3-4134-9ebf-5c367b81c735.png" width="100%">
+<img src="https://user-images.githubusercontent.com/23284899/154769578-e7345afa-6ba9-4ccc-898f-5b7235fc9d9d.png" width="100%">
 </center>
 </div>
