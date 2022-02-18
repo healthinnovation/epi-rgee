@@ -1,0 +1,281 @@
+---
+title: "4. An environmental index with a Principal Component Analysis"
+author: "Gabriel Carrasco & Antony Barja"
+date: 2020-12-01T21:13:14-05:00
+tags: ["pca"]
+---
+
+
+The objective of this demo is to create a new environment index from the analysis of the principal 
+components of multiple variables in the city of [San Diego](https://es.wikipedia.org/wiki/Lima_Metropolitana), 
+the dataset used is:
+
+ - Landcover
+ - % Impervious
+ - % Tree cover
+ - NDVI index
+ - EVI index
+
+All the dataset is from [USGS National Land Cover Database](https://developers.google.com/earth-engine/datasets/catalog/USGS_NLCD_RELEASES_2016_REL?hl=en) and [MOD13Q1.006](https://developers.google.com/earth-engine/datasets/catalog/MODIS_006_MOD13Q1?hl=en).
+
+---
+<img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
+- For this demo you need to have `rgee`, `sf`, `tidyverse`, and `cptcity` packages previously installed.
+---
+
+#### 1. Requirements
+```{r, eval = FALSE}
+library(rgee)
+library(tidyverse)
+library(sf)
+library(cptcity)
+source("https://raw.githubusercontent.com/ambarja/rgee_landcover/main/pca_rgee.R")
+ee_Initialize()
+```
+```
+> ee_Initialize()
+── rgee 1.1.2 ────────────────────────── earthengine-api 0.1.292 ── 
+ ✓ user: not_defined
+ ✓ Initializing Google Earth Engine:  DONE!
+ ✓ Earth Engine account: users/ambarja 
+─────────────────────────────────────────────────────────────────── 
+```
+#### 2. Vector layer reading of our study area 
+```{r, eval = FALSE}
+geodata <- st_read(
+  "https://github.com/ambarja/gpkg-pe/raw/main/SanDiego.gpkg"
+  )
+sandiego <- geodata %>% sf_as_ee()  
+```
+
+#### 3. Cooking data with rgee 
+
+```{r, eval = FALSE}
+years <- c(1992, 2001,2004,2006,2008,2011,2013,2016) %>% ee$List()
+nldc <- years$
+  map(ee_utils_pyfunc(function(x) {
+    ee$ImageCollection("USGS/NLCD_RELEASES/2016_REL")$
+      select(c("landcover"))$
+      filter(ee$Filter$calendarRange(x, x, "year"))$
+      sum()$
+      clip(sandiego)
+  })
+  )
+
+nldc <- ee$ImageCollection(nldc)$
+  toBands()$
+  select("7_landcover")$
+  rename("nldc")
+
+impervious <- years$
+  map(ee_utils_pyfunc(function(x) {
+    ee$ImageCollection("USGS/NLCD_RELEASES/2016_REL")$
+      select("impervious")$
+      filter(ee$Filter$calendarRange(x, x, "year"))$
+      sum()$
+      clip(sandiego)
+  })
+  )
+
+imp <- ee$ImageCollection(impervious)$
+  toBands()$
+  select("0_impervious")$
+  rename("imp")
+
+years <- c(2011, 2016) %>% ee$List()
+tree_cover <- years$
+  map(ee_utils_pyfunc(function(x) {
+    ee$ImageCollection("USGS/NLCD_RELEASES/2016_REL")$
+      select("percent_tree_cover")$
+      filter(ee$Filter$calendarRange(x, x, "year"))$
+      sum()$
+      clip(sandiego)
+  })
+  )
+
+tree <- ee$ImageCollection(tree_cover)$
+  toBands()$
+  select("1_percent_tree_cover")$
+  rename("tree")
+
+modis_years <- c(2010:2021) %>% ee$List()
+ndvi <- modis_years$
+  map(ee_utils_pyfunc(function(x){
+    ee$ImageCollection("MODIS/006/MOD13Q1")$
+      select("NDVI")$
+      filter(ee$Filter$calendarRange(x,x,"year"))$
+      mean()$
+      multiply(0.0001)$
+      clip(sandiego)
+  })
+  )
+
+ndvi <- ee$ImageCollection(ndvi)$
+  toBands()$
+  select("0_NDVI")$
+  rename("ndvi") 
+
+evi <-  modis_years$
+  map(ee_utils_pyfunc(function(x){
+    ee$ImageCollection("MODIS/006/MOD13Q1")$
+      select("EVI")$
+      filter(ee$Filter$calendarRange(x,x,"year"))$
+      mean()$
+      multiply(0.0001)$
+      clip(sandiego)
+  })
+  )
+
+evi <- ee$ImageCollection(evi)$
+  toBands()$
+  select("1_EVI")$
+  rename("evi") 
+
+stack_evironment <- ee$Image(
+    c(nldc, imp, tree, ndvi, evi)
+    )$
+    toDouble()
+```
+#### 4. Variable standardization 
+
+```{r, eval = FALSE}
+standCov <-
+  ee_scale(
+    image = stack_evironment,
+    ee_feature = sandiego,
+    scale = 30,
+    namevar = c("nldc","imp","tree","ndvi","evi")
+  )
+```
+
+#### 5. PCA 
+
+```{r, eval = FALSE}
+PCA <-
+  ee_pca(
+    image = standCov,
+    ee_feature = sandiego,
+    scale = 30,
+    nvar = 5
+  )$select(sprintf("pc%1$s", 1:5))
+Map$addLayer(PCA,visParams = list("PC1","PC2","PC3"))
+```
+
+<center>
+   <img src="https://user-images.githubusercontent.com/23284899/154719983-f3eb638b-0b32-4c3b-bbd6-eccdd812850e.png" width="100%">
+</center>
+
+#### 6. Table of eingvectors
+```{r, eval = FALSE}
+eVectors(
+  image = standCov,
+  ee_feature = sandiego,
+  scale = 30,
+  nvar = 5
+)
+```
+
+```
+ eingvector  eVec1  eVec2  eVec3  eVec4  eVec5
+1          1  0.337 -0.234  0.356  0.598  0.589
+2          2  0.602 -0.662 -0.351 -0.187 -0.205
+3          3 -0.141 -0.393  0.816 -0.263 -0.302
+4          4  0.710  0.594  0.290 -0.172 -0.172
+5          5 -0.006  0.020 -0.021  0.713 -0.700
+```
+
+#### 7. Table of eingvalues
+
+```{r, eval = FALSE} 
+eValues(
+  image = standCov,
+  ee_feature = sandiego,
+  scale = 30,
+  nvar = 5
+)
+```
+
+```
+  eingvalue values
+1     eVal1   2.40
+2     eVal2   1.38
+3     eVal3   0.74
+4     eVal4   0.42
+5     eVal5   0.06
+```
+#### 8. Summary table
+```{r, eval = FALSE} 
+table <-
+  imporPCA(
+    image = standCov,
+    ee_feature = sandiego,
+    scale = 30,
+    nvar = 5
+  )
+table
+```
+```
+> table
+  eingvalue values component variance cumulative
+1     eVal1   2.40       pc1     48.0       48.0
+2     eVal2   1.38       pc2     27.6       75.6
+3     eVal3   0.74       pc3     14.8       90.4
+4     eVal4   0.42       pc4      8.4       98.8
+5     eVal5   0.06       pc5      1.2      100.0
+```
+
+#### 9. Plot PCA
+```{r, eval = FALSE}
+table %>%
+  ggplot(aes(x = reorder(component, variance), y = variance, fill = variance)) +
+  geom_bar(stat = "identity") +
+  theme_bw() +
+  coord_flip() +
+  labs(x = "PCs", y = "%Total variance")
+```
+
+<center>
+   <img src="https://user-images.githubusercontent.com/23284899/154721056-f67b246e-d217-41c3-83b7-cc4cfd397841.png" width="100%">
+</center>
+
+#### 10. Construction of an environmental index 
+
+```{r, eval= FALSE}
+index <- PCA$
+  select(
+  c("pc1","pc2","pc3")
+  )$
+  reduce("sum")
+```
+#### 11. Identifying min and max values of environmental index
+
+```{r, eval= FALSE}
+(minmax <- index$reduceRegion(
+  reducer = ee$Reducer$minMax(),
+  geometry = sandiego,
+  scale = 50*1000)$
+  getInfo())
+```
+
+```
+$sum_max
+[1] 0.9375844
+
+$sum_min
+[1] -0.6983301
+```
+#### 12. Mapping environmental index
+
+```{r, eval= FALSE}
+viz <- list(
+  min = -0.6983301 ,
+  max = 0.9375844,
+  palette = cpt("es_landscape_es_landscape_01")
+)
+
+Map$addLayer(index,visParams = viz) + 
+  Map$addLegend(visParams = viz,name = "Environment index")
+```
+<center>
+   <img src="https://user-images.githubusercontent.com/23284899/154721611-e4580a56-53da-4f60-b3ef-f54ec9b82b99.png" width="100%">
+</center>

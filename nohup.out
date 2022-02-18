@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/snap/ubuntu-budgie-welcome/380/usr/bin/budgie-welcome", line 2476, in <module>
+    os.makedirs(localdir)
+  File "/usr/lib/python3.9/os.py", line 215, in makedirs
+    makedirs(head, exist_ok=exist_ok)
+  File "/usr/lib/python3.9/os.py", line 225, in makedirs
+    mkdir(name, mode)
+PermissionError: [Errno 13] Permiso denegado: '/usr/lib/rstudio/resources/terminal/bash/.config'

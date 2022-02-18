@@ -8,8 +8,8 @@ tags: ["pca"]
 <script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
-<p>The objective of this demo is create a new environment index from analysis principal
-component of multiple variables inside the region the city of <a href="https://es.wikipedia.org/wiki/Lima_Metropolitana">San Diego</a>,
+<p>The objective of this demo is to create a new environment index from the analysis of the principal
+components of multiple variables in the city of <a href="https://es.wikipedia.org/wiki/Lima_Metropolitana">San Diego</a>,
 the dataset used is:</p>
 <ul>
 <li>Landcover</li>
@@ -18,24 +18,24 @@ the dataset used is:</p>
 <li>NDVI index</li>
 <li>EVI index</li>
 </ul>
-<p>All dataset is of <a href="https://developers.google.com/earth-engine/datasets/catalog/USGS_NLCD_RELEASES_2016_REL?hl=en">USGS National Land Cover Database</a> and <a href="https://developers.google.com/earth-engine/datasets/catalog/MODIS_006_MOD13Q1?hl=en">MOD13Q1.006</a>.</p>
+<p>All the dataset is from <a href="https://developers.google.com/earth-engine/datasets/catalog/USGS_NLCD_RELEASES_2016_REL?hl=en">USGS National Land Cover Database</a> and <a href="https://developers.google.com/earth-engine/datasets/catalog/MODIS_006_MOD13Q1?hl=en">MOD13Q1.006</a>.</p>
 <table>
 <tbody>
 <tr class="odd">
 <td><img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b></td>
 </tr>
 <tr class="even">
-<td>- For this demo we need to have install the packages of <code>rgee</code>, <code>sf</code>, <code>tidyverse</code> and <code>cptcity</code> .</td>
+<td>- For this demo you need to have <code>rgee</code>, <code>sf</code>, <code>tidyverse</code>, and <code>cptcity</code> packages previously installed.</td>
 </tr>
 </tbody>
 </table>
-<div id="requeriments" class="section level4">
-<h4>1. Requeriments</h4>
+<div id="requirements" class="section level4">
+<h4>1. Requirements</h4>
 <pre class="r"><code>library(rgee)
 library(tidyverse)
 library(sf)
 library(cptcity)
-source(&quot;https://raw.githubusercontent.com/ambarja/rgee_landcover/main/utils.R&quot;)
+source(&quot;https://raw.githubusercontent.com/ambarja/rgee_landcover/main/pca_rgee.R&quot;)
 ee_Initialize()</code></pre>
 <pre><code>&gt; ee_Initialize()
 ── rgee 1.1.2 ────────────────────────── earthengine-api 0.1.292 ── 
@@ -47,7 +47,7 @@ ee_Initialize()</code></pre>
 <div id="vector-layer-reading-of-our-study-area" class="section level4">
 <h4>2. Vector layer reading of our study area</h4>
 <pre class="r"><code>geodata &lt;- st_read(
-  &quot;https://github.com/ambarja/gpkg-pe/raw/main/san_diego.geojson&quot;
+  &quot;https://github.com/ambarja/gpkg-pe/raw/main/SanDiego.gpkg&quot;
   )
 sandiego &lt;- geodata %&gt;% sf_as_ee()  </code></pre>
 </div>
@@ -57,86 +57,81 @@ sandiego &lt;- geodata %&gt;% sf_as_ee()  </code></pre>
 nldc &lt;- years$
   map(ee_utils_pyfunc(function(x) {
     ee$ImageCollection(&quot;USGS/NLCD_RELEASES/2016_REL&quot;)$
-      select(c(&#39;landcover&#39;))$
+      select(c(&quot;landcover&quot;))$
       filter(ee$Filter$calendarRange(x, x, &quot;year&quot;))$
       sum()$
-      clip(nc)
+      clip(sandiego)
   })
   )
 
-nldc &lt;- ee$ImageCollection(nldc) %&gt;% 
-   ee$ImageCollection()$
-   toBands()$
-   select(&#39;7_landcover&#39;)$
-   rename(&#39;nldc&#39;)
+nldc &lt;- ee$ImageCollection(nldc)$
+  toBands()$
+  select(&quot;7_landcover&quot;)$
+  rename(&quot;nldc&quot;)
 
 impervious &lt;- years$
   map(ee_utils_pyfunc(function(x) {
     ee$ImageCollection(&quot;USGS/NLCD_RELEASES/2016_REL&quot;)$
-      select(&#39;impervious&#39;)$
+      select(&quot;impervious&quot;)$
       filter(ee$Filter$calendarRange(x, x, &quot;year&quot;))$
       sum()$
-      clip(nc)
+      clip(sandiego)
   })
   )
 
-imp &lt;- ee$ImageCollection(impervious) %&gt;% 
-    ee$ImageCollection()$ %&gt;% 
-    toBands()$
-    select(&quot;1_impervious&quot;)$
-    rename(imp)
+imp &lt;- ee$ImageCollection(impervious)$
+  toBands()$
+  select(&quot;0_impervious&quot;)$
+  rename(&quot;imp&quot;)
 
 years &lt;- c(2011, 2016) %&gt;% ee$List()
 tree_cover &lt;- years$
   map(ee_utils_pyfunc(function(x) {
     ee$ImageCollection(&quot;USGS/NLCD_RELEASES/2016_REL&quot;)$
-      select(&#39;percent_tree_cover&#39;)$
+      select(&quot;percent_tree_cover&quot;)$
       filter(ee$Filter$calendarRange(x, x, &quot;year&quot;))$
       sum()$
-      clip(nc)
+      clip(sandiego)
   })
   )
 
-tree &lt;- ee$ImageCollection(tree_cover) %&gt;%
-      ee$ImageCollection()$
-      toBands()$
-      select(&#39;1_percent_tree_cover&#39;)$
-      rename(&#39;tree&#39;)
+tree &lt;- ee$ImageCollection(tree_cover)$
+  toBands()$
+  select(&quot;1_percent_tree_cover&quot;)$
+  rename(&quot;tree&quot;)
 
 modis_years &lt;- c(2010:2021) %&gt;% ee$List()
 ndvi &lt;- modis_years$
   map(ee_utils_pyfunc(function(x){
-    ee$ImageCollection(&#39;MODIS/006/MOD13Q1&#39;)$
-      select(&#39;NDVI&#39;)$
+    ee$ImageCollection(&quot;MODIS/006/MOD13Q1&quot;)$
+      select(&quot;NDVI&quot;)$
       filter(ee$Filter$calendarRange(x,x,&quot;year&quot;))$
       mean()$
       multiply(0.0001)$
-      clip(nc)
+      clip(sandiego)
   })
   )
 
-ndvi &lt;- ee$ImageCollection(ndvi) %&gt;%
-   ee$ImageCollection()$
-   toBands()$
-   select(&#39;0_ndvi&#39;)$
-   rename(&#39;ndvi&#39;) 
+ndvi &lt;- ee$ImageCollection(ndvi)$
+  toBands()$
+  select(&quot;0_NDVI&quot;)$
+  rename(&quot;ndvi&quot;) 
 
 evi &lt;-  modis_years$
   map(ee_utils_pyfunc(function(x){
-    ee$ImageCollection(&#39;MODIS/006/MOD13Q1&#39;)$
-      select(&#39;EVI&#39;)$
+    ee$ImageCollection(&quot;MODIS/006/MOD13Q1&quot;)$
+      select(&quot;EVI&quot;)$
       filter(ee$Filter$calendarRange(x,x,&quot;year&quot;))$
       mean()$
       multiply(0.0001)$
-      clip(nc)
+      clip(sandiego)
   })
   )
 
-evi &lt;- ee$ImageCollection(evi) %&gt;%
-    ee$ImageCollection()$
-    toBands()$
-    select(&#39;0_evi&#39;)$
-    rename(&#39;evi&#39;) 
+evi &lt;- ee$ImageCollection(evi)$
+  toBands()$
+  select(&quot;1_EVI&quot;)$
+  rename(&quot;evi&quot;) 
 
 stack_evironment &lt;- ee$Image(
     c(nldc, imp, tree, ndvi, evi)
@@ -144,11 +139,11 @@ stack_evironment &lt;- ee$Image(
     toDouble()</code></pre>
 </div>
 <div id="variable-standardization" class="section level4">
-<h4>4. variable standardization</h4>
+<h4>4. Variable standardization</h4>
 <pre class="r"><code>standCov &lt;-
   ee_scale(
     image = stack_evironment,
-    ee_feature = nc,
+    ee_feature = sandiego,
     scale = 30,
     namevar = c(&quot;nldc&quot;,&quot;imp&quot;,&quot;tree&quot;,&quot;ndvi&quot;,&quot;evi&quot;)
   )</code></pre>
@@ -158,63 +153,65 @@ stack_evironment &lt;- ee$Image(
 <pre class="r"><code>PCA &lt;-
   ee_pca(
     image = standCov,
-    ee_feature = nc,
+    ee_feature = sandiego,
     scale = 30,
     nvar = 5
-  )$select(sprintf(&quot;pc%1$s&quot;, 1:5))</code></pre>
+  )$select(sprintf(&quot;pc%1$s&quot;, 1:5))
+Map$addLayer(PCA,visParams = list(&quot;PC1&quot;,&quot;PC2&quot;,&quot;PC3&quot;))</code></pre>
 <center>
-<img src="https://user-images.githubusercontent.com/23284899/152654558-c2580f6e-50d6-48df-9e7d-3a994bbc1cf3.png" width="100%">
+<img src="https://user-images.githubusercontent.com/23284899/154719983-f3eb638b-0b32-4c3b-bbd6-eccdd812850e.png" width="100%">
 </center>
 </div>
 <div id="table-of-eingvectors" class="section level4">
 <h4>6. Table of eingvectors</h4>
 <pre class="r"><code>eVectors(
   image = standCov,
-  ee_feature = study_area,
+  ee_feature = sandiego,
   scale = 30,
-  nvar = 9
+  nvar = 5
 )</code></pre>
-<pre><code>  eingvector  eVec1  eVec2  eVec3  eVec4  eVec5
-1          1  0.392 -0.435  0.202  0.555  0.555
-2          2  0.544 -0.390 -0.672 -0.223 -0.223
-3          3  0.279 -0.385  0.700 -0.377 -0.377
-4          4 -0.687 -0.714 -0.133 -0.013 -0.013
-5          5  0.000  0.000  0.000  0.707 -0.707</code></pre>
+<pre><code> eingvector  eVec1  eVec2  eVec3  eVec4  eVec5
+1          1  0.337 -0.234  0.356  0.598  0.589
+2          2  0.602 -0.662 -0.351 -0.187 -0.205
+3          3 -0.141 -0.393  0.816 -0.263 -0.302
+4          4  0.710  0.594  0.290 -0.172 -0.172
+5          5 -0.006  0.020 -0.021  0.713 -0.700</code></pre>
 </div>
 <div id="table-of-eingvalues" class="section level4">
 <h4>7. Table of eingvalues</h4>
 <pre class="r"><code>eValues(
   image = standCov,
-  ee_feature = study_area,
+  ee_feature = sandiego,
   scale = 30,
-  nvar = 9
+  nvar = 5
 )</code></pre>
 <pre><code>  eingvalue values
-1     eVal1   2.70
-2     eVal2   1.13
-3     eVal3   0.78
-4     eVal4   0.39
-5     eVal5   0.00</code></pre>
+1     eVal1   2.40
+2     eVal2   1.38
+3     eVal3   0.74
+4     eVal4   0.42
+5     eVal5   0.06</code></pre>
 </div>
-<div id="table-of-summarie" class="section level4">
-<h4>8. Table of summarie</h4>
+<div id="summary-table" class="section level4">
+<h4>8. Summary table</h4>
 <pre class="r"><code>table &lt;-
   imporPCA(
     image = standCov,
-    ee_feature = study_area,
+    ee_feature = sandiego,
     scale = 30,
-    nvar = 9
+    nvar = 5
   )
 table</code></pre>
-<pre><code>  eingvalue values component variance cumulative
-1     eVal1   2.70       pc1     54.0       54.0
-2     eVal2   1.13       pc2     22.6       76.6
-3     eVal3   0.78       pc3     15.6       92.2
-4     eVal4   0.39       pc4      7.8      100.0
-5     eVal5   0.00       pc5      0.0      100.0</code></pre>
+<pre><code>&gt; table
+  eingvalue values component variance cumulative
+1     eVal1   2.40       pc1     48.0       48.0
+2     eVal2   1.38       pc2     27.6       75.6
+3     eVal3   0.74       pc3     14.8       90.4
+4     eVal4   0.42       pc4      8.4       98.8
+5     eVal5   0.06       pc5      1.2      100.0</code></pre>
 </div>
 <div id="plot-pca" class="section level4">
-<h4>9. plot PCA</h4>
+<h4>9. Plot PCA</h4>
 <pre class="r"><code>table %&gt;%
   ggplot(aes(x = reorder(component, variance), y = variance, fill = variance)) +
   geom_bar(stat = &quot;identity&quot;) +
@@ -222,40 +219,41 @@ table</code></pre>
   coord_flip() +
   labs(x = &quot;PCs&quot;, y = &quot;%Total variance&quot;)</code></pre>
 <center>
-<img src="https://user-images.githubusercontent.com/23284899/152654812-4b26b894-591b-47e5-b725-a0c37dc5e8e4.png" width="100%">
+<img src="https://user-images.githubusercontent.com/23284899/154721056-f67b246e-d217-41c3-83b7-cc4cfd397841.png" width="100%">
 </center>
 </div>
-<div id="construction-of-a-environment-index" class="section level4">
-<h4>10. Construction of a environment index</h4>
+<div id="construction-of-an-environmental-index" class="section level4">
+<h4>10. Construction of an environmental index</h4>
 <pre class="r"><code>index &lt;- PCA$
   select(
   c(&quot;pc1&quot;,&quot;pc2&quot;,&quot;pc3&quot;)
   )$
   reduce(&quot;sum&quot;)</code></pre>
 </div>
-<div id="indentifying-min-and-max-value-of-environment-index" class="section level4">
-<h4>11. Indentifying min and max value of environment index</h4>
-<pre class="r"><code>(minmax &lt;- past$reduceRegion(
+<div id="identifying-min-and-max-values-of-environmental-index" class="section level4">
+<h4>11. Identifying min and max values of environmental index</h4>
+<pre class="r"><code>(minmax &lt;- index$reduceRegion(
   reducer = ee$Reducer$minMax(),
-  geometry = geometry,
-  scale = 500*1000)$
+  geometry = sandiego,
+  scale = 50*1000)$
   getInfo())</code></pre>
 <pre><code>$sum_max
-[1] 4.740431
+[1] 0.9375844
 
 $sum_min
-[1] -2.455181</code></pre>
+[1] -0.6983301</code></pre>
 </div>
-<div id="mapping-environment-index" class="section level4">
-<h4>12. Mapping environment index</h4>
+<div id="mapping-environmental-index" class="section level4">
+<h4>12. Mapping environmental index</h4>
 <pre class="r"><code>viz &lt;- list(
-  min = -2.455 ,
-  max = 4.75,
+  min = -0.6983301 ,
+  max = 0.9375844,
   palette = cpt(&quot;es_landscape_es_landscape_01&quot;)
 )
+
 Map$addLayer(index,visParams = viz) + 
   Map$addLegend(visParams = viz,name = &quot;Environment index&quot;)</code></pre>
 <center>
-<img src="https://user-images.githubusercontent.com/23284899/152656080-1d9d8c20-10d3-4c1b-aa68-6c3eee215ded.png" width="100%">
+<img src="https://user-images.githubusercontent.com/23284899/154721611-e4580a56-53da-4f60-b3ef-f54ec9b82b99.png" width="100%">
 </center>
 </div>

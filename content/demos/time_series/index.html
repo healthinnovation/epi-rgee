@@ -8,8 +8,7 @@ tags: ["statisticzonal"]
 <script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
-<p>The objective of this demo is extract a time series of meteorological variables like the
-temperatura and precipitation in <a href="https://es.wikipedia.org/wiki/Lima_Metropolitana">Lima</a>
+<p>The objective of this demo is to extract a time series of meteorological variables like temperature and precipitation in <a href="https://es.wikipedia.org/wiki/Lima_Metropolitana">Lima</a>
 using the dataset of <a href="https://developers.google.com/earth-engine/datasets/catalog/IDAHO_EPSCOR_TERRACLIMATE?hl=en">Terraclim</a>.</p>
 <table>
 <tbody>
@@ -17,12 +16,12 @@ using the dataset of <a href="https://developers.google.com/earth-engine/dataset
 <td><img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b></td>
 </tr>
 <tr class="even">
-<td>- For this demo we need to have install the packages of <code>rgee</code>, <code>sf</code>, <code>tidyverse</code> ,<code>lubridate</code> and <code>patchwork</code>.</td>
+<td>- For this demo you need to have <code>rgee</code>, <code>sf</code>, <code>tidyverse</code> ,<code>lubridate</code>, and <code>patchwork</code> packages previously installed.</td>
 </tr>
 </tbody>
 </table>
-<div id="requeriments" class="section level4">
-<h4>1. Requeriments</h4>
+<div id="requirements" class="section level4">
+<h4>1. Requirements</h4>
 <pre class="r"><code>library(rgee)
 library(sf)  
 library(tidyverse)
@@ -43,8 +42,8 @@ ee_Initialize()</code></pre>
   quiet = TRUE) %&gt;%
   summarise()</code></pre>
 </div>
-<div id="transformation-of-sf-object-to-a-featurecollection" class="section level4">
-<h4>3. Transformation of sf object to a featurecollection</h4>
+<div id="transformation-of-sf-object-to-a-feature-collection" class="section level4">
+<h4>3. Transformation of sf object to a feature collection</h4>
 <pre class="r"><code>lima_ee &lt;-  lima %&gt;% 
   sf_as_ee()</code></pre>
 </div>
@@ -63,22 +62,38 @@ data &lt;- ee_extract(
 </div>
 <div id="cooking-data-for-mapping" class="section level4">
 <h4>5. Cooking data for mapping</h4>
-<pre class="r"><code>newdata &lt;- data %&gt;% as_tibble() %&gt;% 
+<pre class="r"><code>data_prev &lt;- data %&gt;% as_tibble() %&gt;% 
   mutate(region = &quot;LIMA&quot;) %&gt;% 
   pivot_longer(X199001_pr:X202012_tmmx) %&gt;% 
   separate(col = name,into = c(&quot;date&quot;,&quot;variable&quot;),sep = &quot;_&quot;) %&gt;% 
   mutate(date = ym(gsub(&quot;X&quot;,&quot;&quot;,date))) %&gt;% 
   separate(col = date,into = c(&quot;year&quot;,&quot;month&quot;),sep = &quot;-&quot;) %&gt;% 
-  mutate(month = factor(month,labels = month.abb)) %&gt;%
+  mutate(month = factor(month,labels = month.abb))</code></pre>
+</div>
+<div id="time-series-plot" class="section level4">
+<h4>6. Time series plot</h4>
+<pre class="r"><code>data_prev %&gt;% 
+  filter(variable == &quot;tmmx&quot;) %&gt;% 
+  ggplot(aes(x = as.integer(year),y = value*0.1, group = year, fill =  year)) + 
+  geom_boxplot(color = &quot;black&quot;,lwd=0.5,alpha=0.8) + 
+  theme_minimal(8) + 
+  theme(legend.position = &quot;none&quot;) + 
+  scale_fill_viridis_d(option = &quot;inferno&quot;) +
+  labs(x = &quot;&quot;, y = &quot;Temp&quot;)</code></pre>
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/154715567-5a9ff726-8fe6-466e-bd30-fb636e1800bc.png" width="100%">
+</center>
+</div>
+<div id="plots-of-temperature-and-precipitation" class="section level4">
+<h4>7. Plots of temperature and precipitation</h4>
+<pre class="r"><code>newdata &lt;- data_prev %&gt;% 
   group_by(month,variable) %&gt;% 
   summarise(value = mean(value,na.rm = TRUE)) %&gt;% 
   spread(variable,value) %&gt;% 
   rename(temp = pr,
-         pp = tmmx) </code></pre>
-</div>
-<div id="plots-of-temperatura-and-precipitation" class="section level4">
-<h4>6. Plots of temperatura and precipitation</h4>
-<pre class="r"><code>pp &lt;- ggplot(newdata,aes(x = month,y = pp)) +
+         pp = tmmx) 
+
+pp &lt;- ggplot(newdata,aes(x = month,y = pp)) +
   geom_bar(stat = &quot;identity&quot;,fill = &quot;blue&quot;,alpha=0.5) +
   theme_minimal() +
   labs(x = &quot;&quot;,

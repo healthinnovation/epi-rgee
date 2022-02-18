@@ -1,0 +1,162 @@
+---
+title: "1. Zonal statistics in continuous data"
+author: "Gabriel Carrasco & Antony Barja"
+date: 2020-12-01T21:13:14-05:00
+tags: ["statisticzonal","SO2"]
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>The objective of this demo is to identify the regions that have a high concentration of
+SO2 emissions in <a href="https://es.wikipedia.org/wiki/Lima_Metropolitana">Lima</a> - Peru and <a href="https://es.wikipedia.org/wiki/San_Diego_(California)">San Diego</a> city - USA.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td><img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b></td>
+</tr>
+<tr class="even">
+<td>- For this demo you need to have previously installed the <code>rgee</code>, <code>sf</code>, <code>viridis</code> and <code>ggplot2</code> and <code>ggspatial</code> packages.</td>
+</tr>
+</tbody>
+</table>
+<div id="requirements" class="section level4">
+<h4>1. Requirements</h4>
+<pre class="r"><code>library(rgee)
+library(sf)
+library(viridis)   
+library(tidyverse)
+library(ggspatial)
+library(patchwork)
+ee_Initialize()</code></pre>
+<pre><code>&gt; ee_Initialize()
+── rgee 1.1.2 ────────────────────────── earthengine-api 0.1.292 ── 
+ ✓ user: not_defined
+ ✓ Initializing Google Earth Engine:  DONE!
+ ✓ Earth Engine account: users/ambarja 
+─────────────────────────────────────────────────────────────────── </code></pre>
+</div>
+<div id="vector-layer-reading-of-our-study-area" class="section level4">
+<h4>2. Vector layer reading of our study area</h4>
+<pre class="r"><code>lima &lt;- st_read(
+  &quot;https://github.com/ambarja/gpkg-pe/raw/main/lima_distritos.gpkg&quot;,
+  quiet = TRUE) %&gt;% 
+  select(NOMBDIST,UBIGEO)
+sandiego &lt;- st_read(
+  &quot;https://github.com/ambarja/gpkg-pe/raw/main/SanDiegodistricts.gpkg&quot;,
+  quiet = TRUE) %&gt;% 
+  select(CODE,NAME)</code></pre>
+</div>
+<div id="transformation-of-sf-object-to-a-feature-collection" class="section level4">
+<h4>3. Transformation of sf object to a feature collection</h4>
+<pre class="r"><code>lima_ee &lt;-  lima %&gt;% 
+  sf_as_ee()
+
+sandiego_ee &lt;- sandiego %&gt;% 
+  sf_as_ee()</code></pre>
+</div>
+<div id="cooking-data-with-rgee" class="section level4">
+<h4>4. Cooking data with rgee</h4>
+<pre class="r"><code># 1DU(Dobson units = 4,4615 x 10 -4 mol/m 2 molecules)
+# source:https://sacs.aeronomie.be/info/dobson.php
+
+so2 &lt;- ee$ImageCollection$Dataset$COPERNICUS_S5P_NRTI_L3_SO2$
+  select(&quot;SO2_column_number_density_15km&quot;)$
+  filter(ee$Filter$calendarRange(2021,2021,&quot;year&quot;))$
+  filter(ee$Filter$calendarRange(1,12,&quot;month&quot;))$
+  median()$
+  divide(0.00044615)$
+  rename(&quot;so2&quot;)
+
+# Extracting data
+so2_to_lima &lt;- ee_extract(
+  x = so2,
+  y = lima_ee,
+  fun = ee$Reducer$mean(),
+  sf = TRUE
+)
+so2_to_sandiego &lt;- ee_extract(
+  x = so2,
+  y = sandiego_ee,
+  fun = ee$Reducer$mean(),
+  sf = TRUE
+)
+head(so2_to_lima)
+# head(so2_to_sandiego)</code></pre>
+<pre><code>Simple feature collection with 50 features and 3 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -77.1988 ymin: -12.51993 xmax: -76.62082 ymax: -11.57241
+Geodetic CRS:  WGS 84
+First 10 features:
+            NOMBDIST UBIGEO       so2                       geometry
+1         LURIGANCHO 150118 0.0089653 MULTIPOLYGON (((-76.7268 -1...
+2        JESUS MARIA 150113 0.0050146 MULTIPOLYGON (((-77.03762 -...
+3               LIMA 150101 0.0050673 MULTIPOLYGON (((-77.00972 -...
+4              LINCE 150116 0.0066919 MULTIPOLYGON (((-77.02807 -...
+5         MIRAFLORES 150122 0.0064254 MULTIPOLYGON (((-77.02739 -...
+6  MAGDALENA DEL MAR 150120 0.0060677 MULTIPOLYGON (((-77.07179 -...
+7       PUEBLO LIBRE 150121 0.0049854 MULTIPOLYGON (((-77.05433 -...
+8          SAN BORJA 150130 0.0067893 MULTIPOLYGON (((-76.9872 -1...
+9           SAN LUIS 150134 0.0063101 MULTIPOLYGON (((-76.99876 -...
+10        SAN MIGUEL 150136 0.0048452 MULTIPOLYGON (((-77.0791 -1...</code></pre>
+</div>
+<div id="mapping-with-ggplot-and-ggspatial" class="section level4">
+<h4>5. Mapping with ggplot and ggspatial</h4>
+<pre class="r"><code>p1 &lt;- so2_to_lima %&gt;% 
+  ggplot() + 
+  geom_sf(aes(fill = so2),color = NA) +
+  scale_fill_viridis(&quot;SO2 [DU]&quot;,option = &quot;F&quot;,direction = -1) + 
+  theme_minimal(8) + 
+  labs(
+    title = &quot;SO2 emission in Lima-2021&quot;
+    ) +
+  annotation_north_arrow(
+    height = unit(0.3,&quot;cm&quot;),
+    width = unit(0.3,&quot;cm&quot;),
+    location = &quot;tr&quot;
+    ) + 
+  annotation_scale(line_width = 0.05,height = unit(0.1,&quot;cm&quot;))
+
+p2 &lt;- so2_to_sandiego %&gt;% 
+  ggplot() + 
+  geom_sf(aes(fill = so2),color = NA) +
+  scale_fill_viridis(&quot;SO2 [DU]&quot;,option = &quot;F&quot;,direction = -1) + 
+  theme_minimal(8) + 
+  labs(
+    title = &quot;SO2 emission in San Diego-2021&quot;
+  ) +
+  annotation_north_arrow(
+    height = unit(0.3,&quot;cm&quot;),
+    width = unit(0.3,&quot;cm&quot;),
+    location = &quot;tr&quot;
+  ) + 
+  annotation_scale(line_width = 0.05,height = unit(0.1,&quot;cm&quot;))
+
+# Violin plot
+v1 &lt;-  so2_to_lima %&gt;% 
+  st_set_geometry(NULL) %&gt;%
+  mutate(name = &quot;Lima Metropolitana&quot;) %&gt;% 
+  ggplot(aes(x = name ,y = so2)) + 
+  geom_violin(width=1, size=0.5, alpha = 0.8,trim=FALSE) +
+  geom_jitter(color = &quot;darkgrey&quot;, alpha = 0.8, cex = 0.5) +
+  theme_minimal() +
+  labs(x = &quot;&quot;)
+
+v2 &lt;-  so2_to_sandiego %&gt;% 
+  st_set_geometry(NULL) %&gt;%
+  mutate(name = &quot;San Diego&quot;) %&gt;% 
+  ggplot(aes(x = name ,y = so2)) + 
+  geom_violin(width=1, size=0.5, alpha = 0.8,trim=FALSE) +
+  geom_jitter(color = &quot;darkgrey&quot;, alpha = 0.8, cex = 0.5) +
+  theme_minimal() +
+  labs(
+    x = &quot;&quot;,
+    caption = &quot;Source:Sentinel-5P Near Real-Time Sulphur Dioxide&quot;)+
+  theme(plot.caption = element_text(hjust = 1, face = &quot;italic&quot;))
+  
+(p1 | v1)/(p2 | v2)</code></pre>
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/154685578-072696a9-e8ea-435e-abfa-2a00d7b75767.png" width="100%">
+</center>
+</div>
