@@ -37,10 +37,6 @@ lima <- st_read(
   "https://github.com/ambarja/gpkg-pe/raw/main/Lima_provincia.gpkg",
   quiet = TRUE) %>%
   summarise()
-dep <- st_read(
-  "https://github.com/ambarja/gpkg-pe/raw/main/departamentos.gpkg",
-  quiet = TRUE) %>% 
-  dplyr::select(NOMBDEP)
 ```
 
 #### 3. Transformation of sf object to a feature collection 
@@ -63,17 +59,6 @@ lima_data <- ee_extract(
   y = lima_ee,
   fun = ee$Reducer$mean(),
   sf = FALSE)
-# Time estimate ~ 12 min
-dep_list <- list()
-for(i in 1:nrow(dep)){
-  dep_ee <- dep[i,] %>% sf_as_ee()
-  pet <- ee_extract(
-  x = terraclim,
-  y = dep_ee,
-  fun = ee$Reducer$mean(),
-  sf = FALSE)
-  dep_list[[i]] <- pet
-}
 ```
 
 #### 5. Cooking data for mapping  
@@ -85,16 +70,6 @@ lima_temp <- lima_data %>% as_tibble() %>%
   mutate(date = ym(gsub("X","",date))) %>% 
   separate(col = date,into = c("year","month"),sep = "-") %>% 
   mutate(month = factor(month,labels = month.abb))
-
-dep_pet <- dep_list %>% 
-  map_df(.f = as_tibble) %>% 
-  pivot_longer(X199001_pr:X202012_tmmx) %>% 
-  mutate(variables = gsub("[^prtmmx]", "", name) ,
-         date = gsub("\\D", "", name) %>% as.integer()) %>% 
-  mutate(value = case_when(
-    variables =="pr" ~ value,
-    variables == "tmmx" ~ value *0.1)
-
 ```
 
 #### 6. Time series plot - Lima
@@ -122,7 +97,44 @@ lima_temp %>%
 </center>
 
 
-#### 7. Time series plot for the 24 departaments of Peru
+#### 8. Time series plot for the 24 departaments of Peru
+
+```{r,eval = FALSE}
+# Reading vector layer
+dep <- st_read(
+  "https://github.com/ambarja/gpkg-pe/raw/main/departamentos.gpkg",
+  quiet = TRUE) %>% 
+  dplyr::select(NOMBDEP)
+```
+
+
+```{r,eval = FALSE}
+# Time estimate ~ 12 min
+dep_list <- list()
+for(i in 1:nrow(dep)){
+  dep_ee <- dep[i,] %>% sf_as_ee()
+  pet <- ee_extract(
+    x = terraclim,
+    y = dep_ee,
+    fun = ee$Reducer$mean(),
+    sf = FALSE)
+  dep_list[[i]] <- pet
+}
+```
+
+
+```{r,eval = FALSE}
+# Cooking data for mapping 
+dep_pet <- dep_list %>% 
+  map_df(.f = as_tibble) %>% 
+  pivot_longer(X199001_pr:X202012_tmmx) %>% 
+  mutate(variables = gsub("[^prtmmx]", "", name) ,
+         date = gsub("\\D", "", name) %>% as.integer()) %>% 
+  mutate(value = case_when(
+    variables =="pr" ~ value,
+    variables == "tmmx" ~ value *0.1)
+```
+
 
 ```{r,eval = FALSE}
 # Accumulated precipitation
