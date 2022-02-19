@@ -6,11 +6,11 @@ tags: ["statisticzonal"]
 ---
 
 The objective of this demo is to extract a time series of meteorological variables like temperature and precipitation in [Lima](https://es.wikipedia.org/wiki/Lima_Metropolitana) 
-using  the dataset of [Terraclim](https://developers.google.com/earth-engine/datasets/catalog/IDAHO_EPSCOR_TERRACLIMATE?hl=en).
+and the 24 departaments using  the dataset of [Terraclim](https://developers.google.com/earth-engine/datasets/catalog/IDAHO_EPSCOR_TERRACLIMATE?hl=en).
 
 ---
 <img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
-- For this demo you need to have `rgee`, `sf`, `tidyverse` ,`lubridate`, and `patchwork` packages previously installed.
+- For this demo you need to have `rgee`, `sf`, `tidyverse` and `lubridate` packages previously installed.
 ---
 
 #### 1. Requirements
@@ -20,7 +20,6 @@ library(rgee)
 library(sf)  
 library(tidyverse)
 library(lubridate)
-library(patchwork)
 ee_Initialize()
 ```
 ```
@@ -38,6 +37,10 @@ lima <- st_read(
   "https://github.com/ambarja/gpkg-pe/raw/main/Lima_provincia.gpkg",
   quiet = TRUE) %>%
   summarise()
+dep <- st_read(
+  "https://github.com/ambarja/gpkg-pe/raw/main/departamentos.gpkg",
+  quiet = TRUE) %>% 
+  dplyr::select(NOMBDEP)
 ```
 
 #### 3. Transformation of sf object to a feature collection 
@@ -55,28 +58,50 @@ terraclim <-  ee$ImageCollection$Dataset$IDAHO_EPSCOR_TERRACLIMATE$
   filterDate("1990-01-01","2021-12-31")$
   toBands()
 # Extracting data
-data <- ee_extract(
+lima_data <- ee_extract(
   x = terraclim,
   y = lima_ee,
   fun = ee$Reducer$mean(),
   sf = FALSE)
+# Time estimate ~ 12 min
+dep_list <- list()
+for(i in 1:nrow(dep)){
+  dep_ee <- dep[i,] %>% sf_as_ee()
+  pet <- ee_extract(
+  x = terraclim,
+  y = dep_ee,
+  fun = ee$Reducer$mean(),
+  sf = FALSE)
+  dep_list[[i]] <- pet
+}
 ```
 
 #### 5. Cooking data for mapping  
 ```{r,eval = FALSE}
-data_prev <- data %>% as_tibble() %>% 
+lima_temp <- lima_data %>% as_tibble() %>% 
   mutate(region = "LIMA") %>% 
   pivot_longer(X199001_pr:X202012_tmmx) %>% 
   separate(col = name,into = c("date","variable"),sep = "_") %>% 
   mutate(date = ym(gsub("X","",date))) %>% 
   separate(col = date,into = c("year","month"),sep = "-") %>% 
   mutate(month = factor(month,labels = month.abb))
+
+dep_pet <- dep_list %>% 
+  map_df(.f = as_tibble) %>% 
+  pivot_longer(X199001_pr:X202012_tmmx) %>% 
+  mutate(variables = gsub("[^prtmmx]", "", name) ,
+         date = gsub("\\D", "", name) %>% as.integer()) %>% 
+  mutate(value = case_when(
+    variables =="pr" ~ value,
+    variables == "tmmx" ~ value *0.1)
+
 ```
 
-#### 6. Time series plot 
+#### 6. Time series plot - Lima
 
 ```{r,eval = FALSE}
-data_prev %>% 
+# Maximum temperature
+lima_temp %>% 
   pivot_wider(names_from = variable,
               values_from = value) %>% 
   mutate(date = ymd(paste(year, month, "01", sep = "/"))) %>%
@@ -89,8 +114,34 @@ data_prev %>%
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.position = "top")
+
 ```
 
 <center>
   <img src="https://user-images.githubusercontent.com/23284899/154769578-e7345afa-6ba9-4ccc-898f-5b7235fc9d9d.png" width="100%">
+</center>
+
+
+#### 7. Time series plot for the 24 departaments of Peru
+
+```{r,eval = FALSE}
+# Accumulated precipitation
+dep_pet  %>% 
+  mutate(date = ymd(sprintf("%s01",date))) %>%
+  filter(variables == "pr") %>% 
+  ggplot(aes(x = date, y = value, col = value)) +
+  geom_line() + 
+  scale_x_date(date_breaks = "36 months", 
+               date_minor_breaks = "36 months",
+               date_labels = "%Y") +
+  scale_color_viridis_c(option = "magma") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        legend.position = "top") +
+  facet_wrap(~NOMBDEP,nrow = 4) + 
+  labs(x = "" , y = "")
+```
+
+<center>
+  <img src="https://user-images.githubusercontent.com/23284899/154778112-cfb8d63e-421d-43ef-b891-98eb38da8aaa.png" width="100%">
 </center>

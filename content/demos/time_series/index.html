@@ -9,14 +9,14 @@ tags: ["statisticzonal"]
 
 
 <p>The objective of this demo is to extract a time series of meteorological variables like temperature and precipitation in <a href="https://es.wikipedia.org/wiki/Lima_Metropolitana">Lima</a>
-using the dataset of <a href="https://developers.google.com/earth-engine/datasets/catalog/IDAHO_EPSCOR_TERRACLIMATE?hl=en">Terraclim</a>.</p>
+and the 24 departaments using the dataset of <a href="https://developers.google.com/earth-engine/datasets/catalog/IDAHO_EPSCOR_TERRACLIMATE?hl=en">Terraclim</a>.</p>
 <table>
 <tbody>
 <tr class="odd">
 <td><img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b></td>
 </tr>
 <tr class="even">
-<td>- For this demo you need to have <code>rgee</code>, <code>sf</code>, <code>tidyverse</code> ,<code>lubridate</code>, and <code>patchwork</code> packages previously installed.</td>
+<td>- For this demo you need to have <code>rgee</code>, <code>sf</code>, <code>tidyverse</code> and <code>lubridate</code> packages previously installed.</td>
 </tr>
 </tbody>
 </table>
@@ -26,7 +26,6 @@ using the dataset of <a href="https://developers.google.com/earth-engine/dataset
 library(sf)  
 library(tidyverse)
 library(lubridate)
-library(patchwork)
 ee_Initialize()</code></pre>
 <pre><code>&gt; ee_Initialize()
 ── rgee 1.1.2 ────────────────────────── earthengine-api 0.1.292 ── 
@@ -40,7 +39,11 @@ ee_Initialize()</code></pre>
 <pre class="r"><code>lima &lt;- st_read(
   &quot;https://github.com/ambarja/gpkg-pe/raw/main/Lima_provincia.gpkg&quot;,
   quiet = TRUE) %&gt;%
-  summarise()</code></pre>
+  summarise()
+dep &lt;- st_read(
+  &quot;https://github.com/ambarja/gpkg-pe/raw/main/departamentos.gpkg&quot;,
+  quiet = TRUE) %&gt;% 
+  dplyr::select(NOMBDEP)</code></pre>
 </div>
 <div id="transformation-of-sf-object-to-a-feature-collection" class="section level4">
 <h4>3. Transformation of sf object to a feature collection</h4>
@@ -54,25 +57,46 @@ ee_Initialize()</code></pre>
   filterDate(&quot;1990-01-01&quot;,&quot;2021-12-31&quot;)$
   toBands()
 # Extracting data
-data &lt;- ee_extract(
+lima_data &lt;- ee_extract(
   x = terraclim,
   y = lima_ee,
   fun = ee$Reducer$mean(),
-  sf = FALSE)</code></pre>
+  sf = FALSE)
+# Time estimate ~ 12 min
+dep_list &lt;- list()
+for(i in 1:nrow(dep)){
+  dep_ee &lt;- dep[i,] %&gt;% sf_as_ee()
+  pet &lt;- ee_extract(
+  x = terraclim,
+  y = dep_ee,
+  fun = ee$Reducer$mean(),
+  sf = FALSE)
+  dep_list[[i]] &lt;- pet
+}</code></pre>
 </div>
 <div id="cooking-data-for-mapping" class="section level4">
 <h4>5. Cooking data for mapping</h4>
-<pre class="r"><code>data_prev &lt;- data %&gt;% as_tibble() %&gt;% 
+<pre class="r"><code>lima_temp &lt;- lima_data %&gt;% as_tibble() %&gt;% 
   mutate(region = &quot;LIMA&quot;) %&gt;% 
   pivot_longer(X199001_pr:X202012_tmmx) %&gt;% 
   separate(col = name,into = c(&quot;date&quot;,&quot;variable&quot;),sep = &quot;_&quot;) %&gt;% 
   mutate(date = ym(gsub(&quot;X&quot;,&quot;&quot;,date))) %&gt;% 
   separate(col = date,into = c(&quot;year&quot;,&quot;month&quot;),sep = &quot;-&quot;) %&gt;% 
-  mutate(month = factor(month,labels = month.abb))</code></pre>
+  mutate(month = factor(month,labels = month.abb))
+
+dep_pet &lt;- dep_list %&gt;% 
+  map_df(.f = as_tibble) %&gt;% 
+  pivot_longer(X199001_pr:X202012_tmmx) %&gt;% 
+  mutate(variables = gsub(&quot;[^prtmmx]&quot;, &quot;&quot;, name) ,
+         date = gsub(&quot;\\D&quot;, &quot;&quot;, name) %&gt;% as.integer()) %&gt;% 
+  mutate(value = case_when(
+    variables ==&quot;pr&quot; ~ value,
+    variables == &quot;tmmx&quot; ~ value *0.1)</code></pre>
 </div>
-<div id="time-series-plot" class="section level4">
-<h4>6. Time series plot</h4>
-<pre class="r"><code>data_prev %&gt;% 
+<div id="time-series-plot---lima" class="section level4">
+<h4>6. Time series plot - Lima</h4>
+<pre class="r"><code># Maximum temperature
+lima_temp %&gt;% 
   pivot_wider(names_from = variable,
               values_from = value) %&gt;% 
   mutate(date = ymd(paste(year, month, &quot;01&quot;, sep = &quot;/&quot;))) %&gt;%
@@ -87,5 +111,26 @@ data &lt;- ee_extract(
         legend.position = &quot;top&quot;)</code></pre>
 <center>
 <img src="https://user-images.githubusercontent.com/23284899/154769578-e7345afa-6ba9-4ccc-898f-5b7235fc9d9d.png" width="100%">
+</center>
+</div>
+<div id="time-series-plot-for-the-24-departaments-of-peru" class="section level4">
+<h4>7. Time series plot for the 24 departaments of Peru</h4>
+<pre class="r"><code># Accumulated precipitation
+dep_pet  %&gt;% 
+  mutate(date = ymd(sprintf(&quot;%s01&quot;,date))) %&gt;%
+  filter(variables == &quot;pr&quot;) %&gt;% 
+  ggplot(aes(x = date, y = value, col = value)) +
+  geom_line() + 
+  scale_x_date(date_breaks = &quot;36 months&quot;, 
+               date_minor_breaks = &quot;36 months&quot;,
+               date_labels = &quot;%Y&quot;) +
+  scale_color_viridis_c(option = &quot;magma&quot;) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        legend.position = &quot;top&quot;) +
+  facet_wrap(~NOMBDEP,nrow = 4) + 
+  labs(x = &quot;&quot; , y = &quot;&quot;)</code></pre>
+<center>
+<img src="https://user-images.githubusercontent.com/23284899/154778112-cfb8d63e-421d-43ef-b891-98eb38da8aaa.png" width="100%">
 </center>
 </div>
