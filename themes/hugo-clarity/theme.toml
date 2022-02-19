@@ -1,7 +1,7 @@
 name = "Clarity"
 license = "MIT"
 licenselink = "https://github.com/chipzoller/hugo-clarity/blob/master/LICENSE.md"
-description = "A theme based on VMware's Clarity Design System for publishing technical blogs with Hugo."
+description = "A workshop on Google Earth Engine for R and its applications in different aspects related to spatial modelling in epidemiology."
 homepage = "https://github.com/chipzoller/hugo-clarity"
 tags = ["blog", "technical", "simple", "dark", "syntax highlighting"]
 features = ["blog", "technical", "simple", "dark", "syntax highlighting"]
