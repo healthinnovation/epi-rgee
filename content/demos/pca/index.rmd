@@ -23,7 +23,7 @@ All the dataset is from [USGS National Land Cover Database](https://developers.g
 - For this demo you need to have `rgee`, `sf`, `tidyverse`, and `cptcity` packages previously installed.
 ---
 
-#### 1. Requirements
+#### 4.1 Requirements
 ```{r, eval = FALSE}
 library(rgee)
 library(tidyverse)
@@ -40,7 +40,7 @@ ee_Initialize()
  ✓ Earth Engine account: users/ambarja 
 ─────────────────────────────────────────────────────────────────── 
 ```
-#### 2. Vector layer reading of our study area 
+#### 4.2 Vector layer reading of our study area 
 ```{r, eval = FALSE}
 geodata <- st_read(
   "https://github.com/healthinnovation/sdb-gpkg/raw/main/SanDiego.gpkg"
@@ -48,7 +48,7 @@ geodata <- st_read(
 sandiego <- geodata %>% sf_as_ee()  
 ```
 
-#### 3. Cooking data with rgee 
+#### 4.3 Cooking data with rgee 
 
 ```{r, eval = FALSE}
 years <- c(1992, 2001,2004,2006,2008,2011,2013,2016) %>% ee$List()
@@ -136,7 +136,7 @@ stack_evironment <- ee$Image(
     )$
     toDouble()
 ```
-#### 4. Variable standardization 
+#### 4.4 Variable standardization 
 
 ```{r, eval = FALSE}
 standCov <-
@@ -148,7 +148,7 @@ standCov <-
   )
 ```
 
-#### 5. PCA 
+#### 4.5 PCA 
 
 ```{r, eval = FALSE}
 PCA <-
@@ -165,7 +165,7 @@ Map$addLayer(PCA,visParams = list("PC1","PC2","PC3"))
    <img src="https://user-images.githubusercontent.com/23284899/154719983-f3eb638b-0b32-4c3b-bbd6-eccdd812850e.png" width="100%">
 </center>
 
-#### 6. Table of eingvectors
+#### 4.6 Table of eingvectors
 ```{r, eval = FALSE}
 eVectors(
   image = standCov,
@@ -184,7 +184,7 @@ eVectors(
 5          5 -0.006  0.020 -0.021  0.713 -0.700
 ```
 
-#### 7. Table of eingvalues
+#### 4.7 Table of eingvalues
 
 ```{r, eval = FALSE} 
 eValues(
@@ -203,7 +203,7 @@ eValues(
 4     eVal4   0.42
 5     eVal5   0.06
 ```
-#### 8. Summary table
+#### 4.8 Summary table
 ```{r, eval = FALSE} 
 table <-
   imporPCA(
@@ -224,7 +224,7 @@ table
 5     eVal5   0.06       pc5      1.2      100.0
 ```
 
-#### 9. Plot PCA
+#### 4.9 Plot PCA
 ```{r, eval = FALSE}
 table %>%
   ggplot(aes(x = reorder(component, variance), y = variance, fill = variance)) +
@@ -238,7 +238,7 @@ table %>%
    <img src="https://user-images.githubusercontent.com/23284899/154721056-f67b246e-d217-41c3-83b7-cc4cfd397841.png" width="100%">
 </center>
 
-#### 10. Construction of an environmental index 
+#### 4.10 Construction of an environmental index 
 
 ```{r, eval= FALSE}
 index <- PCA$
@@ -247,7 +247,7 @@ index <- PCA$
   )$
   reduce("sum")
 ```
-#### 11. Identifying min and max values of environmental index
+#### 4.11 Identifying min and max values of environmental index
 
 ```{r, eval= FALSE}
 (minmax <- index$reduceRegion(
@@ -264,7 +264,7 @@ $sum_max
 $sum_min
 [1] -0.6983301
 ```
-#### 12. Mapping environmental index
+#### 4.12 Mapping environmental index
 
 ```{r, eval= FALSE}
 viz <- list(

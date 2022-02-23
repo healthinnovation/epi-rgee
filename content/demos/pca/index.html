@@ -30,7 +30,7 @@ the dataset used is:</p>
 </tbody>
 </table>
 <div id="requirements" class="section level4">
-<h4>1. Requirements</h4>
+<h4>4.1 Requirements</h4>
 <pre class="r"><code>library(rgee)
 library(tidyverse)
 library(sf)
@@ -45,14 +45,14 @@ ee_Initialize()</code></pre>
 ─────────────────────────────────────────────────────────────────── </code></pre>
 </div>
 <div id="vector-layer-reading-of-our-study-area" class="section level4">
-<h4>2. Vector layer reading of our study area</h4>
+<h4>4.2 Vector layer reading of our study area</h4>
 <pre class="r"><code>geodata &lt;- st_read(
   &quot;https://github.com/healthinnovation/sdb-gpkg/raw/main/SanDiego.gpkg&quot;
   )
 sandiego &lt;- geodata %&gt;% sf_as_ee()  </code></pre>
 </div>
 <div id="cooking-data-with-rgee" class="section level4">
-<h4>3. Cooking data with rgee</h4>
+<h4>4.3 Cooking data with rgee</h4>
 <pre class="r"><code>years &lt;- c(1992, 2001,2004,2006,2008,2011,2013,2016) %&gt;% ee$List()
 nldc &lt;- years$
   map(ee_utils_pyfunc(function(x) {
@@ -139,7 +139,7 @@ stack_evironment &lt;- ee$Image(
     toDouble()</code></pre>
 </div>
 <div id="variable-standardization" class="section level4">
-<h4>4. Variable standardization</h4>
+<h4>4.4 Variable standardization</h4>
 <pre class="r"><code>standCov &lt;-
   ee_scale(
     image = stack_evironment,
@@ -149,7 +149,7 @@ stack_evironment &lt;- ee$Image(
   )</code></pre>
 </div>
 <div id="pca" class="section level4">
-<h4>5. PCA</h4>
+<h4>4.5 PCA</h4>
 <pre class="r"><code>PCA &lt;-
   ee_pca(
     image = standCov,
@@ -163,7 +163,7 @@ Map$addLayer(PCA,visParams = list(&quot;PC1&quot;,&quot;PC2&quot;,&quot;PC3&quot
 </center>
 </div>
 <div id="table-of-eingvectors" class="section level4">
-<h4>6. Table of eingvectors</h4>
+<h4>4.6 Table of eingvectors</h4>
 <pre class="r"><code>eVectors(
   image = standCov,
   ee_feature = sandiego,
@@ -178,7 +178,7 @@ Map$addLayer(PCA,visParams = list(&quot;PC1&quot;,&quot;PC2&quot;,&quot;PC3&quot
 5          5 -0.006  0.020 -0.021  0.713 -0.700</code></pre>
 </div>
 <div id="table-of-eingvalues" class="section level4">
-<h4>7. Table of eingvalues</h4>
+<h4>4.7 Table of eingvalues</h4>
 <pre class="r"><code>eValues(
   image = standCov,
   ee_feature = sandiego,
@@ -193,7 +193,7 @@ Map$addLayer(PCA,visParams = list(&quot;PC1&quot;,&quot;PC2&quot;,&quot;PC3&quot
 5     eVal5   0.06</code></pre>
 </div>
 <div id="summary-table" class="section level4">
-<h4>8. Summary table</h4>
+<h4>4.8 Summary table</h4>
 <pre class="r"><code>table &lt;-
   imporPCA(
     image = standCov,
@@ -211,7 +211,7 @@ table</code></pre>
 5     eVal5   0.06       pc5      1.2      100.0</code></pre>
 </div>
 <div id="plot-pca" class="section level4">
-<h4>9. Plot PCA</h4>
+<h4>4.9 Plot PCA</h4>
 <pre class="r"><code>table %&gt;%
   ggplot(aes(x = reorder(component, variance), y = variance, fill = variance)) +
   geom_bar(stat = &quot;identity&quot;) +
@@ -223,7 +223,7 @@ table</code></pre>
 </center>
 </div>
 <div id="construction-of-an-environmental-index" class="section level4">
-<h4>10. Construction of an environmental index</h4>
+<h4>4.10 Construction of an environmental index</h4>
 <pre class="r"><code>index &lt;- PCA$
   select(
   c(&quot;pc1&quot;,&quot;pc2&quot;,&quot;pc3&quot;)
@@ -231,7 +231,7 @@ table</code></pre>
   reduce(&quot;sum&quot;)</code></pre>
 </div>
 <div id="identifying-min-and-max-values-of-environmental-index" class="section level4">
-<h4>11. Identifying min and max values of environmental index</h4>
+<h4>4.11 Identifying min and max values of environmental index</h4>
 <pre class="r"><code>(minmax &lt;- index$reduceRegion(
   reducer = ee$Reducer$minMax(),
   geometry = sandiego,
@@ -244,7 +244,7 @@ $sum_min
 [1] -0.6983301</code></pre>
 </div>
 <div id="mapping-environmental-index" class="section level4">
-<h4>12. Mapping environmental index</h4>
+<h4>4.12 Mapping environmental index</h4>
 <pre class="r"><code>viz &lt;- list(
   min = -0.6983301 ,
   max = 0.9375844,
