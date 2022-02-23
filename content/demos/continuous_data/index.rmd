@@ -127,7 +127,7 @@ v1 <-  so2_to_lima %>%
 p1 + v1
 
 ```
-<center><img src="https://user-images.githubusercontent.com/23284899/155327429-91ae055c-80c4-4409-9f07-3ea80e442274.png" width="100%"></center>
+<center><img src="https://user-images.githubusercontent.com/23284899/155328179-f9a9cad3-0cd7-4a5e-8e77-a5ebe817965d.png" width="100%"></center>
 
 
 ### 1.6 Vector layer reading of San Diego
@@ -209,5 +209,5 @@ v2 <-  so2_to_sandiego %>%
 p2 + v2
 ```
 
-<center><img src="https://user-images.githubusercontent.com/23284899/155326853-4d2953c8-7a88-4319-a261-02568c824aba.png" width="100%"></center>
+<center><img src="https://user-images.githubusercontent.com/23284899/155328153-d3b106cf-c3ee-4a97-a94b-fbce5b4a511f.png" width="100%"></center>
 
