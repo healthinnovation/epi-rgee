@@ -1,7 +1,7 @@
 ---
-title: "2. Zonal statistics with discrete data"
+title: "3. Zonal statistics with discrete data"
 author: "Gabriel Carrasco & Antony Barja"
-date: 2020-12-01T21:13:14-05:00
+date: 2020-12-02
 tags: ["statisticzonal","discrete"]
 ---
 
@@ -31,7 +31,7 @@ More information <a href="https://developers.google.com/earth-engine/datasets/ca
 </tbody>
 </table>
 <div id="requirements" class="section level4">
-<h4>2.1 Requirements</h4>
+<h4>3.1 Requirements</h4>
 <pre class="r"><code>library(rgee)
 library(tidyverse)
 library(sf)
@@ -48,7 +48,7 @@ ee_Initialize()</code></pre>
 ─────────────────────────────────────────────────────────────────── </code></pre>
 </div>
 <div id="vector-layer-reading-of-your-study-area" class="section level4">
-<h4>2.2 Vector layer reading of your study area</h4>
+<h4>3.2 Vector layer reading of your study area</h4>
 <pre class="r"><code>sandiego &lt;- st_read(
   &quot;https://github.com/healthinnovation/sdb-gpkg/raw/main/SanDiego.gpkg&quot;
 ) %&gt;%
@@ -64,12 +64,12 @@ Geodetic CRS:  WGS 84
 1 San Diego MULTIPOLYGON (((-117.2394 3...</code></pre>
 </div>
 <div id="cooking-data-with-rgee" class="section level4">
-<h4>2.3 Cooking data with rgee</h4>
+<h4>3.3 Cooking data with rgee</h4>
 <pre class="r"><code>lulc &lt;- ee$Image(&quot;COPERNICUS/Landcover/100m/Proba-V-C3/Global/2019&quot;)$
   select(&quot;discrete_classification&quot;)</code></pre>
 </div>
 <div id="a-function-that-extracts-the-area-of-vegetation-cover-in-hectares." class="section level4">
-<h4>2.4 A function that extracts the area of vegetation cover in hectares.</h4>
+<h4>3.4 A function that extracts the area of vegetation cover in hectares.</h4>
 <pre class="r"><code>ee_area_lulc &lt;- function(img, region, scale = 1000) {
   lista_histo &lt;- list()
   for (i in 1:nrow(region)) {
@@ -93,11 +93,11 @@ Geodetic CRS:  WGS 84
 }</code></pre>
 </div>
 <div id="use-of-ee_area_lulc-rgee-as-backend" class="section level4">
-<h4>2.5 Use of ee_area_lulc (rgee as backend)</h4>
+<h4>3.5 Use of ee_area_lulc (rgee as backend)</h4>
 <pre class="r"><code>area_Ha &lt;- ee_area_lulc(img = lulc, region = sandiego)</code></pre>
 </div>
 <div id="identifying-the-type-of-vegetation-cover-according-to-the-following-table" class="section level4">
-<h4>2.6 Identifying the type of vegetation cover according to the following table</h4>
+<h4>3.6 Identifying the type of vegetation cover according to the following table</h4>
 <center>
 <a href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global#bands">
 <img src="https://user-images.githubusercontent.com/23284899/152642180-ca0d6501-bad9-44bc-a862-42597c04a4bf.png" width="100%">
@@ -141,7 +141,7 @@ area_Ha</code></pre>
 11 San Diego Herbaceous wetland        200  Ha   </code></pre>
 </div>
 <div id="bar-plot" class="section level4">
-<h4>2.7 Bar plot</h4>
+<h4>3.7 Bar plot</h4>
 <pre class="r"><code>g1 &lt;- area_Ha %&gt;%
   ggplot(aes(x = reorder(Category,values), y = values, fill = Category)) +
   geom_bar(stat = &quot;identity&quot;) +
@@ -152,10 +152,10 @@ area_Ha</code></pre>
 ggplotly(g1) %&gt;% 
   config(displayModeBar = F)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"data":[{"orientation":"h","width":0.9,"base":0,"x":[184500],"y":[7],"text":"reorder(Category, values): agriculture<br />values: 184500.000<br />Category: agriculture","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(68,1,84,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"agriculture","legendgroup":"agriculture","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":0.9,"base":0,"x":[113547.058823529],"y":[6],"text":"reorder(Category, values): Bare<br />values: 113547.059<br />Category: Bare","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(71,45,123,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Bare","legendgroup":"Bare","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":[0.9,0.9],"base":[0,1000],"x":[1000,10553.3333333333],"y":[3,3],"text":["reorder(Category, values): Closed forest<br />values:   1000.000<br />Category: Closed forest","reorder(Category, values): Closed forest<br />values:  10553.333<br />Category: Closed forest"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(59,82,139,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Closed forest","legendgroup":"Closed forest","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":[0.9,0.9],"base":[0,124243.529411765],"x":[124243.529411765,600],"y":[5,5],"text":["reorder(Category, values): Herbaceous vegetation<br />values: 124243.529<br />Category: Herbaceous vegetation","reorder(Category, values): Herbaceous vegetation<br />values:    600.000<br />Category: Herbaceous vegetation"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(44,114,142,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Herbaceous vegetation","legendgroup":"Herbaceous vegetation","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":0.9,"base":0,"x":[200],"y":[1],"text":"reorder(Category, values): Herbaceous wetland<br />values:    200.000<br />Category: Herbaceous wetland","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(33,144,140,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Herbaceous wetland","legendgroup":"Herbaceous wetland","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":0.899999999999999,"base":0,"x":[274954.117647059],"y":[8],"text":"reorder(Category, values): Open forest<br />values: 274954.118<br />Category: Open forest","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(39,173,129,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Open forest","legendgroup":"Open forest","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":0.9,"base":0,"x":[6429.41176470588],"y":[4],"text":"reorder(Category, values): Permanent water bodies<br />values:   6429.412<br />Category: Permanent water bodies","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(93,200,99,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Permanent water bodies","legendgroup":"Permanent water bodies","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":0.899999999999999,"base":0,"x":[852717.254901961],"y":[9],"text":"reorder(Category, values): Shrubs<br />values: 852717.255<br />Category: Shrubs","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(170,220,50,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Shrubs","legendgroup":"Shrubs","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":0.9,"base":0,"x":[3634.50980392157],"y":[2],"text":"reorder(Category, values): Water bodies<br />values:   3634.510<br />Category: Water bodies","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(253,231,37,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Water bodies","legendgroup":"Water bodies","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":26.2283105022831,"r":7.30593607305936,"b":25.5707762557078,"l":139.543378995434},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-42635.8627450981,895353.117647059],"tickmode":"array","ticktext":["0e+00","2e+05","4e+05","6e+05","8e+05"],"tickvals":[0,200000,400000,600000,800000],"categoryorder":"array","categoryarray":["0e+00","2e+05","4e+05","6e+05","8e+05"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,9.6],"tickmode":"array","ticktext":["Herbaceous wetland","Water bodies","Closed forest","Permanent water bodies","Herbaceous vegetation","Bare","agriculture","Open forest","Shrubs"],"tickvals":[1,2,3,4,5,6,7,8,9],"categoryorder":"array","categoryarray":["Herbaceous wetland","Water bodies","Closed forest","Permanent water bodies","Herbaceous vegetation","Bare","agriculture","Open forest","Shrubs"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"title":{"text":"Category","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displayModeBar":false},"source":"A","attrs":{"3528635113f2":{"x":{},"y":{},"fill":{},"type":"bar"}},"cur_data":"3528635113f2","visdat":{"3528635113f2":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"data":[{"orientation":"h","width":0.9,"base":0,"x":[184500],"y":[7],"text":"reorder(Category, values): agriculture<br />values: 184500.000<br />Category: agriculture","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(68,1,84,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"agriculture","legendgroup":"agriculture","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":0.9,"base":0,"x":[113547.058823529],"y":[6],"text":"reorder(Category, values): Bare<br />values: 113547.059<br />Category: Bare","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(71,45,123,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Bare","legendgroup":"Bare","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":[0.9,0.9],"base":[0,1000],"x":[1000,10553.3333333333],"y":[3,3],"text":["reorder(Category, values): Closed forest<br />values:   1000.000<br />Category: Closed forest","reorder(Category, values): Closed forest<br />values:  10553.333<br />Category: Closed forest"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(59,82,139,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Closed forest","legendgroup":"Closed forest","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":[0.9,0.9],"base":[0,124243.529411765],"x":[124243.529411765,600],"y":[5,5],"text":["reorder(Category, values): Herbaceous vegetation<br />values: 124243.529<br />Category: Herbaceous vegetation","reorder(Category, values): Herbaceous vegetation<br />values:    600.000<br />Category: Herbaceous vegetation"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(44,114,142,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Herbaceous vegetation","legendgroup":"Herbaceous vegetation","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":0.9,"base":0,"x":[200],"y":[1],"text":"reorder(Category, values): Herbaceous wetland<br />values:    200.000<br />Category: Herbaceous wetland","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(33,144,140,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Herbaceous wetland","legendgroup":"Herbaceous wetland","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":0.899999999999999,"base":0,"x":[274954.117647059],"y":[8],"text":"reorder(Category, values): Open forest<br />values: 274954.118<br />Category: Open forest","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(39,173,129,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Open forest","legendgroup":"Open forest","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":0.9,"base":0,"x":[6429.41176470588],"y":[4],"text":"reorder(Category, values): Permanent water bodies<br />values:   6429.412<br />Category: Permanent water bodies","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(93,200,99,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Permanent water bodies","legendgroup":"Permanent water bodies","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":0.899999999999999,"base":0,"x":[852717.254901961],"y":[9],"text":"reorder(Category, values): Shrubs<br />values: 852717.255<br />Category: Shrubs","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(170,220,50,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Shrubs","legendgroup":"Shrubs","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":0.9,"base":0,"x":[3634.50980392157],"y":[2],"text":"reorder(Category, values): Water bodies<br />values:   3634.510<br />Category: Water bodies","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(253,231,37,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Water bodies","legendgroup":"Water bodies","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":26.2283105022831,"r":7.30593607305936,"b":25.5707762557078,"l":139.543378995434},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-42635.8627450981,895353.117647059],"tickmode":"array","ticktext":["0e+00","2e+05","4e+05","6e+05","8e+05"],"tickvals":[0,200000,400000,600000,800000],"categoryorder":"array","categoryarray":["0e+00","2e+05","4e+05","6e+05","8e+05"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,9.6],"tickmode":"array","ticktext":["Herbaceous wetland","Water bodies","Closed forest","Permanent water bodies","Herbaceous vegetation","Bare","agriculture","Open forest","Shrubs"],"tickvals":[1,2,3,4,5,6,7,8,9],"categoryorder":"array","categoryarray":["Herbaceous wetland","Water bodies","Closed forest","Permanent water bodies","Herbaceous vegetation","Bare","agriculture","Open forest","Shrubs"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"title":{"text":"Category","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displayModeBar":false},"source":"A","attrs":{"be6546e7dfa4":{"x":{},"y":{},"fill":{},"type":"bar"}},"cur_data":"be6546e7dfa4","visdat":{"be6546e7dfa4":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="get-raster-data-san-diego" class="section level4">
-<h4>2.8 Get raster data San Diego</h4>
+<h4>3.8 Get raster data San Diego</h4>
 <pre class="r"><code>sandiego_raster &lt;- ee_as_raster(
   image = lulc,
   region = sf_as_ee(sandiego)$geometry(),
@@ -222,7 +222,7 @@ head(sandiego_lucl)</code></pre>
 6 -117.5055 33.50491                     126</code></pre>
 </div>
 <div id="categories-classification" class="section level4">
-<h4>2.9 Categories classification</h4>
+<h4>3.9 Categories classification</h4>
 <pre class="r"><code>sandiego_lucl &lt;- sandiego_lucl %&gt;% 
   mutate(
     discrete_classification = case_when(
@@ -242,7 +242,7 @@ head(sandiego_lucl)</code></pre>
   dplyr::rename(Category = discrete_classification)</code></pre>
 </div>
 <div id="final-plot" class="section level4">
-<h4>2.10 Final plot</h4>
+<h4>3.10 Final plot</h4>
 <pre class="r"><code>m1 &lt;- ggplot() + 
   geom_sf(data = sandiego) +
   annotation_map_tile(zoom = 10) +

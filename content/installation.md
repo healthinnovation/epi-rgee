@@ -145,7 +145,7 @@ ee:             [NOT FOUND]
 NOTE: Python version was forced by use_python function
 ```
 
-Finally, we set up our rgee environment, install the necessary python dependencies, then initialise Google Earth Engine from R and save our credentials.
+Finally, we set up our rgee environment, install the necessary python dependencies.
 
 <center>
 <img src="https://user-images.githubusercontent.com/23284899/151891145-20fe5dab-3515-47f6-ade3-ca5891931b49.png" width="100%">
@@ -153,6 +153,14 @@ Finally, we set up our rgee environment, install the necessary python dependenci
 <center>
 <img src="https://user-images.githubusercontent.com/23284899/151892441-1ed646ea-763a-4ac4-98cb-6750a07934bc.png" width="100%">
 </center>
+<br>
+Then initialise Google Earth Engine from R and save our credentials.
+
+```
+ee_Initialize("GMAIL_ACCOUNT",drive = TRUE)
+```
+
+
 <center>
 <img src="https://user-images.githubusercontent.com/23284899/151892339-0b02eddb-4ce9-451e-bf82-7f7a43c09022.png" width="100%">
 </center>
@@ -191,6 +199,12 @@ rgee::install_ee()
 <center>
 <img src="https://user-images.githubusercontent.com/23284899/152569946-5c264487-b132-4e8a-af37-8e2dfb5434dc.png" width="100%">
 </center>
+<br>
+Then initialise Google Earth Engine from R and save our credentials.
+
+```
+ee_Initialize("GMAIL_ACCOUNT",drive = TRUE)
+```
 <center>
 <img src="https://user-images.githubusercontent.com/23284899/152569973-c55e9633-6b7a-4217-ad7f-c9a9d056e9ad.png" width="100%">
 </center>

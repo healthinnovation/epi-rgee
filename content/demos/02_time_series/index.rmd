@@ -1,7 +1,7 @@
 ---
-title: "3. Extraction of a large time series of meteorological variables"
+title: "2. Extraction of a large time series of meteorological variables"
 author: "Gabriel Carrasco & Antony Barja"
-date: 2020-12-01T21:13:14-05:00
+date: 2020-12-03
 tags: ["statisticzonal"]
 ---
 
@@ -13,7 +13,7 @@ and the 24 departaments using  the dataset of [Terraclim](https://developers.goo
 - For this demo you need to have `rgee`, `sf`, `tidyverse` and `lubridate` packages previously installed.
 ---
 
-#### 3.1 Requirements
+#### 2.1 Requirements
 
 ```{r,eval = FALSE}
 library(rgee)
@@ -39,14 +39,14 @@ lima <- st_read(
   summarise()
 ```
 
-#### 3.3 Transformation of sf object to a feature collection 
+#### 2.3 Transformation of sf object to a feature collection 
 
 ```{r,eval = FALSE}
 lima_ee <-  lima %>% 
   sf_as_ee()
 ```
 
-#### 3.4 Cooking data with rgee
+#### 2.4 Cooking data with rgee
 
 ```{r,eval = FALSE}
 terraclim <-  ee$ImageCollection$Dataset$IDAHO_EPSCOR_TERRACLIMATE$
@@ -61,7 +61,7 @@ lima_data <- ee_extract(
   sf = FALSE)
 ```
 
-#### 3.5 Cooking data for mapping  
+#### 2.5 Cooking data for mapping  
 ```{r,eval = FALSE}
 lima_temp <- lima_data %>% as_tibble() %>% 
   mutate(region = "LIMA") %>% 
@@ -72,7 +72,7 @@ lima_temp <- lima_data %>% as_tibble() %>%
   mutate(month = factor(month,labels = month.abb))
 ```
 
-#### 3.6 Time series plot - Lima
+#### 2.6 Time series plot - Lima
 
 ```{r,eval = FALSE}
 # Maximum temperature
@@ -97,7 +97,7 @@ lima_temp %>%
 </center>
 
 
-#### 3.7 Time series plot for the 24 departaments of Peru
+#### 2.7 Time series plot for the 24 departaments of Peru
 
 ```{r,eval = FALSE}
 # Reading vector layer
