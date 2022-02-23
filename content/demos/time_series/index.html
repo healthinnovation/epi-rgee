@@ -21,7 +21,7 @@ and the 24 departaments using the dataset of <a href="https://developers.google.
 </tbody>
 </table>
 <div id="requirements" class="section level4">
-<h4>1. Requirements</h4>
+<h4>3.1 Requirements</h4>
 <pre class="r"><code>library(rgee)
 library(sf)  
 library(tidyverse)
@@ -35,19 +35,19 @@ ee_Initialize()</code></pre>
 ─────────────────────────────────────────────────────────────────── </code></pre>
 </div>
 <div id="reading-vector-layer-of-study-area" class="section level4">
-<h4>2. Reading vector layer of study area</h4>
+<h4>3.2 Reading vector layer of study area</h4>
 <pre class="r"><code>lima &lt;- st_read(
-  &quot;https://github.com/ambarja/gpkg-pe/raw/main/Lima_provincia.gpkg&quot;,
+  &quot;https://github.com/healthinnovation/sdb-gpkg/raw/main/Lima_provincia.gpkg&quot;,
   quiet = TRUE) %&gt;%
   summarise()</code></pre>
 </div>
 <div id="transformation-of-sf-object-to-a-feature-collection" class="section level4">
-<h4>3. Transformation of sf object to a feature collection</h4>
+<h4>3.3 Transformation of sf object to a feature collection</h4>
 <pre class="r"><code>lima_ee &lt;-  lima %&gt;% 
   sf_as_ee()</code></pre>
 </div>
 <div id="cooking-data-with-rgee" class="section level4">
-<h4>4. Cooking data with rgee</h4>
+<h4>3.4 Cooking data with rgee</h4>
 <pre class="r"><code>terraclim &lt;-  ee$ImageCollection$Dataset$IDAHO_EPSCOR_TERRACLIMATE$
   select(c(&quot;tmmx&quot;,&quot;pr&quot;))$
   filterDate(&quot;1990-01-01&quot;,&quot;2021-12-31&quot;)$
@@ -60,7 +60,7 @@ lima_data &lt;- ee_extract(
   sf = FALSE)</code></pre>
 </div>
 <div id="cooking-data-for-mapping" class="section level4">
-<h4>5. Cooking data for mapping</h4>
+<h4>3.5 Cooking data for mapping</h4>
 <pre class="r"><code>lima_temp &lt;- lima_data %&gt;% as_tibble() %&gt;% 
   mutate(region = &quot;LIMA&quot;) %&gt;% 
   pivot_longer(X199001_pr:X202012_tmmx) %&gt;% 
@@ -70,7 +70,7 @@ lima_data &lt;- ee_extract(
   mutate(month = factor(month,labels = month.abb))</code></pre>
 </div>
 <div id="time-series-plot---lima" class="section level4">
-<h4>6. Time series plot - Lima</h4>
+<h4>3.6 Time series plot - Lima</h4>
 <pre class="r"><code># Maximum temperature
 lima_temp %&gt;% 
   pivot_wider(names_from = variable,
@@ -90,10 +90,10 @@ lima_temp %&gt;%
 </center>
 </div>
 <div id="time-series-plot-for-the-24-departaments-of-peru" class="section level4">
-<h4>8. Time series plot for the 24 departaments of Peru</h4>
+<h4>3.7 Time series plot for the 24 departaments of Peru</h4>
 <pre class="r"><code># Reading vector layer
 dep &lt;- st_read(
-  &quot;https://github.com/ambarja/gpkg-pe/raw/main/departamentos.gpkg&quot;,
+  &quot;https://github.com/healthinnovation/sdb-gpkg/raw/main/departamentos.gpkg&quot;,
   quiet = TRUE) %&gt;% 
   dplyr::select(NOMBDEP)</code></pre>
 <pre class="r"><code># Time estimate ~ 12 min

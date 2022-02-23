@@ -13,7 +13,7 @@ SO2 emissions in [Lima](https://es.wikipedia.org/wiki/Lima_Metropolitana) - Peru
 - For this demo you need to have previously installed the `rgee`, `sf`, `viridis` and `ggplot2` and `ggspatial` packages.
 ---
 
-#### 1. Requirements
+#### 1.1 Requirements
 
 ```{r,eval = FALSE}
 library(rgee)
@@ -34,28 +34,22 @@ ee_Initialize()
 ─────────────────────────────────────────────────────────────────── 
 ```
 
-#### 2. Vector layer reading of our study area 
+#### 1.2 Vector layer reading of Lima
 ```{r,eval = FALSE}
 lima <- st_read(
   "https://github.com/ambarja/gpkg-pe/raw/main/lima_distritos.gpkg",
   quiet = TRUE) %>% 
   select(NOMBDIST,UBIGEO)
-sandiego <- st_read(
-  "https://github.com/ambarja/gpkg-pe/raw/main/SanDiegodistricts.gpkg",
-  quiet = TRUE) %>% 
-  select(CODE,NAME)
 ```
-#### 3. Transformation of sf object to a feature collection 
+
+#### 1.3 Transformation of sf object to a feature collection 
 
 ```{r,eval = FALSE}
 lima_ee <-  lima %>% 
   sf_as_ee()
-
-sandiego_ee <- sandiego %>% 
-  sf_as_ee()
 ```
 
-#### 4. Cooking data with rgee
+#### 1.4 Cooking data with rgee
 
 ```{r,eval = FALSE}
 # 1DU(Dobson units = 4,4615 x 10 -4 mol/m 2 molecules)
@@ -76,14 +70,8 @@ so2_to_lima <- ee_extract(
   fun = ee$Reducer$mean(),
   sf = TRUE
 )
-so2_to_sandiego <- ee_extract(
-  x = so2,
-  y = sandiego_ee,
-  fun = ee$Reducer$mean(),
-  sf = TRUE
-)
+
 head(so2_to_lima)
-# head(so2_to_sandiego)
 ```
 
 ```
@@ -107,7 +95,7 @@ First 10 features:
 ```
 
 
-#### 5. Mapping with ggplot and ggspatial 
+#### 1.5 Mapping with ggplot and ggspatial 
 ```{r,eval = FALSE}
 p1 <- so2_to_lima %>% 
   ggplot() + 
@@ -124,6 +112,72 @@ p1 <- so2_to_lima %>%
     ) + 
   annotation_scale(line_width = 0.05,height = unit(0.1,"cm"))
 
+# Violin plot
+v1 <-  so2_to_lima %>% 
+  st_set_geometry(NULL) %>%
+  mutate(name = "Lima Metropolitana") %>% 
+  ggplot(aes(x = name ,y = so2)) + 
+  geom_violin(width=1, size=0.5, alpha = 0.8,trim=FALSE) +
+  geom_jitter(color = "darkgrey", alpha = 0.8, cex = 0.5) +
+  theme_minimal() +
+  labs(x = "",
+      caption = "Source:Sentinel-5P Near Real-Time Sulphur Dioxide"
+      )
+
+p1 + v1
+
+```
+<center><img src="https://user-images.githubusercontent.com/23284899/155327429-91ae055c-80c4-4409-9f07-3ea80e442274.png" width="100%"></center>
+
+
+### 1.6 Vector layer reading of San Diego
+
+```{r,eval = FALSE}
+sandiego <- st_read(
+  "https://github.com/ambarja/gpkg-pe/raw/main/SanDiegodistricts.gpkg",
+  quiet = TRUE) %>% 
+  select(CODE,NAME)
+```
+
+### 1.7 Transformation of sf object to a feature collection 
+
+```{r,eval = FALSE}
+sandiego_ee <- sandiego %>% 
+  sf_as_ee()
+```
+
+### 1.8 Cooking data with rgee
+
+```{r,eval = FALSE}
+so2_to_sandiego <- ee_extract(
+  x = so2,
+  y = sandiego_ee,
+  fun = ee$Reducer$mean(),
+  sf = TRUE
+)
+
+head(so2_to_sandiego)
+```
+
+```
+> head(so2_to_sandiego)
+Simple feature collection with 6 features and 3 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -117.2167 ymin: 33.05765 xmax: -116.9939 ymax: 33.21161
+Geodetic CRS:  WGS 84
+  CODE              NAME       so2                       geometry
+1   ES   Michael Morasco 0.0128617 MULTIPOLYGON (((-117.1106 3...
+2   ES       Tina Inscoe 0.0038041 MULTIPOLYGON (((-117.0245 3...
+3   ES Consuelo Martinez 0.0067750 MULTIPOLYGON (((-117.0753 3...
+4   ES        Joe Garcia 0.0077659 MULTIPOLYGON (((-117.0603 3...
+5   SM       Maria Nunez 0.0048378 MULTIPOLYGON (((-117.2117 3...
+6   SM       Ed Musgrove 0.0021466 MULTIPOLYGON (((-117.1391 3...
+```
+
+### 1.9 Mapping with ggplot and ggspatial 
+
+```{r,eval = FALSE}
 p2 <- so2_to_sandiego %>% 
   ggplot() + 
   geom_sf(aes(fill = so2),color = NA) +
@@ -140,15 +194,6 @@ p2 <- so2_to_sandiego %>%
   annotation_scale(line_width = 0.05,height = unit(0.1,"cm"))
 
 # Violin plot
-v1 <-  so2_to_lima %>% 
-  st_set_geometry(NULL) %>%
-  mutate(name = "Lima Metropolitana") %>% 
-  ggplot(aes(x = name ,y = so2)) + 
-  geom_violin(width=1, size=0.5, alpha = 0.8,trim=FALSE) +
-  geom_jitter(color = "darkgrey", alpha = 0.8, cex = 0.5) +
-  theme_minimal() +
-  labs(x = "")
-
 v2 <-  so2_to_sandiego %>% 
   st_set_geometry(NULL) %>%
   mutate(name = "San Diego") %>% 
@@ -160,8 +205,9 @@ v2 <-  so2_to_sandiego %>%
     x = "",
     caption = "Source:Sentinel-5P Near Real-Time Sulphur Dioxide")+
   theme(plot.caption = element_text(hjust = 1, face = "italic"))
-  
-(p1 | v1)/(p2 | v2)
 
+p2 + v2
 ```
-<center><img src="https://user-images.githubusercontent.com/23284899/154685578-072696a9-e8ea-435e-abfa-2a00d7b75767.png" width="100%"></center>
+
+<center><img src="https://user-images.githubusercontent.com/23284899/155326853-4d2953c8-7a88-4319-a261-02568c824aba.png" width="100%"></center>
+

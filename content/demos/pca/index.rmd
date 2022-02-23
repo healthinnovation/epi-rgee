@@ -43,7 +43,7 @@ ee_Initialize()
 #### 2. Vector layer reading of our study area 
 ```{r, eval = FALSE}
 geodata <- st_read(
-  "https://github.com/ambarja/gpkg-pe/raw/main/SanDiego.gpkg"
+  "https://github.com/healthinnovation/sdb-gpkg/raw/main/SanDiego.gpkg"
   )
 sandiego <- geodata %>% sf_as_ee()  
 ```

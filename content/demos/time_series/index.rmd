@@ -13,7 +13,7 @@ and the 24 departaments using  the dataset of [Terraclim](https://developers.goo
 - For this demo you need to have `rgee`, `sf`, `tidyverse` and `lubridate` packages previously installed.
 ---
 
-#### 1. Requirements
+#### 3.1 Requirements
 
 ```{r,eval = FALSE}
 library(rgee)
@@ -31,22 +31,22 @@ ee_Initialize()
 ─────────────────────────────────────────────────────────────────── 
 ```
 
-#### 2. Reading vector layer of study area
+#### 3.2 Reading vector layer of study area
 ```{r,eval = FALSE}
 lima <- st_read(
-  "https://github.com/ambarja/gpkg-pe/raw/main/Lima_provincia.gpkg",
+  "https://github.com/healthinnovation/sdb-gpkg/raw/main/Lima_provincia.gpkg",
   quiet = TRUE) %>%
   summarise()
 ```
 
-#### 3. Transformation of sf object to a feature collection 
+#### 3.3 Transformation of sf object to a feature collection 
 
 ```{r,eval = FALSE}
 lima_ee <-  lima %>% 
   sf_as_ee()
 ```
 
-#### 4. Cooking data with rgee
+#### 3.4 Cooking data with rgee
 
 ```{r,eval = FALSE}
 terraclim <-  ee$ImageCollection$Dataset$IDAHO_EPSCOR_TERRACLIMATE$
@@ -61,7 +61,7 @@ lima_data <- ee_extract(
   sf = FALSE)
 ```
 
-#### 5. Cooking data for mapping  
+#### 3.5 Cooking data for mapping  
 ```{r,eval = FALSE}
 lima_temp <- lima_data %>% as_tibble() %>% 
   mutate(region = "LIMA") %>% 
@@ -72,7 +72,7 @@ lima_temp <- lima_data %>% as_tibble() %>%
   mutate(month = factor(month,labels = month.abb))
 ```
 
-#### 6. Time series plot - Lima
+#### 3.6 Time series plot - Lima
 
 ```{r,eval = FALSE}
 # Maximum temperature
@@ -97,12 +97,12 @@ lima_temp %>%
 </center>
 
 
-#### 8. Time series plot for the 24 departaments of Peru
+#### 3.7 Time series plot for the 24 departaments of Peru
 
 ```{r,eval = FALSE}
 # Reading vector layer
 dep <- st_read(
-  "https://github.com/ambarja/gpkg-pe/raw/main/departamentos.gpkg",
+  "https://github.com/healthinnovation/sdb-gpkg/raw/main/departamentos.gpkg",
   quiet = TRUE) %>% 
   dplyr::select(NOMBDEP)
 ```

@@ -29,7 +29,7 @@ with the integration of the spatial universe of R packages.
 For this example, we use the ERA5-Land dataset,  a reanalysis dataset providing a consistent view of the evolution of
 land variables over several decades at an enhanced resolution compared to ERA5, more information [click here.](https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY)
 
-#### 1. Requeriments
+#### 3.1 Requeriments
 ```{r,message=FALSE,}
 
 library(rgee)
@@ -39,7 +39,7 @@ library(cptcity)
 ee_Initialize() # Initialize gee inside R with registered account
 ```
 
-#### 2. Cooking data with rgee
+#### 3.2 Cooking data with rgee
 ```{r}
 dataset <- ee$ImageCollection$Dataset$ECMWF_ERA5_LAND_MONTHLY
 past <- dataset$
@@ -50,7 +50,7 @@ past <- dataset$
   mean()$
   subtract(273.15)
 ```
-#### 3. Simple visualization  
+#### 3.3 Simple visualization  
 ```{r,out.width="100%"}
 viz <- list(
   min = 5,
@@ -66,7 +66,7 @@ Map$addLayer(past,visParams = viz) +
 <!-- </center> -->
 
 
-#### 4. Define box to study area 
+#### 3.4 Define box to study area 
 ```{r, eval= FALSE}
 geometry <- ee$Geometry$Rectangle(
   coords = c(-180,-90,180,90),
@@ -75,7 +75,7 @@ geometry <- ee$Geometry$Rectangle(
 )
 
 ```
-#### 5. Identifying min and max values of temperature
+#### 3.5 Identifying min and max values of temperature
 ```{r, eval= FALSE}
 (minmax <- past$reduceRegion(
   reducer = ee$Reducer$minMax(),
@@ -92,7 +92,7 @@ $temperature_2m_min
 ```
 
 
-#### 6. Generate a thumbnail image in a rasterlayer or stars format  
+#### 3.6 Generate a thumbnail image in a rasterlayer or stars format  
 ```{r, eval= FALSE}
 world_temp <- ee_as_thumbnail(
   image = past,        # Image to export
@@ -103,7 +103,7 @@ world_temp <- ee_as_thumbnail(
 )
 ```
 
-#### 7. Cooking data for mapping with tmap
+#### 3.7 Cooking data for mapping with tmap
 ```{r, eval= FALSE}
 # Define a projection (EPSG:4326 - WGS 84)
 crs(world_temp) <- 4326
@@ -121,7 +121,7 @@ robin <- "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m 
 map <-  world_temp %>% 
   mask(World) 
 ```
-#### 8. Elaboration of the Temperature Map
+#### 3.8 Elaboration of the Temperature Map
 ```{r, eval= FALSE}
 temp_map <- map %>% 
   tm_shape(projection = robin,raster.warp = FALSE) +
@@ -161,7 +161,7 @@ temp_map <- map %>%
     ) 
 ```
 
-#### 9. Export map in png format
+#### 3.9 Export map in png format
 ```{r, eval= FALSE}
 tmap_save(temp_map,"temp_map.png",width = 6,height = 3)
 ```

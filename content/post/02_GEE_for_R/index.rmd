@@ -143,7 +143,7 @@ More information, please click [here](https://r-spatial.github.io/rgee/articles/
 
 ### 2.5 Hello spatial world 🌎
 
-```{r eval = F}
+```{r eval = Fmessage=
 library(rgee)
 ee_Initialize()
 ```
@@ -185,7 +185,7 @@ ee$String("Hello World from Earth Engine!") %>%
 ````{r, eval = TRUE,out.width = "100%"}
 library(rgee)
 library(cptcity)
-ee_Initialize()
+ee_Initialize(quiet = T)
 
 viz = list(
   min = 500,
@@ -207,6 +207,3 @@ ee$Image("CGIAR/SRTM90_V4") %>%
 <a href="https://github.com/r-spatial/rgee/tree/examples"><img src="https://user-images.githubusercontent.com/23284899/152283689-c5a4c789-793a-40ac-b4b8-905007bd1764.png
 " width="100%"></a>
 </center>
-
-
-

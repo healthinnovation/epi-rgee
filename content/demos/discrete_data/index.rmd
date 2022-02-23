@@ -15,7 +15,7 @@ More information [click here](https://developers.google.com/earth-engine/dataset
 - For this demo you need `rgee`, `sf`, `raster`, `tidyverse`, `ggspatial`, `patchwork` and `plotly` packages previously installed.
 ---
 
-#### 1. Requirements
+#### 2.1 Requirements
 ```{r, eval = FALSE}
 library(rgee)
 library(tidyverse)
@@ -35,10 +35,10 @@ ee_Initialize()
 ─────────────────────────────────────────────────────────────────── 
 ```
 
-#### 2. Vector layer reading of your study area 
+#### 2.2 Vector layer reading of your study area 
 ```{r, eval = FALSE}
 sandiego <- st_read(
-  "https://github.com/ambarja/gpkg-pe/raw/main/SanDiego.gpkg"
+  "https://github.com/healthinnovation/sdb-gpkg/raw/main/SanDiego.gpkg"
 ) %>%
   dplyr::select(NAME_2) 
 head(sandiego)
@@ -54,13 +54,13 @@ Geodetic CRS:  WGS 84
 1 San Diego MULTIPOLYGON (((-117.2394 3...
 ```
 
-#### 3. Cooking data with rgee 
+#### 2.3 Cooking data with rgee 
 
 ```{r, eval = FALSE}
 lulc <- ee$Image("COPERNICUS/Landcover/100m/Proba-V-C3/Global/2019")$
   select("discrete_classification")
 ```
-#### 4. A function that extracts the area of vegetation cover in hectares.
+#### 2.4 A function that extracts the area of vegetation cover in hectares.
 
 ```{r, eval = FALSE}
 ee_area_lulc <- function(img, region, scale = 1000) {
@@ -85,13 +85,13 @@ ee_area_lulc <- function(img, region, scale = 1000) {
   return(histo_df)
 }
 ```
-#### 5. Use of ee_area_lulc (rgee as backend) 
+#### 2.5 Use of ee_area_lulc (rgee as backend) 
 
 ```{r,eval = FALSE}
 area_Ha <- ee_area_lulc(img = lulc, region = sandiego)
 ```
 
-#### 6. identifying the type of vegetation cover according to the following table
+#### 2.6 Identifying the type of vegetation cover according to the following table
 
 <center>
  <a href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global#bands">
@@ -141,7 +141,7 @@ area_Ha
 11 San Diego Herbaceous wetland        200  Ha   
 ```
 
-#### 7. Bar plot   
+#### 2.7 Bar plot   
 
 ```{r,eval = TRUE,echo = FALSE,message = FALSE}
 library(tidyverse)
@@ -161,7 +161,7 @@ ggplotly(g1) %>%
   config(displayModeBar = F)
 ```
 
-#### 4. Get raster data San Diego
+#### 2.8 Get raster data San Diego
 
 ```{r,eval = FALSE,out.width="100%"}
 sandiego_raster <- ee_as_raster(
@@ -245,7 +245,7 @@ head(sandiego_lucl)
 6 -117.5055 33.50491                     126
 ```
 
-#### 5. Categories classification 
+#### 2.9 Categories classification 
 
 ```{r,eval = FALSE,out.width="100%"}
 sandiego_lucl <- sandiego_lucl %>% 
@@ -269,7 +269,7 @@ sandiego_lucl <- sandiego_lucl %>%
 ```
 
 
-#### 5. Final plot
+#### 2.10 Final plot
 
 ```{r,eval = FALSE,out.width="100%"}
 m1 <- ggplot() + 
