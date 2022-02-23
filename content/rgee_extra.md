@@ -44,7 +44,7 @@ ee_Initialize()
 ───────────────────────────────────────────────────────────── 
 ```
 
-#### 3. Vector layer reading of our study area 
+#### 2. Vector layer reading of our study area 
 
 ```{r, eval = FALSE}
 hcyo <- st_read(
@@ -53,7 +53,7 @@ hcyo <- st_read(
   summarise()
 ```
 
-#### 2. Cooking with dataset with rgee
+#### 3. Cooking with dataset with rgee
 
 ```{r, eval = FALSE}
 landsat <-ee$ImageCollection("LANDSAT/LC08/C02/T1_TOA")$
@@ -65,14 +65,14 @@ landsat <-ee$ImageCollection("LANDSAT/LC08/C02/T1_TOA")$
   clip(hcyo_ee)
 ```
 
-#### 3. Calculate of NDVI index with rgee
+#### 4. Calculate of NDVI index with rgee
 
 ```{r, eval = FALSE}
 ndvi <- landsat$
   normalizedDifference(c("B5", "B4"))
 ```
 
-#### 4.  Indentifying min and max value of index
+#### 5.  Indentifying min and max value of index
 ```{r, eval = FALSE}
 (minmax <- ndvi$reduceRegion(
   reducer = ee$Reducer$minMax(),
@@ -89,7 +89,7 @@ $nd_min
 [1] -0.07480448
 ```
 
-##### 5. Parameter of visualization
+##### 6. Parameter of visualization
 ```{r, eval = FALSE}
 viz <- list(
   min = -0.08,
@@ -98,25 +98,25 @@ viz <- list(
 )
 Map$centerObject(ndvi,zoom=9)
 ```
-##### 6. NDVI map wih rgee
+##### 7. NDVI map wih rgee
 
 ```
 m1 <- Map$addLayer(ndvi,visParams = viz) +
   Map$addLegend(visParams = viz,name = "ndvi")
 ```
 
-##### 7. Calculate of NDVI index with rgeeExtra
+##### 8. Calculate of NDVI index with rgeeExtra
 ```{r, eval = FALSE}
 ndvi <- (landsat[["B5"]] - landsat[["B4"]])/(landsat[["B5"]] + landsat[["B4"]])
 ```
-##### 8. NDVI map wih rgeeExtra
+##### 9. NDVI map wih rgeeExtra
 
 ```
 m2 <- Map$addLayer(ndvi,visParams = viz) + 
   Map$addLegend(visParams = viz,name = "ndvi_ee")
 ```
 
-#### 9. Two map in only display
+#### 10. Two map in only display
 
 ```{r, eval = FALSE}
 m1 | m2
