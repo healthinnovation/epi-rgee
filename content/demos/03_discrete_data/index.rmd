@@ -12,7 +12,7 @@ More information [click here](https://developers.google.com/earth-engine/dataset
 
 ---
 <img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
-- For this demo you need `rgee`, `sf`, `tidyverse`, `mapview`, `raster` and `ggspatial`  packages previously installed.
+- For this demo you need `rgee`, `sf`, `tidyverse`, `mapview`, `raster`, `viridis` and `ggspatial`  packages previously installed.
 ---
 
 #### 3.1 Requirements
@@ -22,6 +22,7 @@ library(sf)
 library(tidyverse)
 library(mapview)
 library(raster)
+library(viridis)
 library(ggspatial)
 ee_Initialize()
 ```
@@ -154,7 +155,7 @@ Geodetic CRS:  WGS 84
 #### 3.7 Exploration map
 
 ```{r eval=FALSE}
-mapview(sandiego,zcol="area_Ha", layer.name = "Herbaceous")
+mapview(sandiego_herb,zcol="area_Ha", layer.name = "Herbaceous")
 ```
 
 ```{r eval=TRUE, echo=FALSE, message=FALSE,warning=FALSE, out.width="100%"}
@@ -221,6 +222,3 @@ ggplot() +
 <center>
  <img src="https://user-images.githubusercontent.com/23284899/155546368-0be18a08-01be-48d3-b47f-a5c838f100f7.png" width="100%">
 </center>
-
-
-
