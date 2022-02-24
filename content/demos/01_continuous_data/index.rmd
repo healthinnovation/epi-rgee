@@ -10,7 +10,7 @@ SO2 emissions in [Lima](https://es.wikipedia.org/wiki/Lima_Metropolitana) - Peru
 
 ---
 <img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
-- For this demo you need to have previously installed the `rgee`, `sf`, `viridis` and `ggplot2` and `ggspatial` packages.
+- For this demo you need to have previously installed the `rgee`, `sf`, `viridis`, `tidyverse`, `patchwork`, `mapview` and `ggspatial` packages.
 ---
 
 #### 1.1 Requirements
@@ -20,8 +20,9 @@ library(rgee)
 library(sf)
 library(viridis)   
 library(tidyverse)
-library(ggspatial)
 library(patchwork)
+library(mapview)
+library(ggspatial)
 ee_Initialize()
 ```
 
@@ -37,7 +38,7 @@ ee_Initialize()
 #### 1.2 Vector layer reading of Lima
 ```{r,eval = FALSE}
 lima <- st_read(
-  "https://github.com/ambarja/gpkg-pe/raw/main/lima_distritos.gpkg",
+  "https://github.com/healthinnovation/sdb-gpkg/raw/main/lima_distritos.gpkg",
   quiet = TRUE) %>% 
   select(NOMBDIST,UBIGEO)
 ```
@@ -94,8 +95,68 @@ First 10 features:
 10        SAN MIGUEL 150136 0.0048452 MULTIPOLYGON (((-77.0791 -1...
 ```
 
+#### 1.5 Exploration Lima map
 
-#### 1.5 Mapping with ggplot and ggspatial 
+
+```{r,eval=FALSE}
+mapview(
+  so2_to_lima,
+  zcol="so2",
+  layer.name = "SO2"
+  )
+```
+
+```{r,eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE,out.width="100%"}
+library(leaflet)
+library(leaflet.extras)
+library(leaflet.extras2)
+library(leafem)
+library(viridis)
+library(sf)
+library(tidyverse)
+so2_to_lima <- read_rds("dataset/so2")[[1]]
+
+pal <- colorNumeric(
+  palette = viridis(256),
+  domain = NULL
+  )
+
+so2_to_lima %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron,group = "CartoDB.Positron") %>%
+  addProviderTiles(providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>%
+  addTiles(group = "OpenSreetMap") %>% 
+  addProviderTiles(providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>%
+  addProviderTiles(providers$OpenTopoMap,group = "OpenTopoMap") %>% 
+  addPolygons(
+    fillColor = ~pal(so2_to_lima$so2),
+    fillOpacity = 0.7,
+    weight = 0.5,color = "black",
+    fill = so2_to_lima$so2,
+    popup = so2_to_lima$so2,
+    label = so2_to_lima$so2,
+    group = "SO2") %>% 
+  addLayersControl(
+    overlayGroups = c("SO2"), 
+    baseGroups = c(
+      "CartoDB.Positron",
+      "CartoDB.DarkMatter",
+      "OpenSreetMap",
+      "Esri.WorldImagery",
+      "OpenTopoMap"),
+    position = "topleft") %>% 
+  addLegend(pal =  pal ,
+            values = ~so2_to_lima$so2,
+            opacity = 1,
+            title = "SO2",
+            position = "topright") %>% 
+  addMouseCoordinates() %>% 
+  addResetMapButton()
+```
+
+
+
+#### 1.6 Mapping with ggplot and ggspatial 
 ```{r,eval = FALSE}
 p1 <- so2_to_lima %>% 
   ggplot() + 
@@ -130,23 +191,23 @@ p1 + v1
 <center><img src="https://user-images.githubusercontent.com/23284899/155328179-f9a9cad3-0cd7-4a5e-8e77-a5ebe817965d.png" width="100%"></center>
 
 
-### 1.6 Vector layer reading of San Diego
+### 1.7 Vector layer reading of San Diego
 
 ```{r,eval = FALSE}
 sandiego <- st_read(
-  "https://github.com/ambarja/gpkg-pe/raw/main/SanDiegodistricts.gpkg",
+  "https://github.com/healthinnovation/sdb-gpkg/raw/main/SanDiego_districts.gpkg",
   quiet = TRUE) %>% 
-  select(CODE,NAME)
+  select(OBJECTID,PO_NAME)
 ```
 
-### 1.7 Transformation of sf object to a feature collection 
+### 1.8 Transformation of sf object to a feature collection 
 
 ```{r,eval = FALSE}
 sandiego_ee <- sandiego %>% 
   sf_as_ee()
 ```
 
-### 1.8 Cooking data with rgee
+### 1.9 Cooking data with rgee
 
 ```{r,eval = FALSE}
 so2_to_sandiego <- ee_extract(
@@ -164,18 +225,74 @@ head(so2_to_sandiego)
 Simple feature collection with 6 features and 3 fields
 Geometry type: MULTIPOLYGON
 Dimension:     XY
-Bounding box:  xmin: -117.2167 ymin: 33.05765 xmax: -116.9939 ymax: 33.21161
+Bounding box:  xmin: -117.1162 ymin: 32.58162 xmax: -116.208 ymax: 32.90116
 Geodetic CRS:  WGS 84
-  CODE              NAME       so2                       geometry
-1   ES   Michael Morasco 0.0128617 MULTIPOLYGON (((-117.1106 3...
-2   ES       Tina Inscoe 0.0038041 MULTIPOLYGON (((-117.0245 3...
-3   ES Consuelo Martinez 0.0067750 MULTIPOLYGON (((-117.0753 3...
-4   ES        Joe Garcia 0.0077659 MULTIPOLYGON (((-117.0603 3...
-5   SM       Maria Nunez 0.0048378 MULTIPOLYGON (((-117.2117 3...
-6   SM       Ed Musgrove 0.0021466 MULTIPOLYGON (((-117.1391 3...
+  OBJECTID     PO_NAME       so2                       geometry
+1    28113      Alpine 0.0157558 MULTIPOLYGON (((-116.6075 3...
+2    28114      Bonita 0.0149694 MULTIPOLYGON (((-116.9655 3...
+3    28115   Boulevard 0.0139448 MULTIPOLYGON (((-116.2085 3...
+4    28116       Campo 0.0070619 MULTIPOLYGON (((-116.3573 3...
+5    28117 Chula Vista 0.0198098 MULTIPOLYGON (((-117.0728 3...
+6    28118 Chula Vista 0.0286568 MULTIPOLYGON (((-117.0081 3...
+```
+### 1.10 Exploration San Diego Map
+
+```{r,eval=FALSE}
+mapview(
+  so2_to_sandiego,
+  zcol="so2",
+  layer.name = "SO2")
 ```
 
-### 1.9 Mapping with ggplot and ggspatial 
+```{r,eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE,out.width="100%"}
+library(leaflet)
+library(leaflet.extras)
+library(leaflet.extras2)
+library(leafem)
+library(viridis)
+library(sf)
+library(tidyverse)
+so2_to_sandiego <- read_rds("dataset/so2")[[2]]
+pal <- colorNumeric(
+  palette = viridis(256),
+  domain = NULL
+  )
+
+so2_to_sandiego %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron,group = "CartoDB.Positron") %>%
+  addProviderTiles(providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>%
+  addTiles(group = "OpenSreetMap") %>% 
+  addProviderTiles(providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>%
+  addProviderTiles(providers$OpenTopoMap,group = "OpenTopoMap") %>% 
+  addPolygons(
+    fillColor = ~pal(so2_to_sandiego$so2),
+    fillOpacity = 0.7,
+    weight = 0.5,color = "black",
+    fill = so2_to_sandiego$so2,
+    popup = so2_to_sandiego$so2,
+    label = so2_to_sandiego$so2,
+    group = "SO2") %>% 
+  addLayersControl(
+    overlayGroups = c("SO2"), 
+    baseGroups = c(
+      "CartoDB.Positron",
+      "CartoDB.DarkMatter",
+      "OpenSreetMap",
+      "Esri.WorldImagery",
+      "OpenTopoMap"),
+    position = "topleft") %>% 
+  addLegend(pal =  pal ,
+            values = ~so2_to_sandiego$so2,
+            opacity = 1,
+            title = "SO2",
+            position = "topright") %>% 
+  addMouseCoordinates() %>% 
+  addResetMapButton()
+```
+
+
+### 1.11 Mapping with ggplot and ggspatial 
 
 ```{r,eval = FALSE}
 p2 <- so2_to_sandiego %>% 
@@ -209,5 +326,5 @@ v2 <-  so2_to_sandiego %>%
 p2 + v2
 ```
 
-<center><img src="https://user-images.githubusercontent.com/23284899/155328153-d3b106cf-c3ee-4a97-a94b-fbce5b4a511f.png" width="100%"></center>
+<center><img src="https://user-images.githubusercontent.com/23284899/155409222-220b2417-9166-41b4-b731-244d934baae7.png" width="100%"></center>
 

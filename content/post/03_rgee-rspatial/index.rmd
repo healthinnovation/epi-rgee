@@ -121,7 +121,51 @@ robin <- "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m 
 map <-  world_temp %>% 
   mask(World) 
 ```
-#### 3.8 Elaboration of the Temperature Map
+
+
+### 3.8 Exploration raster data
+
+```{r eval = TRUE, echo=FALSE,warning=FALSE,message=FALSE, out.width="100%"}
+library(leaflet)
+library(raster)
+library(cptcity)
+library(leaflet.extras2)
+library(leaflet.extras)
+library(tidyverse)
+map <- read_rds("data/map")
+pal <- colorNumeric(
+  palette = cpt(pal = "mpl_inferno"),
+  domain = values(map),na.color = "#c9c9c9")
+
+leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron,group = "CartoDB.Positron") %>%
+  addProviderTiles(providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>%
+  addTiles(group = "OpenSreetMap") %>% 
+  addProviderTiles(providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>%
+  addProviderTiles(providers$OpenTopoMap,group = "OpenTopoMap") %>% 
+  addRasterImage(x = map,group = "map",colors = pal) %>% 
+   addLayersControl(
+     overlayGroups = c("map"), 
+     baseGroups = c(
+       "CartoDB.Positron",
+       "CartoDB.DarkMatter",
+       "OpenSreetMap",
+       "Esri.WorldImagery",
+       "OpenTopoMap"),
+     position = "topleft") %>% 
+   addLegend(pal =  pal ,
+             values = values(map),
+             opacity = 1,
+             title = "map",
+             position = "topright")
+```
+
+```{r, eval=FALSE}
+mapview(map)
+```
+
+
+#### 3.9 Elaboration of the Temperature Map
 ```{r, eval= FALSE}
 temp_map <- map %>% 
   tm_shape(projection = robin,raster.warp = FALSE) +
@@ -161,7 +205,7 @@ temp_map <- map %>%
     ) 
 ```
 
-#### 3.9 Export map in png format
+#### 3.10 Export map in png format
 ```{r, eval= FALSE}
 tmap_save(temp_map,"temp_map.png",width = 6,height = 3)
 ```
