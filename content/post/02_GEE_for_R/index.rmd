@@ -143,7 +143,7 @@ More information, please click [here](https://r-spatial.github.io/rgee/articles/
 
 ### 2.5 Hello spatial world 🌎
 
-```{r eval = Fmessage=
+```{r eval=FALSE}
 library(rgee)
 ee_Initialize()
 ```

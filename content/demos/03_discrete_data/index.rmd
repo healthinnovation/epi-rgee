@@ -5,25 +5,24 @@ date: 2020-12-02
 tags: ["statisticzonal","discrete"]
 ---
 
-The objective of this demo is to quantify the categories of landcover in [San Diego city](https://es.wikipedia.org/wiki/San_Diego_(California)) - USA. The dataset used 
+The objective of this demo is to quantify the categories of herbaceous vegetation in [San Diego city](https://es.wikipedia.org/wiki/San_Diego_(California)) - USA. The dataset used 
 is Copernicus Global Land Service (CGLS) which provides a series of bio-geophysical
 products on the status and evolution of land surface at global scale to a spatial resolution of 100m.
 More information [click here](https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global#description)
 
 ---
 <img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
-- For this demo you need `rgee`, `sf`, `raster`, `tidyverse`, `ggspatial`, `patchwork` and `plotly` packages previously installed.
+- For this demo you need `rgee`, `sf`, `tidyverse`, `mapview`, `raster` and `ggspatial`  packages previously installed.
 ---
 
 #### 3.1 Requirements
 ```{r, eval = FALSE}
 library(rgee)
-library(tidyverse)
 library(sf)
-library(ggspatial)
-library(patchwork)
-library(plotly)
+library(tidyverse)
+library(mapview)
 library(raster)
+library(ggspatial)
 ee_Initialize()
 ```
 ```
@@ -38,32 +37,41 @@ ee_Initialize()
 #### 3.2 Vector layer reading of your study area 
 ```{r, eval = FALSE}
 sandiego <- st_read(
-  "https://github.com/healthinnovation/sdb-gpkg/raw/main/SanDiego.gpkg"
+  "https://github.com/healthinnovation/sdb-gpkg/raw/main/SanDiego_districts.gpkg"
 ) %>%
-  dplyr::select(NAME_2) 
+  dplyr::select(PO_NAME) 
 head(sandiego)
 ```
 ```
 > head(sandiego)
-Simple feature collection with 1 feature and 1 field
+Simple feature collection with 6 features and 1 field
 Geometry type: MULTIPOLYGON
 Dimension:     XY
-Bounding box:  xmin: -117.5954 ymin: 32.53088 xmax: -116.0796 ymax: 33.5053
+Bounding box:  xmin: -117.1162 ymin: 32.58161 xmax: -116.208 ymax: 32.90116
 Geodetic CRS:  WGS 84
-     NAME_2                           geom
-1 San Diego MULTIPOLYGON (((-117.2394 3...
+      PO_NAME                           geom
+1      Alpine MULTIPOLYGON (((-116.6075 3...
+2      Bonita MULTIPOLYGON (((-116.9655 3...
+3   Boulevard MULTIPOLYGON (((-116.2085 3...
+4       Campo MULTIPOLYGON (((-116.3573 3...
+5 Chula Vista MULTIPOLYGON (((-117.0728 3...
+6 Chula Vista MULTIPOLYGON (((-117.0081 3...
 ```
 
 #### 3.3 Cooking data with rgee 
 
 ```{r, eval = FALSE}
-lulc <- ee$Image("COPERNICUS/Landcover/100m/Proba-V-C3/Global/2019")$
-  select("discrete_classification")
+dataset <- ee$Image("COPERNICUS/Landcover/100m/Proba-V-C3/Global/2019")$
+  select("discrete_classification")$
+  eq(30) # 30: Herbaceous vegetation
+
+herbaceous <- dataset$updateMask(dataset)
 ```
-#### 3.4 A function that extracts the area of vegetation cover in hectares.
+
+#### 3.4 A function that extracts the number of pixels of herbaceous vegetation for each polygon
 
 ```{r, eval = FALSE}
-ee_area_lulc <- function(img, region, scale = 1000) {
+ee_get_data <- function(img, region, scale = 1000) {
   lista_histo <- list()
   for (i in 1:nrow(region)) {
     region_ee <- region[i, ] %>% sf_as_ee()
@@ -76,219 +84,143 @@ ee_area_lulc <- function(img, region, scale = 1000) {
       map_df(., .f = as.data.frame) %>%
       mutate(NAME = region[[i, 1]] %>% as.vector())
   }
-  histo_df <- map_df(lista_histo, .f = as.data.frame) %>%
-    mutate_if(is.numeric, .funs = function(x) {
-      x * 1000 * 1000 / 10000
-    }) %>%
-    replace(is.na(.), 0) %>%
-    rename_with(~ paste0("Pi", sub("X", "", .), "_Ha"), -NAME)
-  return(histo_df)
+  return(lista_histo)
 }
 ```
-#### 3.5 Use of ee_area_lulc (rgee as backend) 
 
-```{r,eval = FALSE}
-area_Ha <- ee_area_lulc(img = lulc, region = sandiego)
+#### 3.5 Application of the function `ee_get_data`
+
+```{r eval=FALSE}
+# Time: ~ 2 min
+rawdata <- ee_get_data(img = herbaceous, region = sandiego)
+class(rawdata)
 ```
 
-#### 3.6 Identifying the type of vegetation cover according to the following table
+```
+[1] "list"
+```
 
-<center>
- <a href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global#bands">
-   <img src="https://user-images.githubusercontent.com/23284899/152642180-ca0d6501-bad9-44bc-a862-42597c04a4bf.png" width="100%">
- </a>
-</center>
+#### 3.6 Preprocesing rawdata
 
-```{r,eval = FALSE}
-area_Ha <- area_Ha %>% 
-  dplyr::select(NAME, ends_with("Ha")) %>% 
-  gather(Category, values, Pi111_Ha:Pi90_Ha) %>% 
-  mutate(
-    Category = case_when(
-      Category == "Pi20_Ha" ~ "Shrubs",
-      Category == "Pi30_Ha" ~ "Herbaceous vegetation",
-      Category == "Pi40_Ha" ~ "Herbaceous vegetation",
-      Category == "Pi50_Ha" ~ "agriculture",
-      Category == "Pi60_Ha" ~ "Bare",
-      Category == "Pi80_Ha" ~ "Permanent water bodies",
-      Category == "Pi90_Ha" ~ "Herbaceous wetland",
-      Category == "Pi111_Ha" ~ "Closed forest",
-      Category == "Pi116_Ha" ~ "Closed forest",
-      Category == "Pi126_Ha" ~ "Open forest",
-      Category == "Pi200_Ha" ~ "Water bodies",
-    ),
-    Unit = "Ha"
+```{r eval=FALSE}
+# Herbaceous area in Hectare Units 
+newdata <- rawdata %>% 
+  map_df(.f = as_tibble) %>% 
+  mutate_if(
+    is.numeric,
+    .funs = function(x) {x * 1000 * 1000 / 10000}
     ) %>% 
-  as_tibble()
-area_Ha
+  rename(area_Ha = X1)
+head(newdata)
 ```
 
 ```
-> area_Ha
-# A tibble: 11 × 4
-   NAME      Category                values Unit 
-   <chr>     <chr>                    <dbl> <chr>
- 1 San Diego Closed forest            1000  Ha   
- 2 San Diego Closed forest           10553. Ha   
- 3 San Diego Open forest            274954. Ha   
- 4 San Diego Shrubs                 852717. Ha   
- 5 San Diego Water bodies             3635. Ha   
- 6 San Diego Herbaceous vegetation  124244. Ha   
- 7 San Diego Herbaceous vegetation     600  Ha   
- 8 San Diego agriculture            184500  Ha   
- 9 San Diego Bare                   113547. Ha   
-10 San Diego Permanent water bodies   6429. Ha   
-11 San Diego Herbaceous wetland        200  Ha   
+# A tibble: 6 × 2
+  area_Ha NAME       
+    <dbl> <chr>      
+1   800   Alpine     
+2  1073.  Bonita     
+3   188.  Boulevard  
+4  1300   Campo      
+5    59.6 Chula Vista
+6   179.  Chula Vista
 ```
 
-#### 3.7 Bar plot   
+```{r eval=FALSE}
+# Left join with spatial data
+sandiego_herb <- left_join(
+ sandiego,
+ newdata,
+ by = c("PO_NAME"="NAME")
+)
+head(sandiego_herb)
+```
 
-```{r,eval = TRUE,echo = FALSE,message = FALSE}
+```
+Simple feature collection with 6 features and 2 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -117.1162 ymin: 32.58161 xmax: -116.208 ymax: 32.90116
+Geodetic CRS:  WGS 84
+      PO_NAME    area_Ha                           geom
+1      Alpine  800.00000 MULTIPOLYGON (((-116.6075 3...
+2      Bonita 1073.33333 MULTIPOLYGON (((-116.9655 3...
+3   Boulevard  187.84314 MULTIPOLYGON (((-116.2085 3...
+4       Campo 1300.00000 MULTIPOLYGON (((-116.3573 3...
+5 Chula Vista   59.60784 MULTIPOLYGON (((-117.0728 3...
+6 Chula Vista  179.21569 MULTIPOLYGON (((-117.0728 3...
+```
+
+#### 3.8 Exploration map
+
+```{r eval=FALSE}
+mapview(sandiego,zcol="area_Ha", layer.name = "Herbaceous")
+```
+
+```{r eval=TRUE, echo=FALSE, message=FALSE,warning=FALSE, out.width="100%"}
+library(leaflet)
+library(leaflet.extras)
+library(leaflet.extras2)
+library(leafem)
+library(viridis)
+library(sf)
 library(tidyverse)
-library(plotly)
-area_Ha <- read_rds("data/data_demo2")
+sandiego_herb <- read_rds("data/sandiego_herb")
+
+pal <- colorNumeric(
+  palette = viridis(256),
+  domain = NULL
+  )
+
+sandiego_herb %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron,group = "CartoDB.Positron") %>%
+  addProviderTiles(providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>%
+  addTiles(group = "OpenSreetMap") %>% 
+  addProviderTiles(providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>%
+  addProviderTiles(providers$OpenTopoMap,group = "OpenTopoMap") %>% 
+  addPolygons(
+    fillColor = ~pal(sandiego_herb$area_Ha),
+    fillOpacity = 0.7,
+    weight = 0.5,color = "black",
+    fill = sandiego_herb$area_Ha,
+    popup = sandiego_herb$area_Ha,
+    label = sandiego_herb$area_Ha,
+    group = "Herbaceous") %>% 
+  addLayersControl(
+    overlayGroups = c("Herbaceous"), 
+    baseGroups = c(
+      "CartoDB.Positron",
+      "CartoDB.DarkMatter",
+      "OpenSreetMap",
+      "Esri.WorldImagery",
+      "OpenTopoMap"),
+    position = "topleft") %>% 
+  addLegend(pal =  pal ,
+            values = ~sandiego_herb$area_Ha,
+            opacity = 1,
+            title = "Herbaceous",
+            position = "topright") %>% 
+  addMouseCoordinates() %>% 
+  addResetMapButton()
 ```
 
-```{r,eval = TRUE,out.width="100%"}
-g1 <- area_Ha %>%
-  ggplot(aes(x = reorder(Category,values), y = values, fill = Category)) +
-  geom_bar(stat = "identity") +
-  scale_fill_viridis_d() +
-  coord_flip() + 
+#### 3.9 Final Map
+
+```{r eval=FALSE}
+ggplot() + 
+  geom_sf(data = sandiego_herb) +
+  annotation_map_tile(zoom = 10) + 
+  geom_sf(data = sandiego_herb,aes(fill = area_Ha),lwd=0.05) + 
+  scale_fill_viridis() + 
   theme_minimal() + 
-  labs(x = "", y = "")
-ggplotly(g1) %>% 
-  config(displayModeBar = F)
-```
-
-#### 3.8 Get raster data San Diego
-
-```{r,eval = FALSE,out.width="100%"}
-sandiego_raster <- ee_as_raster(
-  image = lulc,
-  region = sf_as_ee(sandiego)$geometry(),
-  scale = 100,
-  crs = "EPSG:4326")
-```
-
-```
-- region parameters
- sfg      : MULTIPOLYGON (((-117.2394 3 .... 77584, -117.2328 32.77641))) 
- CRS      : GEOGCRS["WGS 84",
-    DATUM["World Geodetic System 1984",
-        ELLIPSOID["WGS 84",6378137,298.257223563, ..... 
- geodesic : TRUE 
- evenOdd  : TRUE 
-
-- download parameters (Google Drive)
- Image ID    : 2019 
- Google user : ndef 
- Folder name : rgee_backup 
- Date        : 2022_02_18_09_08_10 
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 0s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 5s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 10s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 15s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 20s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 25s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 30s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 35s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 40s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 45s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 50s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 55s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 60s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 65s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 70s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 75s>.
-Polling for task <id: 5VHYXPG6TSAW7NGBQNOULXYO, time: 80s>.
-State: COMPLETED
-Moving image from Google Drive to Local ... Please wait  
-```
-
-```{r,eval = FALSE,out.width="100%"}
-# Crop and mask raster data
-sandiego_raster <- sandiego_raster %>% 
-  crop(sandiego) %>% 
-  mask(sandiego)
-sandiego_raster
-```
-
-```
-class      : RasterBrick 
-dimensions : 1085, 1688, 1831480, 1  (nrow, ncol, ncell, nlayers)
-resolution : 0.0008983153, 0.0008983153  (x, y)
-extent     : -117.5958, -116.0794, 32.53069, 33.50536  (xmin, xmax, ymin, ymax)
-crs        : +proj=longlat +datum=WGS84 +no_defs 
-source     : memory
-names      : discrete_classification 
-min values :                      20 
-max values :                     200 
-```
-
-```{r,eval = FALSE,out.width="100%"}
-# Raster layer to data.frame
-sandiego_lucl <- sandiego_raster %>% 
-  as.data.frame(xy = TRUE) %>% 
-  drop_na()
-head(sandiego_lucl)
-```
-
-```
-> head(sandiego_lucl)
-          x        y discrete_classification
-1 -117.5100 33.50491                     126
-2 -117.5091 33.50491                     126
-3 -117.5082 33.50491                     126
-4 -117.5073 33.50491                     126
-5 -117.5064 33.50491                     126
-6 -117.5055 33.50491                     126
-```
-
-#### 3.9 Categories classification 
-
-```{r,eval = FALSE,out.width="100%"}
-sandiego_lucl <- sandiego_lucl %>% 
-  mutate(
-    discrete_classification = case_when(
-      discrete_classification == 20 ~ "Shrubs",
-      discrete_classification == 30 ~ "Herbaceous vegetation",
-      discrete_classification == 40 ~ "Herbaceous vegetation",
-      discrete_classification == 50 ~ "agriculture",
-      discrete_classification == 60 ~ "Bare",
-      discrete_classification == 80 ~ "Permanent water bodies",
-      discrete_classification == 90 ~ "Herbaceous wetland",
-      discrete_classification == 111 ~ "Closed forest",
-      discrete_classification == 116 ~ "Closed forest",
-      discrete_classification == 126 ~ "Open forest",
-      discrete_classification == 200 ~ "Water bodies")
-    ) %>% 
-  drop_na(discrete_classification) %>% 
-  dplyr::rename(Category = discrete_classification)
-
-```
-
-
-#### 3.10 Final plot
-
-```{r,eval = FALSE,out.width="100%"}
-m1 <- ggplot() + 
-  geom_sf(data = sandiego) +
-  annotation_map_tile(zoom = 10) +
-  geom_raster(
-    data = sandiego_lucl,
-    aes(x = x, y = y, fill = Category),alpha = 0.9) +
-    scale_fill_viridis_d() +
-    geom_sf(data = sandiego ,fill = NA,color = "white",lwd=0.5) + 
-    theme(axis.text = element_text(size = 6),
-          legend.position = "none") +
-    labs(x = "", y = "")
-m1 / g1
-
+  labs(title = "Herbaceous vegetation - San Diego",
+       caption = "Source: Copernicus Global Land Service (CGLS)") 
 ```
 
 <center>
-  <img src="https://user-images.githubusercontent.com/23284899/154709936-4edae82c-3e0f-4af6-9069-d91c375adcf6.png" width="100%">
+ <img src="https://user-images.githubusercontent.com/23284899/155546368-0be18a08-01be-48d3-b47f-a5c838f100f7.png">
 </center>
+
 
 

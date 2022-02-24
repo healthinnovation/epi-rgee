@@ -125,6 +125,10 @@ map <-  world_temp %>%
 
 ### 3.8 Exploration raster data
 
+```{r, eval=FALSE}
+mapview(map)
+```
+
 ```{r eval = TRUE, echo=FALSE,warning=FALSE,message=FALSE, out.width="100%"}
 library(leaflet)
 library(raster)
@@ -158,10 +162,6 @@ leaflet() %>%
              opacity = 1,
              title = "map",
              position = "topright")
-```
-
-```{r, eval=FALSE}
-mapview(map)
 ```
 
 

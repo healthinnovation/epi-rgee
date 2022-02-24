@@ -7,21 +7,46 @@
   name = "Installation"
   url = "installation"
   weight = -110
-  
+
 [[main]]
   name = "Demos"
   url = "demos/"
-  weight = -109  
+  weight = -109
 
-[[main]]
-  name = "rgeeExtra"
-  url = "rgee_extra"
-  weight = -108  
+#[[main]]
+#  name = "rgeeExtra"
+#  url = "rgee_extra"
+#  weight = -108
 
 [[main]]
   name = "About us"
   url = "about/"
   weight = -106
+
+[[main]]
+  name = "Resources"
+  identifier = "Links"
+  weight = -107
+
+[[main]]
+  parent = "Links"
+  name = "rgee-website"
+  url = "https://r-spatial.github.io/rgee/"
+
+[[main]]
+  parent = "Links"
+  name = "rgee-OpenGeoHuB"
+  url = "https://www.youtube.com/watch?v=BtXjY6MCG-g&t=0s"
+
+[[main]]
+  parent = "Links"
+  name = "Introduction to rgee"
+  url = "https://www.youtube.com/watch?v=1-k6wNL2hlo&t=0s"
+
+[[main]]
+  parent = "Links"
+  name = "Guide for rgee"
+  url = "http://amazeone.com.br/barebra/pandora/rgeebookT1eng.pdf"
 
 # social menu links
 

@@ -5,4 +5,4 @@ date: 2020-12-01T21:13:14-05:00
 tags: ["epidemiology"]
 ---
 
-### Coming soon ... 
+A set of examples of rgee for the extraction and processing of remote sensing data applied to epidemiological studies.
