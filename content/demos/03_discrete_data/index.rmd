@@ -151,7 +151,7 @@ Geodetic CRS:  WGS 84
 6 Chula Vista  179.21569 MULTIPOLYGON (((-117.0728 3...
 ```
 
-#### 3.8 Exploration map
+#### 3.7 Exploration map
 
 ```{r eval=FALSE}
 mapview(sandiego,zcol="area_Ha", layer.name = "Herbaceous")
@@ -205,7 +205,7 @@ sandiego_herb %>%
   addResetMapButton()
 ```
 
-#### 3.9 Final Map
+#### 3.8 Final Map
 
 ```{r eval=FALSE}
 ggplot() + 
@@ -219,7 +219,7 @@ ggplot() +
 ```
 
 <center>
- <img src="https://user-images.githubusercontent.com/23284899/155546368-0be18a08-01be-48d3-b47f-a5c838f100f7.png">
+ <img src="https://user-images.githubusercontent.com/23284899/155546368-0be18a08-01be-48d3-b47f-a5c838f100f7.png" width="100%">
 </center>
 
 
