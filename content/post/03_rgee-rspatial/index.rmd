@@ -29,6 +29,13 @@ with the integration of the spatial universe of R packages.
 For this example, we use the ERA5-Land dataset,  a reanalysis dataset providing a consistent view of the evolution of
 land variables over several decades at an enhanced resolution compared to ERA5, more information [click here.](https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY)
 
+
+---
+<img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
+- For this demo you need `rgee`, `mapview`, `raster` and  `cptcity` packages previously installed.
+---
+
+
 #### 3.1 Requeriments
 ```{r,message=FALSE,}
 
@@ -36,6 +43,7 @@ library(rgee)
 library(tmap)
 library(raster)
 library(cptcity)
+library(mapview)
 ee_Initialize() # Initialize gee inside R with registered account
 ```
 
@@ -167,10 +175,7 @@ leaflet() %>%
 
 #### 3.9 Elaboration of the Temperature Map
 ```{r, eval= FALSE}
-#library(remotes)
-#install_github("r-tmap/tmaptools")
-#install_github("r-tmap/tmap")
-temp_map <- map %>% 
+map %>% 
   tm_shape(projection = robin,raster.warp = FALSE) +
   tm_raster(
     title = "Temperature (°C)",
@@ -179,40 +184,16 @@ temp_map <- map %>%
   ) + 
   tm_shape(shp = World) + 
   tm_borders(col = "black",lwd = 0.7) + 
-  tm_graticules(alpha = 0.8, lwd = 0.5, labels.size = 0.5) +
-  tm_layout() +
-  tmap_style(style = "natural") +
-  tm_layout(
-    scale = 0.8,
-    bg.color = "gray90",
-    frame = FALSE,
-    frame.lwd = NA,
-    panel.label.bg.color = NA,
-    attr.outside = TRUE,
-    main.title.size = 0.8,
-    main.title = "Global monthly mean Temperature\nfrom ERA5-Land - 1992",
-    main.title.fontface = 2,
-    main.title.position = 0.1,
-    legend.title.size = 1,
-    legend.title.fontface = 2,
-    legend.text.size = 0.7,
-    legend.frame = FALSE,
-    legend.outside = TRUE,
-    legend.position = c(0.10, 0.38),
-    legend.bg.color = "white",
-    legend.bg.alpha = 1
-  ) +
-  tm_credits(
-    text = "Source: ERA5-Land Monthly Averaged - ECMWF Climate Reanalysis",
-    size = 0.8
-    ) 
+  tm_graticules(alpha = 0.8, lwd = 0.5, labels.size = 0.5)
 ```
+
+<center>
+ <img src="https://user-images.githubusercontent.com/23284899/155595673-43e9ae08-da5b-40d2-8e78-0600e5ceb05b.png" width="100%">
+</center>
 
 #### 3.10 Export map in png format
 ```{r, eval= FALSE}
 tmap_save(temp_map,"temp_map.png",width = 6,height = 3)
 ```
 
-<center>
- <img src="https://user-images.githubusercontent.com/23284899/152614266-7fac2efc-f1e8-4c77-9ef8-dbdc71e5ba7c.png" width="100%">
-</center>
+
