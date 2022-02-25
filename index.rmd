@@ -221,7 +221,14 @@ ee_Initialize(user = "GMAIL_ACCOUNT",drive = TRUE)
 <br>
 
 ### 🔴 **4. Additional packages**
- 
+
+```{r , eval=FALSE}
+pkgs <- c("tmap","mapview","ggspatial","viridis","cptcity","raster","sf",
+          "stars","geojsonio","tidyverse","patchwork","lubridate")
+install.packages(pkgs)
+```
+
+
  - tmap: <https://github.com/r-tmap/tmap>
  
  - mapview: <https://github.com/r-spatial/mapview>
