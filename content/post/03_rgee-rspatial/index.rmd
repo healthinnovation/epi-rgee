@@ -195,3 +195,4 @@ map %>%
 ```{r, eval= FALSE}
 tmap_save(temp_map,"temp_map.png",width = 6,height = 3)
 ```
+
