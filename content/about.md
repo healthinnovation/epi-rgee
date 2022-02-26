@@ -19,7 +19,7 @@ title: About us
 
 ---
 
-**Antony Barja** is currently a freelance Geographer and researcher in training at the Health Innovation Laboratory of the Institute of Tropical Medicine "Alexander von Humboldt" of the Peruvian University Cayetano Heredia (UPCH) in Peru. He is currently an official member of the QGIS Peru community and collaborator of several Free and Open Source Software projects related to Spatial Data.
+**Antony Barja** is currently a researcher in training at the Health Innovation Laboratory of the Institute of Tropical Medicine "Alexander von Humboldt" of the Peruvian University Cayetano Heredia (UPCH) in Peru. He is currently an official member of the QGIS Peru community and collaborator of several Free and Open Source Software projects related to Spatial Data. 
 
 **Interests:**
 
