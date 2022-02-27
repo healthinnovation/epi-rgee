@@ -182,6 +182,22 @@ ee_Initialize("GMAIL_ACCOUNT",drive = TRUE)
 
 Installation on Mac OS is very similar to a GNU/Linux distribution, in the following code section, we share the codes and some screenshots of some key points to consider.
 
+---
+
+<img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="left"><b> Information:</b>
+
+- For Mac OS it is recommended to work with the development version of rgee.
+
+```
+library(remotes)
+install_github("r-spatial/rgee")
+```
+---
+
+
+
+
+
 ```{r, eval=FALSE}
 # Installation of rgee and geojsonio:
 install.packages("sf")
