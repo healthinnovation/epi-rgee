@@ -12,7 +12,7 @@ In this section, you're going to learn to how to install rgee step by step for d
 
 ---
 
-<img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
+<img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="20px" align="left"> <b>Information:</b>
 
 - _Rtools is only necessary for Windows OS users. You can download Rtools [here 📥.](https://cran.r-project.org/bin/windows/Rtools/rtools40.html)_
 
@@ -70,7 +70,7 @@ After the installation of the rgee dependencies, you need to have a registered a
 
 ---
 
-<img src="https://user-images.githubusercontent.com/23284899/151848117-90f4dcfc-13cb-413c-9802-0207e84f2c9f.png" width="25px" align="center"><b> Observation:</b>
+<img src="https://user-images.githubusercontent.com/23284899/151848117-90f4dcfc-13cb-413c-9802-0207e84f2c9f.png" width="25px" align="left"><b> Observation:</b>
 
 - _To register on Google Earth Engine, you only need a gmail account and to answer a few short questions._
 
@@ -116,11 +116,9 @@ numpy_version:  1.20.3
 ```
 
 ---
-
-<img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
+<img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="left"><b> Information:</b>
 
 - The function <mark style="background-color: blue;color:white;">py_config()</mark> we allow list all version of python discovered in our System.
-
 ---
 
 After identifying the python version, the next step is to set the path for the new Python environment for rgee, for this you can use the following function <mark style="background-color: blue;color:white;">use_python("PUT-HERE-THE-PYTHON3-VERSION-PATH")</mark>
@@ -179,6 +177,21 @@ ee_Initialize(user = "GMAIL_ACCOUNT",drive = TRUE)
 ### 🔴 **3. Installation on Mac OS**
 
 Installation on Mac OS is very similar to a GNU/Linux distribution. In the following code section, you'll find the codes and some screenshots of some key points to consider.
+
+---
+
+<img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="left"><b> Information:</b>
+
+- For Mac OS it is recommended to work with the development version of rgee.
+
+```
+library(remotes)
+install_github("r-spatial/rgee")
+```
+---
+
+
+
 
 ```{r, eval=FALSE}
 # Installation of rgee and geojsonio:
