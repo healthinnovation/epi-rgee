@@ -10,7 +10,7 @@ tags: ["intro", "datacalog"]
 knitr::opts_chunk$set(collapse = TRUE)
 ```
 
-### 1.1 ¿What is Google Earth Engine?
+### 1.1 What is Google Earth Engine?
 
 <center><img src="https://user-images.githubusercontent.com/23284899/152171996-54afdafa-4456-4d63-9c92-dca515b100a8.png" width="80%"></center>
 
