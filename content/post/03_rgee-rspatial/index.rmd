@@ -32,7 +32,7 @@ land variables over several decades at an enhanced resolution compared to ERA5, 
 
 ---
 <img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
-- For this demo you need `rgee`, `mapview`, `raster` and  `cptcity` packages previously installed.
+- For this demo you need `rgee`, `tmap`, `raster`, `cptcity`, and  `mapview` packages previously installed.
 ---
 
 
@@ -175,7 +175,7 @@ leaflet() %>%
 
 #### 3.9 Elaboration of the Temperature Map
 ```{r, eval= FALSE}
-map %>% 
+temp_map <- map %>% 
   tm_shape(projection = robin,raster.warp = FALSE) +
   tm_raster(
     title = "Temperature (°C)",
@@ -185,6 +185,7 @@ map %>%
   tm_shape(shp = World) + 
   tm_borders(col = "black",lwd = 0.7) + 
   tm_graticules(alpha = 0.8, lwd = 0.5, labels.size = 0.5)
+temp_map
 ```
 
 <center>
