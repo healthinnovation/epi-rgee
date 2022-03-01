@@ -64,7 +64,7 @@ image$bandNames()$getInfo()
 
 ### 2.3 Installation 📥
 
-In the menu bar, you'll find the [installation](https://botam2.netlify.app/installation/) tab, where you'll learn how to instal step by step rgee in different Operating Systems.
+In the menu bar, you'll find the [installation](https://epi-rgee.netlify.app/installation/) tab, where you'll learn how to instal step by step rgee in different Operating Systems.
 Beforehand, you need to install some spatial dependencies in your OS. Use the following Bash commands.  
 
 ```
@@ -170,13 +170,10 @@ print("Hello spatial world!")
 ```
 ```{r, eval=F}
 # Earth Engine Pipes Style
-ee$String("Hello World from Earth Engine!") %>%
-  ee$String$getInfo()
+ee$String("Hello World from Earth Engine!")$getInfo()
 ```
 
 ```
-> ee$String("Hello World from Earth Engine!") %>%
-+     ee$String$getInfo()
 [1] "Hello World from Earth Engine!"
 ```
 
@@ -184,13 +181,13 @@ ee$String("Hello World from Earth Engine!") %>%
 
 ````{r, eval = TRUE,out.width = "100%"}
 library(rgee)
-library(cptcity)
+library(viridis)
 ee_Initialize(quiet = T)
 
 viz = list(
   min = 500,
   max = 5000,
-  palette = cpt("grass_elevation",rev = TRUE)
+  palette = rocket(n = 10,direction = -1)
   )
   
 ee$Image("CGIAR/SRTM90_V4") %>%

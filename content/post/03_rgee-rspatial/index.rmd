@@ -32,17 +32,17 @@ land variables over several decades at an enhanced resolution compared to ERA5, 
 
 ---
 <img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
-- For this demo you need `rgee`, `tmap`, `raster`, `cptcity`, and  `mapview` packages previously installed.
+- For this demo you need `rgee`, `tmap`, `raster`, `viridis`, and  `mapview` packages previously installed.
 ---
 
 
 #### 3.1 Requeriments
-```{r,message=FALSE,}
+```{r,message=FALSE,warning=FALSE}
 
 library(rgee)
 library(tmap)
 library(raster)
-library(cptcity)
+library(viridis)
 library(mapview)
 ee_Initialize() # Initialize gee inside R with registered account
 ```
@@ -61,7 +61,7 @@ past <- dataset$
 viz <- list(
   min = 5,
   max = 25,
-  palette = cpt(pal = "gmt_GMT_seis",rev = 1)
+  palette = magma(n = 5)
   )
 Map$addLayer(past,visParams = viz) + 
   Map$addLegend(visParams = viz,name = "Tem[C°]")
@@ -177,7 +177,7 @@ temp_map <- map %>%
   tm_shape(projection = robin,raster.warp = FALSE) +
   tm_raster(
     title = "Temperature (°C)",
-    palette = cpt("gmt_GMT_seis", n = 100, rev = 1),
+    palette = magma(n = 100),
     style = "cont"
   ) + 
   tm_shape(shp = World) + 
@@ -187,7 +187,7 @@ temp_map
 ```
 
 <center>
- <img src="https://user-images.githubusercontent.com/23284899/155595673-43e9ae08-da5b-40d2-8e78-0600e5ceb05b.png" width="100%">
+ <img src="https://user-images.githubusercontent.com/23284899/156104502-9acd1ccc-ca55-4474-910f-c6848b921053.png" width="100%">
 </center>
 
 #### 3.10 Export map in png format

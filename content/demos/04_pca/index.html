@@ -25,7 +25,7 @@ the dataset used is:</p>
 <td><img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b></td>
 </tr>
 <tr class="even">
-<td>- For this demo you need to have <code>rgee</code>, <code>sf</code>, <code>tidyverse</code>, and <code>cptcity</code> packages previously installed.</td>
+<td>- For this demo you need to have <code>rgee</code>, <code>sf</code>, <code>tidyverse</code>, and <code>viridis</code> packages previously installed.</td>
 </tr>
 </tbody>
 </table>
@@ -34,7 +34,7 @@ the dataset used is:</p>
 <pre class="r"><code>library(rgee)
 library(tidyverse)
 library(sf)
-library(cptcity)
+library(viridis)
 source(&quot;https://raw.githubusercontent.com/ambarja/rgee_landcover/main/pca_rgee.R&quot;)
 ee_Initialize()</code></pre>
 <pre><code>&gt; ee_Initialize()
@@ -130,7 +130,7 @@ evi &lt;-  modis_years$
 
 evi &lt;- ee$ImageCollection(evi)$
   toBands()$
-  select(&quot;1_EVI&quot;)$
+  select(&quot;0_EVI&quot;)$
   rename(&quot;evi&quot;) 
 
 stack_evironment &lt;- ee$Image(
@@ -171,12 +171,12 @@ Map$addLayer(PCA,visParams = list(bands=c(&quot;pc1&quot;,&quot;pc2&quot;,&quot;
   scale = 30,
   nvar = 5
 )</code></pre>
-<pre><code> eingvector  eVec1  eVec2  eVec3  eVec4  eVec5
-1          1  0.337 -0.234  0.356  0.598  0.589
-2          2  0.602 -0.662 -0.351 -0.187 -0.205
-3          3 -0.141 -0.393  0.816 -0.263 -0.302
-4          4  0.710  0.594  0.290 -0.172 -0.172
-5          5 -0.006  0.020 -0.021  0.713 -0.700</code></pre>
+<pre><code>  eingvector  eVec1  eVec2  eVec3  eVec4  eVec5
+1          1  0.342 -0.237  0.354  0.597  0.588
+2          2  0.598 -0.661 -0.355 -0.193 -0.205
+3          3 -0.141 -0.395  0.815 -0.257 -0.306
+4          4  0.711  0.592  0.290 -0.177 -0.170
+5          5  0.001  0.024 -0.026  0.714 -0.700</code></pre>
 </div>
 <div id="table-of-eingvalues" class="section level4">
 <h4>4.7 Table of eingvalues</h4>
@@ -249,7 +249,7 @@ $sum_min
 <pre class="r"><code>viz &lt;- list(
   min = -0.6983301 ,
   max = 0.9375844,
-  palette = cpt(&quot;mpl_viridis&quot;)
+  palette = viridis(n = 100)
 )
 
 Map$addLayer(index,visParams = viz) + 

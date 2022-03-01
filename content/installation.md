@@ -236,7 +236,7 @@ ee_Initialize("GMAIL_ACCOUNT",drive = TRUE)
 ### 🔴 **4. Additional packages**
 
 ```{r , eval=FALSE}
-pkgs <- c("tmap","mapview","ggspatial","viridis","cptcity","raster","sf",
+pkgs <- c("tmap","mapview","ggspatial","viridis","raster","sf",
           "stars","geojsonio","tidyverse","patchwork","lubridate")
 install.packages(pkgs)
 ```
@@ -248,8 +248,6 @@ install.packages(pkgs)
 - ggspatial: <https://github.com/paleolimbot/ggspatial>
 
 - viridis: <https://github.com/sjmgarnier/viridis>
-
-- cptcity: <https://github.com/ibarraespinosa/cptcity>
 
 - raster: <https://github.com/rspatial/raster>
 

@@ -20,7 +20,7 @@ All the dataset is from [USGS National Land Cover Database](https://developers.g
 
 ---
 <img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
-- For this demo you need to have `rgee`, `sf`, `tidyverse`, and `cptcity` packages previously installed.
+- For this demo you need to have `rgee`, `sf`, `tidyverse`, and `viridis` packages previously installed.
 ---
 
 #### 4.1 Requirements
@@ -28,7 +28,7 @@ All the dataset is from [USGS National Land Cover Database](https://developers.g
 library(rgee)
 library(tidyverse)
 library(sf)
-library(cptcity)
+library(viridis)
 source("https://raw.githubusercontent.com/ambarja/rgee_landcover/main/pca_rgee.R")
 ee_Initialize()
 ```
@@ -128,7 +128,7 @@ evi <-  modis_years$
 
 evi <- ee$ImageCollection(evi)$
   toBands()$
-  select("1_EVI")$
+  select("0_EVI")$
   rename("evi") 
 
 stack_evironment <- ee$Image(
@@ -177,12 +177,12 @@ eVectors(
 ```
 
 ```
- eingvector  eVec1  eVec2  eVec3  eVec4  eVec5
-1          1  0.337 -0.234  0.356  0.598  0.589
-2          2  0.602 -0.662 -0.351 -0.187 -0.205
-3          3 -0.141 -0.393  0.816 -0.263 -0.302
-4          4  0.710  0.594  0.290 -0.172 -0.172
-5          5 -0.006  0.020 -0.021  0.713 -0.700
+  eingvector  eVec1  eVec2  eVec3  eVec4  eVec5
+1          1  0.342 -0.237  0.354  0.597  0.588
+2          2  0.598 -0.661 -0.355 -0.193 -0.205
+3          3 -0.141 -0.395  0.815 -0.257 -0.306
+4          4  0.711  0.592  0.290 -0.177 -0.170
+5          5  0.001  0.024 -0.026  0.714 -0.700
 ```
 
 #### 4.7 Table of eingvalues
@@ -271,7 +271,7 @@ $sum_min
 viz <- list(
   min = -0.6983301 ,
   max = 0.9375844,
-  palette = cpt("mpl_viridis")
+  palette = viridis(n = 100)
 )
 
 Map$addLayer(index,visParams = viz) + 
@@ -280,6 +280,3 @@ Map$addLayer(index,visParams = viz) +
 <center>
    <img src="https://user-images.githubusercontent.com/23284899/156098219-04ec7105-4e2b-461b-9159-855017d4681c.png" width="100%">
 </center>
-
-
-
