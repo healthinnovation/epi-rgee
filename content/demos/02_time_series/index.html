@@ -115,7 +115,7 @@ dep_pet &lt;- dep_list %&gt;%
          date = gsub(&quot;\\D&quot;, &quot;&quot;, name) %&gt;% as.integer()) %&gt;% 
   mutate(value = case_when(
     variables ==&quot;pr&quot; ~ value,
-    variables == &quot;tmmx&quot; ~ value *0.1)</code></pre>
+    variables == &quot;tmmx&quot; ~ value *0.1))</code></pre>
 <pre class="r"><code># Accumulated precipitation
 dep_pet  %&gt;% 
   mutate(date = ymd(sprintf(&quot;%s01&quot;,date))) %&gt;%

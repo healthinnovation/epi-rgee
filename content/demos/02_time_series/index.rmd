@@ -132,7 +132,7 @@ dep_pet <- dep_list %>%
          date = gsub("\\D", "", name) %>% as.integer()) %>% 
   mutate(value = case_when(
     variables =="pr" ~ value,
-    variables == "tmmx" ~ value *0.1)
+    variables == "tmmx" ~ value *0.1))
 ```
 
 
