@@ -47,14 +47,6 @@ library(mapview)
 ee_Initialize() # Initialize gee inside R with registered account
 ```
 
-```
-── rgee 1.1.2.9000 ────────────────── earthengine-api 0.1.297 ── 
- ✓ user: not_defined
- ✓ Initializing Google Earth Engine:  DONE!
- ✓ Earth Engine account: users/antonybarja8 
-──────────────────────────────────────────────────────────────── 
-```
-
 #### 3.2 Processing data with rgee
 ```{r}
 dataset <- ee$ImageCollection$Dataset$ECMWF_ERA5_LAND_MONTHLY
