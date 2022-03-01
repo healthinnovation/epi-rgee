@@ -17,6 +17,8 @@ title: About us
 - Health Data Science
 - Geospatial modeling & vi
 
+<a href="https://twitter.com/Gabc91"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white"/></a> <a href="mailto:gabriel.carrasco@upch.pe"><img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white"/></a>
+
 ---
 
 **Antony Barja** is currently a researcher in training at the Health Innovation Laboratory of the Institute of Tropical Medicine "Alexander von Humboldt" of the Peruvian University Cayetano Heredia (UPCH) in Peru. He is currently an official member of the QGIS Peru community and collaborator of several Free and Open Source Software projects related to Spatial Data. 
@@ -26,3 +28,5 @@ title: About us
 - Spatial Data Science
 - Geocomputation
 - Harzard, Vulnerabilities and Risk
+
+<a href="https://twitter.com/antony_barja"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white"/></a> <a href="mailto:antony.barja@upch.pe"><img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white"/></a>
