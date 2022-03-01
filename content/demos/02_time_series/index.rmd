@@ -46,7 +46,7 @@ lima_ee <-  lima %>%
   sf_as_ee()
 ```
 
-#### 2.4 Cooking data with rgee
+#### 2.4 Processing data with rgee
 
 ```{r,eval = FALSE}
 terraclim <-  ee$ImageCollection$Dataset$IDAHO_EPSCOR_TERRACLIMATE$
@@ -61,7 +61,7 @@ lima_data <- ee_extract(
   sf = FALSE)
 ```
 
-#### 2.5 Cooking data for mapping  
+#### 2.5 Processing data for mapping  
 ```{r,eval = FALSE}
 lima_temp <- lima_data %>% as_tibble() %>% 
   mutate(region = "LIMA") %>% 
@@ -124,7 +124,7 @@ for(i in 1:nrow(dep)){
 
 
 ```{r,eval = FALSE}
-# Cooking data for mapping 
+# Processing data for mapping 
 dep_pet <- dep_list %>% 
   map_df(.f = as_tibble) %>% 
   pivot_longer(X199001_pr:X202012_tmmx) %>% 

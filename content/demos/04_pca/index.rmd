@@ -33,7 +33,6 @@ source("https://raw.githubusercontent.com/ambarja/rgee_landcover/main/pca_rgee.R
 ee_Initialize()
 ```
 ```
-> ee_Initialize()
 ── rgee 1.1.2 ────────────────────────── earthengine-api 0.1.292 ── 
  ✓ user: not_defined
  ✓ Initializing Google Earth Engine:  DONE!
@@ -48,7 +47,7 @@ geodata <- st_read(
 sandiego <- geodata %>% sf_as_ee()  
 ```
 
-#### 4.3 Cooking data with rgee 
+#### 4.3 Processing data with rgee 
 
 ```{r, eval = FALSE}
 years <- c(1992, 2001,2004,2006,2008,2011,2013,2016) %>% ee$List()
@@ -216,7 +215,6 @@ table <-
 table
 ```
 ```
-> table
   eingvalue values component variance cumulative
 1     eVal1   2.40       pc1     48.0       48.0
 2     eVal2   1.38       pc2     27.6       75.6

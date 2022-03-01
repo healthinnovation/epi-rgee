@@ -27,7 +27,6 @@ ee_Initialize()
 ```
 
 ```
-> ee_Initialize()
 ── rgee 1.1.2 ────────────────────────── earthengine-api 0.1.292 ── 
  ✓ user: not_defined
  ✓ Initializing Google Earth Engine:  DONE!
@@ -40,7 +39,7 @@ ee_Initialize()
 lima <- st_read(
   "https://github.com/healthinnovation/sdb-gpkg/raw/main/lima_distritos.gpkg",
   quiet = TRUE) %>% 
-  select(NOMBDIST,UBIGEO)
+  dplyr::select(NOMBDIST,UBIGEO)
 ```
 
 #### 1.3 Transformation of sf object to a feature collection 
@@ -50,7 +49,7 @@ lima_ee <-  lima %>%
   sf_as_ee()
 ```
 
-#### 1.4 Cooking data with rgee
+#### 1.4 Processing data with rgee
 
 ```{r,eval = FALSE}
 # 1DU(Dobson units = 4,4615 x 10 -4 mol/m 2 molecules)
@@ -72,27 +71,17 @@ so2_to_lima <- ee_extract(
   sf = TRUE
 )
 
-so2_to_lima
+glimpse(so2_to_lima)
 ```
 
 ```
-Simple feature collection with 50 features and 3 fields
-Geometry type: MULTIPOLYGON
-Dimension:     XY
-Bounding box:  xmin: -77.1988 ymin: -12.51993 xmax: -76.62082 ymax: -11.57241
-Geodetic CRS:  WGS 84
-First 10 features:
-            NOMBDIST UBIGEO       so2                       geometry
-1         LURIGANCHO 150118 0.0267882 MULTIPOLYGON (((-76.7268 -1...
-2        JESUS MARIA 150113 0.0207625 MULTIPOLYGON (((-77.03762 -...
-3               LIMA 150101 0.0148749 MULTIPOLYGON (((-77.00972 -...
-4              LINCE 150116 0.0263857 MULTIPOLYGON (((-77.02807 -...
-5         MIRAFLORES 150122 0.0321065 MULTIPOLYGON (((-77.02739 -...
-6  MAGDALENA DEL MAR 150120 0.0061494 MULTIPOLYGON (((-77.07179 -...
-7       PUEBLO LIBRE 150121 0.0096647 MULTIPOLYGON (((-77.05433 -...
-8          SAN BORJA 150130 0.0216993 MULTIPOLYGON (((-76.9872 -1...
-9           SAN LUIS 150134 0.0131853 MULTIPOLYGON (((-76.99876 -...
-10        SAN MIGUEL 150136 0.0043772 MULTIPOLYGON (((-77.0791 -1...
+Rows: 50
+Columns: 4
+$ NOMBDIST <chr> "LURIGANCHO", "JESUS MARIA", "LIMA", "LINCE", "MIRAFLORES", "M…
+$ UBIGEO   <chr> "150118", "150113", "150101", "150116", "150122", "150120", "1…
+$ so2      <dbl> 0.0267882, 0.0207625, 0.0148749, 0.0263857, 0.0321065, 0.00614…
+$ geometry <MULTIPOLYGON [°]> MULTIPOLYGON (((-76.7268 -1..., MULTIPOLYGON (((-…
+
 ```
 
 #### 1.5 Exploration Lima map
@@ -207,7 +196,7 @@ sandiego_ee <- sandiego %>%
   sf_as_ee()
 ```
 
-### 1.9 Cooking data with rgee
+### 1.9 Processing data with rgee
 
 ```{r,eval = FALSE}
 so2_to_sandiego <- ee_extract(
@@ -217,23 +206,17 @@ so2_to_sandiego <- ee_extract(
   sf = TRUE
 )
 
-so2_to_sandiego
+glimpse(so2_to_sandiego)
 ```
 
 ```
-Simple feature collection with 108 features and 3 fields
-Geometry type: MULTIPOLYGON
-Dimension:     XY
-Bounding box:  xmin: -117.6593 ymin: 32.53434 xmax: -116.081 ymax: 33.50554
-Geodetic CRS:  WGS 84
-First 10 features:
-   OBJECTID     PO_NAME       so2                       geometry
-1     28113      Alpine 0.0157558 MULTIPOLYGON (((-116.6075 3...
-2     28114      Bonita 0.0149694 MULTIPOLYGON (((-116.9655 3...
-3     28115   Boulevard 0.0139448 MULTIPOLYGON (((-116.2085 3...
-4     28116       Campo 0.0070619 MULTIPOLYGON (((-116.3573 3...
-5     28117 Chula Vista 0.0198098 MULTIPOLYGON (((-117.0728 3...
-6     28118 Chula Vista 0.0286568 MULTIPOLYGON (((-117.0081 3...
+Rows: 108
+Columns: 4
+$ OBJECTID <int> 28113, 28114, 28115, 28116, 28117, 28118, 28119, 28120, 28121,…
+$ PO_NAME  <chr> "Alpine", "Bonita", "Boulevard", "Campo", "Chula Vista", "Chul…
+$ so2      <dbl> 0.0157558, 0.0149694, 0.0139448, 0.0070619, 0.0198098, 0.02865…
+$ geometry <MULTIPOLYGON [°]> MULTIPOLYGON (((-116.6075 3..., MULTIPOLYGON (((-…
+
 ```
 ### 1.10 Exploration San Diego Map
 

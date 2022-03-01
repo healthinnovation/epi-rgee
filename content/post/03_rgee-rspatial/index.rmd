@@ -47,7 +47,15 @@ library(mapview)
 ee_Initialize() # Initialize gee inside R with registered account
 ```
 
-#### 3.2 Cooking data with rgee
+```
+── rgee 1.1.2.9000 ────────────────── earthengine-api 0.1.297 ── 
+ ✓ user: not_defined
+ ✓ Initializing Google Earth Engine:  DONE!
+ ✓ Earth Engine account: users/antonybarja8 
+──────────────────────────────────────────────────────────────── 
+```
+
+#### 3.2 Processing data with rgee
 ```{r}
 dataset <- ee$ImageCollection$Dataset$ECMWF_ERA5_LAND_MONTHLY
 past <- dataset$
@@ -61,7 +69,7 @@ past <- dataset$
 viz <- list(
   min = 5,
   max = 25,
-  palette = magma(n = 5)
+  palette = magma(n = 100)
   )
 Map$addLayer(past,visParams = viz) + 
   Map$addLegend(visParams = viz,name = "Tem[C°]")
@@ -109,7 +117,7 @@ world_temp <- ee_as_thumbnail(
 )
 ```
 
-#### 3.7 Cooking data for mapping with tmap
+#### 3.7 Processing data for mapping with tmap
 ```{r, eval= FALSE}
 # Define a projection (EPSG:4326 - WGS 84)
 crs(world_temp) <- 4326

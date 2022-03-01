@@ -26,8 +26,8 @@ library(viridis)
 library(ggspatial)
 ee_Initialize()
 ```
+
 ```
-> ee_Initialize()
 ── rgee 1.1.2 ────────────────────────── earthengine-api 0.1.292 ── 
  ✓ user: not_defined
  ✓ Initializing Google Earth Engine:  DONE!
@@ -41,25 +41,18 @@ sandiego <- st_read(
   "https://github.com/healthinnovation/sdb-gpkg/raw/main/SanDiego_districts.gpkg"
 ) %>%
   dplyr::select(PO_NAME) 
-head(sandiego)
-```
-```
-> head(sandiego)
-Simple feature collection with 6 features and 1 field
-Geometry type: MULTIPOLYGON
-Dimension:     XY
-Bounding box:  xmin: -117.1162 ymin: 32.58161 xmax: -116.208 ymax: 32.90116
-Geodetic CRS:  WGS 84
-      PO_NAME                           geom
-1      Alpine MULTIPOLYGON (((-116.6075 3...
-2      Bonita MULTIPOLYGON (((-116.9655 3...
-3   Boulevard MULTIPOLYGON (((-116.2085 3...
-4       Campo MULTIPOLYGON (((-116.3573 3...
-5 Chula Vista MULTIPOLYGON (((-117.0728 3...
-6 Chula Vista MULTIPOLYGON (((-117.0081 3...
+glimpse(sandiego)
 ```
 
-#### 3.3 Cooking data with rgee 
+```
+Rows: 108
+Columns: 2
+$ PO_NAME <chr> "Alpine", "Bonita", "Boulevard", "Campo", "Chula Vista", …
+$ geom    <MULTIPOLYGON [°]> MULTIPOLYGON (((-116.6075 3..., MULTIPOLYGON…
+
+```
+
+#### 3.3 Processing data with rgee 
 
 ```{r, eval = FALSE}
 dataset <- ee$Image("COPERNICUS/Landcover/100m/Proba-V-C3/Global/2019")$
@@ -112,19 +105,14 @@ newdata <- rawdata %>%
     .funs = function(x) {x * 1000 * 1000 / 10000}
     ) %>% 
   rename(area_Ha = X1)
-head(newdata)
+glimpse(newdata)
 ```
 
 ```
-# A tibble: 6 × 2
-  area_Ha NAME       
-    <dbl> <chr>      
-1   800   Alpine     
-2  1073.  Bonita     
-3   188.  Boulevard  
-4  1300   Campo      
-5    59.6 Chula Vista
-6   179.  Chula Vista
+Rows: 66
+Columns: 2
+$ area_Ha <dbl> 800.000000, 1073.333333, 187.843137, 1300.000000, 59.6078…
+$ NAME    <chr> "Alpine", "Bonita", "Boulevard", "Campo", "Chula Vista", …
 ```
 
 ```{r eval=FALSE}
@@ -134,22 +122,15 @@ sandiego_herb <- left_join(
  newdata,
  by = c("PO_NAME"="NAME")
 )
-head(sandiego_herb)
+glimpse(sandiego_herb)
 ```
 
 ```
-Simple feature collection with 6 features and 2 fields
-Geometry type: MULTIPOLYGON
-Dimension:     XY
-Bounding box:  xmin: -117.1162 ymin: 32.58161 xmax: -116.208 ymax: 32.90116
-Geodetic CRS:  WGS 84
-      PO_NAME    area_Ha                           geom
-1      Alpine  800.00000 MULTIPOLYGON (((-116.6075 3...
-2      Bonita 1073.33333 MULTIPOLYGON (((-116.9655 3...
-3   Boulevard  187.84314 MULTIPOLYGON (((-116.2085 3...
-4       Campo 1300.00000 MULTIPOLYGON (((-116.3573 3...
-5 Chula Vista   59.60784 MULTIPOLYGON (((-117.0728 3...
-6 Chula Vista  179.21569 MULTIPOLYGON (((-117.0728 3...
+Rows: 694
+Columns: 3
+$ PO_NAME <chr> "Alpine", "Bonita", "Boulevard", "Campo", "Chula Vista", …
+$ area_Ha <dbl> 800.00000, 1073.33333, 187.84314, 1300.00000, 59.60784, 1…
+$ geom    <MULTIPOLYGON [°]> MULTIPOLYGON (((-116.6075 3..., MULTIPOLYGON…
 ```
 
 #### 3.7 Exploration map

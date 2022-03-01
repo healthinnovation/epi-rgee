@@ -45,8 +45,8 @@ ee_Initialize()</code></pre>
 <pre class="r"><code>lima_ee &lt;-  lima %&gt;% 
   sf_as_ee()</code></pre>
 </div>
-<div id="cooking-data-with-rgee" class="section level4">
-<h4>2.4 Cooking data with rgee</h4>
+<div id="processing-data-with-rgee" class="section level4">
+<h4>2.4 Processing data with rgee</h4>
 <pre class="r"><code>terraclim &lt;-  ee$ImageCollection$Dataset$IDAHO_EPSCOR_TERRACLIMATE$
   select(c(&quot;tmmx&quot;,&quot;pr&quot;))$
   filterDate(&quot;1990-01-01&quot;,&quot;2021-12-31&quot;)$
@@ -58,8 +58,8 @@ lima_data &lt;- ee_extract(
   fun = ee$Reducer$mean(),
   sf = FALSE)</code></pre>
 </div>
-<div id="cooking-data-for-mapping" class="section level4">
-<h4>2.5 Cooking data for mapping</h4>
+<div id="processing-data-for-mapping" class="section level4">
+<h4>2.5 Processing data for mapping</h4>
 <pre class="r"><code>lima_temp &lt;- lima_data %&gt;% as_tibble() %&gt;% 
   mutate(region = &quot;LIMA&quot;) %&gt;% 
   pivot_longer(X199001_pr:X202012_tmmx) %&gt;% 
@@ -106,7 +106,7 @@ for(i in 1:nrow(dep)){
     sf = FALSE)
   dep_list[[i]] &lt;- pet
 }</code></pre>
-<pre class="r"><code># Cooking data for mapping 
+<pre class="r"><code># Processing data for mapping 
 dep_pet &lt;- dep_list %&gt;% 
   map_df(.f = as_tibble) %&gt;% 
   pivot_longer(X199001_pr:X202012_tmmx) %&gt;% 

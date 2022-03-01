@@ -37,8 +37,7 @@ library(sf)
 library(viridis)
 source(&quot;https://raw.githubusercontent.com/ambarja/rgee_landcover/main/pca_rgee.R&quot;)
 ee_Initialize()</code></pre>
-<pre><code>&gt; ee_Initialize()
-── rgee 1.1.2 ────────────────────────── earthengine-api 0.1.292 ── 
+<pre><code>── rgee 1.1.2 ────────────────────────── earthengine-api 0.1.292 ── 
  ✓ user: not_defined
  ✓ Initializing Google Earth Engine:  DONE!
  ✓ Earth Engine account: users/ambarja 
@@ -51,8 +50,8 @@ ee_Initialize()</code></pre>
   )
 sandiego &lt;- geodata %&gt;% sf_as_ee()  </code></pre>
 </div>
-<div id="cooking-data-with-rgee" class="section level4">
-<h4>4.3 Cooking data with rgee</h4>
+<div id="processing-data-with-rgee" class="section level4">
+<h4>4.3 Processing data with rgee</h4>
 <pre class="r"><code>years &lt;- c(1992, 2001,2004,2006,2008,2011,2013,2016) %&gt;% ee$List()
 nldc &lt;- years$
   map(ee_utils_pyfunc(function(x) {
@@ -203,8 +202,7 @@ Map$addLayer(PCA,visParams = list(bands=c(&quot;pc1&quot;,&quot;pc2&quot;,&quot;
     nvar = 5
   )
 table</code></pre>
-<pre><code>&gt; table
-  eingvalue values component variance cumulative
+<pre><code>  eingvalue values component variance cumulative
 1     eVal1   2.40       pc1     48.0       48.0
 2     eVal2   1.38       pc2     27.6       75.6
 3     eVal3   0.74       pc3     14.8       90.4

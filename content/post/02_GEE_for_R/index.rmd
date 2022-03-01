@@ -149,8 +149,6 @@ ee_Initialize()
 ```
 
 ```
-> library(rgee)
-> ee_Initialize()
 ── rgee 1.1.2 ───────────────────────────── earthengine-api 0.1.292 ── 
  ✓ user: not_defined
  ✓ Initializing Google Earth Engine:  DONE!
@@ -164,8 +162,6 @@ print("Hello spatial world!")
 ```
 
 ```
-> # traditional R character
-> print("Hello world!")
 [1] "Hello world!"
 ```
 ```{r, eval=F}
@@ -187,7 +183,7 @@ ee_Initialize(quiet = T)
 viz = list(
   min = 500,
   max = 5000,
-  palette = rocket(n = 10,direction = -1)
+  palette = rocket(n = 100,direction = -1)
   )
   
 ee$Image("CGIAR/SRTM90_V4") %>%
