@@ -52,9 +52,7 @@ ee_Initialize() # Initialize gee inside R with registered account
 dataset <- ee$ImageCollection$Dataset$ECMWF_ERA5_LAND_MONTHLY
 past <- dataset$
   select("temperature_2m")$
-  filter(
-    ee$Filter$date("1992-01-01","1992-12-31")
-    )$
+  filterDate("1992-01-01","1992-12-31")$
   mean()$
   subtract(273.15)
 ```
@@ -196,4 +194,3 @@ temp_map
 ```{r, eval= FALSE}
 tmap_save(temp_map,"temp_map.png",width = 6,height = 3)
 ```
-

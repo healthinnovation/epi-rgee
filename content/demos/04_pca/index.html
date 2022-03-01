@@ -157,7 +157,8 @@ stack_evironment &lt;- ee$Image(
     scale = 30,
     nvar = 5
   )$select(sprintf(&quot;pc%1$s&quot;, 1:5))
-Map$addLayer(PCA,visParams = list(&quot;PC1&quot;,&quot;PC2&quot;,&quot;PC3&quot;))</code></pre>
+Map$centerObject(sandiego)
+Map$addLayer(PCA,visParams = list(bands=c(&quot;pc1&quot;,&quot;pc2&quot;,&quot;pc3&quot;)))</code></pre>
 <center>
 <img src="https://user-images.githubusercontent.com/23284899/154719983-f3eb638b-0b32-4c3b-bbd6-eccdd812850e.png" width="100%">
 </center>
@@ -248,12 +249,12 @@ $sum_min
 <pre class="r"><code>viz &lt;- list(
   min = -0.6983301 ,
   max = 0.9375844,
-  palette = cpt(&quot;es_landscape_es_landscape_01&quot;)
+  palette = cpt(&quot;mpl_viridis&quot;)
 )
 
 Map$addLayer(index,visParams = viz) + 
   Map$addLegend(visParams = viz,name = &quot;Environment index&quot;)</code></pre>
 <center>
-<img src="https://user-images.githubusercontent.com/23284899/154721611-e4580a56-53da-4f60-b3ef-f54ec9b82b99.png" width="100%">
+<img src="https://user-images.githubusercontent.com/23284899/156098219-04ec7105-4e2b-461b-9159-855017d4681c.png" width="100%">
 </center>
 </div>

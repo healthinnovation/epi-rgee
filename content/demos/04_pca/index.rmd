@@ -158,7 +158,8 @@ PCA <-
     scale = 30,
     nvar = 5
   )$select(sprintf("pc%1$s", 1:5))
-Map$addLayer(PCA,visParams = list("PC1","PC2","PC3"))
+Map$centerObject(sandiego)
+Map$addLayer(PCA,visParams = list(bands=c("pc1","pc2","pc3")))
 ```
 
 <center>
@@ -270,12 +271,15 @@ $sum_min
 viz <- list(
   min = -0.6983301 ,
   max = 0.9375844,
-  palette = cpt("es_landscape_es_landscape_01")
+  palette = cpt("mpl_viridis")
 )
 
 Map$addLayer(index,visParams = viz) + 
   Map$addLegend(visParams = viz,name = "Environment index")
 ```
 <center>
-   <img src="https://user-images.githubusercontent.com/23284899/154721611-e4580a56-53da-4f60-b3ef-f54ec9b82b99.png" width="100%">
+   <img src="https://user-images.githubusercontent.com/23284899/156098219-04ec7105-4e2b-461b-9159-855017d4681c.png" width="100%">
 </center>
+
+
+
