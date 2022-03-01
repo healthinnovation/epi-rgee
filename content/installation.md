@@ -1,5 +1,5 @@
 ---
-author: Gabriel Carrasco y Antony Barja
+author: Gabriel Carrasco and Antony Barja
 date: "2019-03-10"
 description: Installation of rgee step by step in the differents Operative System
 tags:
@@ -7,23 +7,21 @@ tags:
 title: Installation of rgee
 ---
 
-In this post, you going to learn to install rgee in the different Operative Systems steps by steps. Remind is necessary to have previously install R, Rtools and Rstudio in your desktop, here in the following video show the steps to be taken for a proper installation.
+In this section, you're going to learn to how to install rgee step by step for different Operating Systems. Remember it's necessary to have previously installed R, Rtools, and Rstudio in your desktop.
 
 ---
 
 <img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
 
-- _Rtools only is necesarry for the Operative Systen Windows._
+- _Rtools is only necessary for Windows OS users. You can download Rtools [here 📥.](https://cran.r-project.org/bin/windows/Rtools/rtools40.html)_
 
 ---
 
-<center><iframe width="90%" height="350" src="https://www.youtube.com/embed/h2IPWVXaUuU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></center>
-
 </br>
 
-### 🔴 **1. rgee in a Linux distribution**
+### 🔴 **1. Installation on a Linux distribution**
 
-For a distribution like **Ubuntu** and theirs derivatives is necesarry to have set-up and installed some dependences of spatial libs our Operative System. The following bash commands should install key geographic R packages on **Ubuntu 20.10**.
+For a distribution like **Ubuntu** and its derivatives, you must have set up and installed some dependencies of spatial libs in your Operative System. The following bash commands should install key geographic R packages on **Ubuntu 20.10**.
 
 ```
 # install system dependencies:
@@ -33,7 +31,7 @@ sudo apt install libudunits2-dev libgdal-dev libgeos-dev libproj-dev libfontconf
 sudo apt install r-cran-rgee r-cran-geojsonio
 ```
 
-For a distribution like **Manajaro, Archilinux o derivatives**, the installation is using the following bash commands
+For a distribution like **Manajaro, Archilinux or derivatives**, the installation uses the following bash commands
 
 ```
 # install system dependencies:
@@ -51,11 +49,11 @@ install.packages("rgee")
 install.packages("geojsonio")
 ```
 
-**Set-up of rgee and register of credentiales**
+**rgee set up and registration of credentials**
 
-rgee depends on the Python packages **numpy** and **ee**, for its installation there are two methods, however we have used the most recommended way for new users without experience in handling the Python virtual environment.
+rgee depends on the Python packages **numpy** and **ee** for its installation. There are two methods for this, and we will explain the most recommended way for new users without experience handling the Python virtual environment.
 
-For the installation of rgee dependences use for once only, the following function:
+For the installation of rgee dependencies, use the following function (this function can only be used once):
 
 ```{r, eval = FALSE}
 rgee::install_ee()
@@ -67,17 +65,15 @@ rgee::install_ee()
  </video>
 </center>
 
-After of the installation of the rgee dependences is necessary to have a registered acount on [Google Earth Engine]().
-
----
+After the installation of the rgee dependencies, you need to have a registered account on [Google Earth Engine](https://earthengine.google.com/).
 
 <img src="https://user-images.githubusercontent.com/23284899/151848117-90f4dcfc-13cb-413c-9802-0207e84f2c9f.png" width="25px" align="center"><b> Observation:</b>
 
-- _For register on Google Earth Engine only is necesarry to have a acount of gmail and answer short questions._
+- _To register on Google Earth Engine, you only need a gmail account and to answer a few short questions._
 
 ---
 
-Finally with your acount of gmail registered, you can authenticate and initialize in the Earth Engine R API.
+Finally, with your verified gmail account, you can authenticate and initialize the Earth Engine R API.
 
 <center>
  <video controls width="100%">
@@ -86,10 +82,10 @@ Finally with your acount of gmail registered, you can authenticate and initializ
 </center>
 <br>
 
-### 🔴 **2. Instalacion on Windows**
+### 🔴 **2. Installation on Windows**
 
-On windows the installation of rgee is accessible, but you need to have installed **miniconda** or **anaconda**, remind that rgee uses **python3**.
-For a perfect installation on Windows is necessary activate the reticulate library in your R sesion together rgee.
+On windows, the rgee installation is accessible, but you need to have **miniconda** or **anaconda** previously installed. To use the rgee package, you must have **python3** installed.
+For a perfect installation on Windows, activate the reticulate library in your R session, and then activate rgee.
 
 ```{r,eval = FALSE}
 # Installation of rgee and geojsonio:
@@ -103,7 +99,7 @@ library(rgee)
 library(reticulate)
 ```
 
-The <mark style="background-color: blue;color:white;">py_discover_config()</mark> function of reticulate package we allow to know the version of python that will to be used for the installation of Packages **numpy** and **ee**.
+The <mark style="background-color: blue;color:white;">py_discover_config()</mark> function of the reticulate package will allow you to know which version of python will be used for the installation of **numpy** and **ee** libraries.
 
 ```
 > py_discover_config()
@@ -124,7 +120,7 @@ numpy_version:  1.20.3
 
 ---
 
-Having identified the python version, the next step is to set the path as the new Python environment for rgee, for this we use the following function <mark style="background-color: blue;color:white;">use_python("PUT-HERE-THE-PYTHON3-VERSION-PATH")<mark>
+After identifying the python version, the next step is to set the path for the new Python environment for rgee, for this you can use the following function <mark style="background-color: blue;color:white;">use_python("PUT-HERE-THE-PYTHON3-VERSION-PATH")</mark>
 
 ```
 use_python("C:/Users/Windows 10/anaconda3/python.exe")
@@ -154,12 +150,12 @@ Finally, we set up our rgee environment, install the necessary python dependenci
 <img src="https://user-images.githubusercontent.com/23284899/151892441-1ed646ea-763a-4ac4-98cb-6750a07934bc.png" width="100%">
 </center>
 <br>
-Then initialise Google Earth Engine from R and save our credentials.
+
+Then initialize Google Earth Engine from R and save your credentials.
 
 ```
 ee_Initialize("GMAIL_ACCOUNT",drive = TRUE)
 ```
-
 
 <center>
 <img src="https://user-images.githubusercontent.com/23284899/151892339-0b02eddb-4ce9-451e-bf82-7f7a43c09022.png" width="100%">
@@ -180,7 +176,7 @@ ee_Initialize("GMAIL_ACCOUNT",drive = TRUE)
 
 ### 🔴 **3. Instalacion on Mac OS**
 
-Installation on Mac OS is very similar to a GNU/Linux distribution, in the following code section, we share the codes and some screenshots of some key points to consider.
+Installation on Mac OS is very similar to a GNU/Linux distribution. In the following code section, you'll find the codes and some screenshots of some key points to consider.
 
 ---
 
@@ -192,11 +188,8 @@ Installation on Mac OS is very similar to a GNU/Linux distribution, in the follo
 library(remotes)
 install_github("r-spatial/rgee")
 ```
+
 ---
-
-
-
-
 
 ```{r, eval=FALSE}
 # Installation of rgee and geojsonio:
@@ -216,11 +209,13 @@ rgee::install_ee()
 <img src="https://user-images.githubusercontent.com/23284899/152569946-5c264487-b132-4e8a-af37-8e2dfb5434dc.png" width="100%">
 </center>
 <br>
-Then initialise Google Earth Engine from R and save our credentials.
+
+Initialize Google Earth Engine from R and save your credentials.
 
 ```
 ee_Initialize("GMAIL_ACCOUNT",drive = TRUE)
 ```
+
 <center>
 <img src="https://user-images.githubusercontent.com/23284899/152569973-c55e9633-6b7a-4217-ad7f-c9a9d056e9ad.png" width="100%">
 </center>
@@ -237,3 +232,35 @@ ee_Initialize("GMAIL_ACCOUNT",drive = TRUE)
 <img src="https://user-images.githubusercontent.com/23284899/152570578-87421f32-638a-4be9-a658-bb6dffbe2d69.png" width="100%">
 </center>
 <br>
+
+### 🔴 **4. Additional packages**
+
+```{r , eval=FALSE}
+pkgs <- c("tmap","mapview","ggspatial","viridis","cptcity","raster","sf",
+          "stars","geojsonio","tidyverse","patchwork","lubridate")
+install.packages(pkgs)
+```
+
+- tmap: <https://github.com/r-tmap/tmap>
+
+- mapview: <https://github.com/r-spatial/mapview>
+
+- ggspatial: <https://github.com/paleolimbot/ggspatial>
+
+- viridis: <https://github.com/sjmgarnier/viridis>
+
+- cptcity: <https://github.com/ibarraespinosa/cptcity>
+
+- raster: <https://github.com/rspatial/raster>
+
+- sf: <https://github.com/r-spatial/sf>
+
+- stars: <https://github.com/r-spatial/stars>
+
+- geojsonio: <https://github.com/ropensci/geojsonio>
+
+- tidyverse: <https://github.com/tidyverse/tidyverse>
+
+- patchwork: <https://github.com/thomasp85/patchwork>
+
+- lubridate: <https://github.com/tidyverse/lubridate>
