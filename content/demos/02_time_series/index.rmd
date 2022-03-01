@@ -20,7 +20,15 @@ library(rgee)
 library(sf)  
 library(tidyverse)
 library(lubridate)
-ee_Initialize(quiet = TRUE)
+ee_Initialize()
+```
+
+```
+── rgee 1.1.2.9000 ──────────────── earthengine-api 0.1.297 ── 
+ ✓ user: not_defined
+ ✓ Initializing Google Earth Engine:  DONE!
+ ✓ Earth Engine account: users/antonybarja8 
+────────────────────────────────────────────────────────────── 
 ```
 
 #### 3.2 Reading vector layer of study area
