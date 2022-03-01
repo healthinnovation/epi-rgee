@@ -9,7 +9,7 @@ A set of examples of `rgee` for the extraction and processing of remote sensing 
 
 ### Table of contents : 
  
- 1. [Zonal statistics in continuous data](https://epi-rgee.netlify.app/demos/01_continuous_data/)     
+ 1. [Zonal statistics with continuous data](https://epi-rgee.netlify.app/demos/01_continuous_data/)     
   
  2. [Extraction of a large time series of meteorological variables](https://epi-rgee.netlify.app/demos/02_time_series/)
  
