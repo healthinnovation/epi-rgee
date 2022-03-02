@@ -48,6 +48,13 @@
   name = "Guide for rgee"
   url = "http://amazeone.com.br/barebra/pandora/rgeebookT1eng.pdf"
 
+[[main]]
+  parent = "Links"
+  name = "Cheatsheet"
+  url = "https://github.com/r-earthengine/cheatsheet/blob/master/pdf/rgee.pdf"
+
+
+
 # social menu links
 
 [[social]]

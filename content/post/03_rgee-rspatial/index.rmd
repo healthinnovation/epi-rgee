@@ -24,10 +24,10 @@ and it is precisely in this aspect that the rgee package aims to work and be par
 to process large spatial datasets in an accessible and user-friendly way hand in hand 
 with the integration of the spatial universe of R packages.
 
-### Mapping the past temperature 
+### Mapping the past temperature and the current vegetation index 
 
 For this example, we use the ERA5-Land dataset,  a reanalysis dataset providing a consistent view of the evolution of
-land variables over several decades at an enhanced resolution compared to ERA5, more information [click here.](https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY)
+land variables over several decades at an enhanced resolution compared to ERA5, more information [click here.](https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY) together MOD13A1 V6 product provides a Vegetation Index, more information [click here.](https://developers.google.com/earth-engine/datasets/catalog/MODIS_006_MOD13A1) 
 
 
 ---
@@ -56,6 +56,7 @@ past <- dataset$
   mean()$
   subtract(273.15)
 ```
+
 #### 3.3 Simple visualization  
 ```{r,out.width="100%"}
 viz <- list(
@@ -63,13 +64,10 @@ viz <- list(
   max = 25,
   palette = magma(n = 100)
   )
-Map$addLayer(past,visParams = viz) + 
-  Map$addLegend(visParams = viz,name = "Tem[C°]")
+temp <- Map$addLayer(past,visParams = viz) + 
+  Map$addLegend(visParams = viz,name = "Tem[C°]",position = "bottomleft")
+temp
 ```
-
-<!-- <center> -->
-<!--  <img src="https://user-images.githubusercontent.com/23284899/152621719-c5e1656a-3bdb-40a2-8ac5-12d76cef7f1c.png" width="100%"> -->
-<!-- </center> -->
 
 
 #### 3.4 Define box to study area 
@@ -89,6 +87,7 @@ geometry <- ee$Geometry$Rectangle(
   scale = 500*1000)$
   getInfo())
 ```
+
 ```
 $temperature_2m_max
 [1] 29.68718
@@ -96,7 +95,6 @@ $temperature_2m_max
 $temperature_2m_min
 [1] -53.14849
 ```
-
 
 #### 3.6 Generate a thumbnail image in a rasterlayer or stars format  
 ```{r, eval= FALSE}
@@ -128,12 +126,12 @@ map <-  world_temp %>%
   mask(World) 
 ```
 
-
 ### 3.8 Exploration raster data
 
 ```{r, eval=FALSE}
 mapview(map)
 ```
+
 
 ```{r eval = TRUE, echo=FALSE,warning=FALSE,message=FALSE, out.width="100%"}
 library(leaflet)
@@ -194,3 +192,42 @@ temp_map
 ```{r, eval= FALSE}
 tmap_save(temp_map,"temp_map.png",width = 6,height = 3)
 ```
+
+#### 3.11 Mapping of the current vegetation index
+
+```{r}
+# Processing data with rgee
+dataset <- ee$ImageCollection$Dataset$MODIS_006_MYD13Q1
+current <- dataset$
+  select("NDVI")$
+  filterDate("2022-01-01","2022-01-31")$
+  max()$
+  multiply(0.0001)
+```
+
+#### 3.12 Simple visualization  
+```{r,out.width="100%"}
+viz <- list(
+  min = -0.5 ,
+  max = 0.87,
+  palette = viridis(n = 100)
+  )
+ndvi <- Map$addLayer(current,visParams = viz) + 
+  Map$addLegend(visParams = viz,name = "NDVI")
+ndvi
+```
+### 3.13 Comparison between global NDVI and global temperature
+
+```{r,out.width="100%",eval=FALSE}
+temp | ndvi
+```
+
+<center>
+ <img src="https://user-images.githubusercontent.com/23284899/156390954-3ae5d18e-b2c0-4d70-a80e-df87390b16b2.png" width="100%">
+</center>
+
+
+
+
+
+
