@@ -225,9 +225,3 @@ temp | ndvi
 <center>
  <img src="https://user-images.githubusercontent.com/23284899/156390954-3ae5d18e-b2c0-4d70-a80e-df87390b16b2.png" width="100%">
 </center>
-
-
-
-
-
-
