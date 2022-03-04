@@ -56,7 +56,7 @@ rgee depends on the Python packages **numpy** and **ee** for its installation. T
 For the installation of rgee dependencies, use the following function (this function can only be used once):
 
 ```{r, eval = FALSE}
-rgee::install_ee()
+rgee::ee_install()
 ```
 
 <center>
@@ -199,7 +199,7 @@ install.packages("geojsonio")
 
 ```{r, eval = FALSE}
 # Installation of Python dependence libraries:
-rgee::install_ee()
+rgee::ee_install()
 ```
 
 <center>
