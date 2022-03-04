@@ -49,8 +49,8 @@ ee_Initialize() # Initialize gee inside R with registered account
 
 #### 3.2 Processing data with rgee
 ```{r}
-dataset <- ee$ImageCollection$Dataset$ECMWF_ERA5_LAND_MONTHLY
-past <- dataset$
+r_temp <- ee$ImageCollection$Dataset$ECMWF_ERA5_LAND_MONTHLY
+ee_temp <- r_temp$
   select("temperature_2m")$
   filterDate("1992-01-01","1992-12-31")$
   mean()$
@@ -59,13 +59,13 @@ past <- dataset$
 
 #### 3.3 Simple visualization  
 ```{r,out.width="100%"}
-viz <- list(
+viz_temp <- list(
   min = 5,
   max = 25,
   palette = magma(n = 100)
   )
-temp <- Map$addLayer(past,visParams = viz) + 
-  Map$addLegend(visParams = viz,name = "Tem[C°]",position = "bottomleft")
+temp <- Map$addLayer(ee_temp, visParams = viz_temp) + 
+  Map$addLegend(visParams = viz_temp,name = "Tem[C°]",position = "bottomleft")
 temp
 ```
 
@@ -81,7 +81,7 @@ geometry <- ee$Geometry$Rectangle(
 ```
 #### 3.5 Identifying min and max values of temperature
 ```{r, eval= FALSE}
-(minmax <- past$reduceRegion(
+(minmax <- ee_temp$reduceRegion(
   reducer = ee$Reducer$minMax(),
   geometry = geometry,
   scale = 500*1000)$
@@ -99,7 +99,7 @@ $temperature_2m_min
 #### 3.6 Generate a thumbnail image in a rasterlayer or stars format  
 ```{r, eval= FALSE}
 world_temp <- ee_as_thumbnail(
-  image = past,        # Image to export
+  image = ee_temp,     # Image to export
   region = geometry,   # Region of interest
   dimensions = 1024,   # output dimension
   raster = TRUE,       # If FALSE returns a stars object. FALSE by default
@@ -197,8 +197,8 @@ tmap_save(temp_map,"temp_map.png",width = 6,height = 3)
 
 ```{r}
 # Processing data with rgee
-dataset <- ee$ImageCollection$Dataset$MODIS_006_MYD13Q1
-current <- dataset$
+r_ndvi <- ee$ImageCollection$Dataset$MODIS_006_MYD13Q1
+ee_ndvi <- r_ndvi$
   select("NDVI")$
   filterDate("2022-01-01","2022-01-31")$
   max()$
@@ -207,13 +207,13 @@ current <- dataset$
 
 #### 3.12 Simple visualization  
 ```{r,out.width="100%"}
-viz <- list(
+viz_ndvi <- list(
   min = -0.5 ,
   max = 0.87,
   palette = viridis(n = 100)
   )
-ndvi <- Map$addLayer(current,visParams = viz) + 
-  Map$addLegend(visParams = viz,name = "NDVI")
+ndvi <- Map$addLayer(ee_ndvi,visParams = viz_ndvi) + 
+  Map$addLegend(visParams = viz_ndvi,name = "NDVI")
 ndvi
 ```
 ### 3.13 Comparison between global NDVI and global temperature
