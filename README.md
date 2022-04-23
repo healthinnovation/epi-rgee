@@ -53,7 +53,7 @@ In this workshop you will learn how to use rgee in the spatial analysis of epide
   </tr>
 
   <tr align="center">
-    <td>Assistant Professor in Epidemiology at the School of Public Health and Associate Researcher at the Institute of Tropical Medicine “Alexander von Humboldt”, Universidad Peruana Cayetano Heredia (UPCH)</td>
+    <td>Assistant Professor in Epidemiology at the School of Public Health.</td>
     <td>Data analyst of Health Innovation Lab - Universidad Peruana Cayetano Heredia (UPCH)</td>
   </tr>
 
