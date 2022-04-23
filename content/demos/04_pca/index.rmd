@@ -5,7 +5,6 @@ date: 2020-12-01
 tags: ["pca"]
 ---
 
-
 The objective of this demo is to create a new environment index from the analysis of the principal 
 components of multiple variables in the city of [San Diego](https://es.wikipedia.org/wiki/Lima_Metropolitana), 
 the dataset used is:
