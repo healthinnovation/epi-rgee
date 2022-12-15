@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>rgee on Epi &amp; rgee</title>
+    <link>https://epi-rgee.netlify.app/tags/rgee/</link>
+    <description>Recent content in rgee on Epi &amp; rgee</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <copyright>Copyright © 2022, Antony Barja; all rights reserved.</copyright>
+    <lastBuildDate>Thu, 15 Dec 2022 07:52:47 +0000</lastBuildDate><atom:link href="https://epi-rgee.netlify.app/tags/rgee/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2. Google Earth Engine for R</title>
+      <link>https://epi-rgee.netlify.app/post/02_gee_for_r/</link>
+      <pubDate>Thu, 15 Dec 2022 07:52:47 +0000</pubDate>
+      
+      <guid>https://epi-rgee.netlify.app/post/02_gee_for_r/</guid>
+      <description>
+        
+          
+&lt;script src=&#34;https://epi-rgee.netlify.app/post/02_gee_for_r/index_files/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;https://epi-rgee.netlify.app/post/02_gee_for_r/index_files/jquery/jquery.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;https://epi-rgee.netlify.app/post/02_gee_for_r/index_files/leaflet/leaflet.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;https://epi-rgee.netlify.app/post/02_gee_for_r/index_files/leaflet/leaflet.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;https://epi-rgee.netlify.app/post/02_gee_for_r/index_files/leafletfix/leafletfix.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;https://epi-rgee.netlify.app/post/02_gee_for_r/index_files/proj4/proj4.min.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;https://epi-rgee.netlify.app/post/02_gee_for_r/index_files/Proj4Leaflet/proj4leaflet.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;https://epi-rgee.netlify.app/post/02_gee_for_r/index_files/rstudio_leaflet/rstudio_leaflet.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;https://epi-rgee.netlify.app/post/02_gee_for_r/index_files/leaflet-binding/leaflet.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;https://epi-rgee.netlify.app/post/02_gee_for_r/index_files/leaflet-providers/leaflet-providers_1.9.0.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;https://epi-rgee.netlify.app/post/02_gee_for_r/index_files/leaflet-providers-plugin/leaflet-providers-plugin.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;https://epi-rgee.netlify.app/post/02_gee_for_r/index_files/clipboard/setClipboardText.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;introduction&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;2.1 Introduction&lt;/h3&gt;
+&lt;p&gt;Google Earth Engine is a cloud-based platform that allows both expert and non-expert users to access and run a large, planetary-scale remote sensing dataset in a matter of minutes.&lt;/p&gt;
+&lt;p&gt;Currently Google Earth Engine has JavaScript and Python as its official client libraries; however rgee is a new alternative that allows this same Google potential to be integrated within R.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;why-rgee-instead-of-javascript-or-python&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;2.2 Why rgee instead of Javascript or Python?&lt;/h3&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;th&gt;
+JS (Code Editor)
+&lt;/th&gt;
+&lt;th&gt;
+Python
+&lt;/th&gt;
+&lt;th&gt;
+R
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;pre class=&#34;javascript&#34;&gt;&lt;code&gt;var db = &amp;#39;CGIAR/SRTM90_V4&amp;#39;
+var image = ee.Image(db)
+print(image.bandNames())
+#&amp;gt; &amp;#39;elevation&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;/td&gt;
+&lt;td&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;import ee
+ee.Initialize()
+db = &amp;#39;CGIAR/SRTM90_V4&amp;#39;
+image = ee.Image(db)
+image.bandNames().getInfo()
+#&amp;gt; [u&amp;#39;elevation&amp;#39;]&lt;/code&gt;&lt;/pre&gt;
+&lt;/td&gt;
+&lt;td&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rgee)
+ee_Initialize()
+db &amp;lt;- &amp;#39;CGIAR/SRTM90_V4&amp;#39;
+image &amp;lt;- ee$Image(db)
+image$bandNames()$getInfo()
+#&amp;gt; [1] &amp;quot;elevation&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;ul&gt;
+&lt;li&gt;The syntax is shorter and understandable for users with little programming experience.&lt;/li&gt;
+&lt;li&gt;It allows the integration of the R spatial ecosystem.&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;Application development is easier and more accessible thanks to the integration of flexdashboard and shiny.&lt;/li&gt;
+&lt;li&gt;Easy sharing of reproducible code.&lt;/li&gt;
+&lt;li&gt;API more friendly and intuitive to R users.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;installation&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;2.3 Installation 📥&lt;/h3&gt;
+&lt;p&gt;In the menu bar, you’ll find the &lt;a href=&#34;https://epi-rgee.netlify.app/installation/&#34;&gt;installation&lt;/a&gt; tab, where you’ll learn how to instal step by step rgee in different Operating Systems.
+Beforehand, you need to install some spatial dependencies in your OS. Use the following Bash commands.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# install system dependencies:
+sudo apt install libudunits2-dev libgdal-dev libgeos-dev libproj-dev libfontconfig1-dev libjq-dev libprotobuf-dev protobuf-compiler
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Once the dependencies are installed, you may proceed to install rgee inside R.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# binary versions of key R packages:
+sudo apt install r-cran-rgee r-cran-geojsonio&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;&lt;img src=&#34;https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png&#34; width=&#34;25px&#34; align=&#34;center&#34;&gt;&lt;b&gt; Information:&lt;/b&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;- You must have installed &lt;em&gt;geojsonio to work with some rgee functions like &lt;mark&gt;sf_as_ee&lt;/mark&gt;.&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;rgee depends on some Python libraries like numpy and the earth engine api.
+All this is automatically installed using the following function:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rgee::ee_install()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You need to restart the R session to verify the installation.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rgee)
+ee_check()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;◉  Python version
+✓ [Ok] /home/ambarja/.virtualenvs/rgee/bin/python v3.8
+◉  Python packages:
+✓ [Ok] numpy
+✓ [Ok] earthengine-api
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;authentication&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;2.4 Authentication 🔐&lt;/h3&gt;
+&lt;p&gt;When working with Google Earth Engine you need to register your credentials to move data from Google Drive and Google Cloud Storage to your desktop. These dependencies are not mandatory, but are available within rgee.
+rgee allows you to work with the three google API’S. These are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Google Earth Engine&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Google Drive&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Google Cloud Storage&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To authenticate/initialize either Google Drive or Google Cloud Storage, you just need to run:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rgee)
+#ee_reattach() # reattach ee as a reserve word
+# Initialize just Earth Engine
+ee_Initialize() 
+ee_Initialize(user = &amp;#39;user_name@gmail.com&amp;#39;) # Use the argument email is not mandatory, but it&amp;#39;s helpful to change of EE user.
+# Initialize Earth Engine and GD
+ee_Initialize(user = &amp;#39;user_name@gmail.com&amp;#39;, drive = TRUE)
+# Initialize Earth Engine and GCS
+ee_Initialize(user = &amp;#39;user_name@gmail.com&amp;#39;, gcs = TRUE)
+# Initialize Earth Engine, GD and GCS
+ee_Initialize(user = &amp;#39;user_name@gmail.com&amp;#39;, drive = TRUE, gcs = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If the Google account is verified and the permission is granted, you will be directed to an authentication token. Copy this token and paste it in your R console. Unlike Earth Engine and Google Drive, Google Cloud Storage needs to set up its credential manually (&lt;a href=&#34;https://code.markedmondson.me/googleCloudStorageR/articles/googleCloudStorageR.html&#34;&gt;link1&lt;/a&gt; and &lt;a href=&#34;https://github.com/r-spatial/rgee/tree/help/gcs/&#34;&gt;link2&lt;/a&gt;). In all cases, the user’s credentials will be stored in:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ee_get_earthengine_path()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You only have to authorize it once, it will not be necessary for future sessions.&lt;/p&gt;
+&lt;p&gt;More information, please click &lt;a href=&#34;https://r-spatial.github.io/rgee/articles/rgee01.html#authentication&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;hello-spatial-world&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;2.5 Hello spatial world 🌎&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rgee)
+ee_Initialize()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;── rgee 1.1.2 ───────────────────────────── earthengine-api 0.1.292 ── 
+ ✓ user: not_defined
+ ✓ Initializing Google Earth Engine:  DONE!
+ ✓ Earth Engine account: users/ambarja 
+────────────────────────────────────────────────────────────────────── &lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# traditional R character
+print(&amp;quot;Hello spatial world!&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;[1] &amp;quot;Hello world!&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Earth Engine Pipes Style
+ee$String(&amp;quot;Hello World from Earth Engine!&amp;quot;)$getInfo()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;[1] &amp;quot;Hello World from Earth Engine!&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Viewing elevation data (pipe integration)&lt;/strong&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rgee)
+library(viridis)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: viridisLite&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ee_Initialize()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## ── rgee 1.1.5 ─────────────────────────────────────── earthengine-api 0.1.334 ── 
+##  ✔ user: not_defined
+##  ✔ Initializing Google Earth Engine:
+ ✔ Initializing Google Earth Engine:  DONE!
+## 
+ ✔ Earth Engine account: users/ambarja 
+## ────────────────────────────────────────────────────────────────────────────────&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;viz = list(
+  min = 500,
+  max = 5000,
+  palette = rocket(n = 100,direction = -1)
+  )
+  
+ee$Image(&amp;quot;CGIAR/SRTM90_V4&amp;quot;) %&amp;gt;%
+  Map$addLayer(name = &amp;quot;Elevation&amp;quot;,visParams = viz) + 
+  Map$addLegend(visParams = viz, name = &amp;quot;Elevation&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;leaflet html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;options&#34;:{&#34;minZoom&#34;:1,&#34;maxZoom&#34;:24,&#34;crs&#34;:{&#34;crsClass&#34;:&#34;L.CRS.EPSG3857&#34;,&#34;code&#34;:null,&#34;proj4def&#34;:null,&#34;projectedBounds&#34;:null,&#34;options&#34;:{}},&#34;preferCanvas&#34;:false,&#34;bounceAtZoomLimits&#34;:false,&#34;maxBounds&#34;:[[[-90,-370]],[[90,370]]]},&#34;calls&#34;:[{&#34;method&#34;:&#34;addProviderTiles&#34;,&#34;args&#34;:[&#34;CartoDB.Positron&#34;,&#34;CartoDB.Positron&#34;,&#34;CartoDB.Positron&#34;,{&#34;errorTileUrl&#34;:&#34;&#34;,&#34;noWrap&#34;:false,&#34;detectRetina&#34;:false,&#34;pane&#34;:&#34;tilePane&#34;,&#34;maxZoom&#34;:24}]},{&#34;method&#34;:&#34;addProviderTiles&#34;,&#34;args&#34;:[&#34;OpenStreetMap&#34;,&#34;OpenStreetMap&#34;,&#34;OpenStreetMap&#34;,{&#34;errorTileUrl&#34;:&#34;&#34;,&#34;noWrap&#34;:false,&#34;detectRetina&#34;:false,&#34;pane&#34;:&#34;tilePane&#34;,&#34;maxZoom&#34;:24}]},{&#34;method&#34;:&#34;addProviderTiles&#34;,&#34;args&#34;:[&#34;CartoDB.DarkMatter&#34;,&#34;CartoDB.DarkMatter&#34;,&#34;CartoDB.DarkMatter&#34;,{&#34;errorTileUrl&#34;:&#34;&#34;,&#34;noWrap&#34;:false,&#34;detectRetina&#34;:false,&#34;pane&#34;:&#34;tilePane&#34;,&#34;maxZoom&#34;:24}]},{&#34;method&#34;:&#34;addProviderTiles&#34;,&#34;args&#34;:[&#34;Esri.WorldImagery&#34;,&#34;Esri.WorldImagery&#34;,&#34;Esri.WorldImagery&#34;,{&#34;errorTileUrl&#34;:&#34;&#34;,&#34;noWrap&#34;:false,&#34;detectRetina&#34;:false,&#34;pane&#34;:&#34;tilePane&#34;,&#34;maxZoom&#34;:24}]},{&#34;method&#34;:&#34;addProviderTiles&#34;,&#34;args&#34;:[&#34;OpenTopoMap&#34;,&#34;OpenTopoMap&#34;,&#34;OpenTopoMap&#34;,{&#34;errorTileUrl&#34;:&#34;&#34;,&#34;noWrap&#34;:false,&#34;detectRetina&#34;:false,&#34;pane&#34;:&#34;tilePane&#34;,&#34;maxZoom&#34;:24}]},{&#34;method&#34;:&#34;addLayersControl&#34;,&#34;args&#34;:[[&#34;CartoDB.Positron&#34;,&#34;OpenStreetMap&#34;,&#34;CartoDB.DarkMatter&#34;,&#34;Esri.WorldImagery&#34;,&#34;OpenTopoMap&#34;],[],{&#34;collapsed&#34;:true,&#34;autoZIndex&#34;:true,&#34;position&#34;:&#34;topleft&#34;}]},{&#34;method&#34;:&#34;addScaleBar&#34;,&#34;args&#34;:[{&#34;maxWidth&#34;:100,&#34;metric&#34;:true,&#34;imperial&#34;:true,&#34;updateWhenIdle&#34;:true,&#34;position&#34;:&#34;bottomleft&#34;}]},{&#34;method&#34;:&#34;addTiles&#34;,&#34;args&#34;:[&#34;https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/c4d158a5d9dc7befd6d55a220de5b101-766169ce0c0bfcba844dd12d2fe52a02/tiles/{z}/{x}/{y}&#34;,&#34;Elevation&#34;,&#34;Elevation&#34;,{&#34;minZoom&#34;:0,&#34;maxZoom&#34;:24,&#34;tileSize&#34;:256,&#34;subdomains&#34;:&#34;abc&#34;,&#34;errorTileUrl&#34;:&#34;&#34;,&#34;tms&#34;:false,&#34;noWrap&#34;:false,&#34;zoomOffset&#34;:0,&#34;zoomReverse&#34;:false,&#34;opacity&#34;:1,&#34;zIndex&#34;:1,&#34;detectRetina&#34;:false}]},{&#34;method&#34;:&#34;addLayersControl&#34;,&#34;args&#34;:[[&#34;CartoDB.Positron&#34;,&#34;OpenStreetMap&#34;,&#34;CartoDB.DarkMatter&#34;,&#34;Esri.WorldImagery&#34;,&#34;OpenTopoMap&#34;],&#34;Elevation&#34;,{&#34;collapsed&#34;:true,&#34;autoZIndex&#34;:true,&#34;position&#34;:&#34;topleft&#34;}]},{&#34;method&#34;:&#34;hideGroup&#34;,&#34;args&#34;:[null]},{&#34;method&#34;:&#34;addLegend&#34;,&#34;args&#34;:[{&#34;colors&#34;:[&#34;#FAEBDD , #FAEBDD 0%, #F6C09E 11.1111111111111%, #F5936A 22.2222222222222%, #F06043 33.3333333333333%, #DD2C45 44.4444444444444%, #B41658 55.5555555555556%, #841E5A 66.6666666666667%, #551E4F 77.7777777777778%, #2A1636 88.8888888888889%, #03051A 100%, #03051A &#34;],&#34;labels&#34;:[&#34;500&#34;,&#34;1,000&#34;,&#34;1,500&#34;,&#34;2,000&#34;,&#34;2,500&#34;,&#34;3,000&#34;,&#34;3,500&#34;,&#34;4,000&#34;,&#34;4,500&#34;,&#34;5,000&#34;],&#34;na_color&#34;:null,&#34;na_label&#34;:&#34;NA&#34;,&#34;opacity&#34;:1,&#34;position&#34;:&#34;bottomright&#34;,&#34;type&#34;:&#34;numeric&#34;,&#34;title&#34;:&#34;Elevation&#34;,&#34;extra&#34;:{&#34;p_1&#34;:0,&#34;p_n&#34;:1},&#34;layerId&#34;:null,&#34;className&#34;:&#34;info legend&#34;,&#34;group&#34;:null}]}],&#34;setView&#34;:[[0,0],1,[]]},&#34;evals&#34;:[],&#34;jsHooks&#34;:{&#34;render&#34;:[{&#34;code&#34;:&#34;function(el, x, data) {\n  return (\n      function(el, x, data) {\n      // get the leaflet map\n      var map = this; //HTMLWidgets.find(&#39;#&#39; + el.id);\n      // we need a new div element because we have to handle\n      // the mouseover output separately\n      // debugger;\n      function addElement () {\n      // generate new div Element\n      var newDiv = $(document.createElement(&#39;div&#39;));\n      // append at end of leaflet htmlwidget container\n      $(el).append(newDiv);\n      //provide ID and style\n      newDiv.addClass(&#39;lnlt&#39;);\n      newDiv.css({\n      &#39;position&#39;: &#39;relative&#39;,\n      &#39;bottomleft&#39;:  &#39;0px&#39;,\n      &#39;background-color&#39;: &#39;rgba(255, 255, 255, 0.7)&#39;,\n      &#39;box-shadow&#39;: &#39;0 0 2px #bbb&#39;,\n      &#39;background-clip&#39;: &#39;padding-box&#39;,\n      &#39;margin&#39;: &#39;0&#39;,\n      &#39;padding-left&#39;: &#39;5px&#39;,\n      &#39;color&#39;: &#39;#333&#39;,\n      &#39;font&#39;: &#39;9px/1.5 \&#34;Helvetica Neue\&#34;, Arial, Helvetica, sans-serif&#39;,\n      &#39;z-index&#39;: &#39;700&#39;,\n      });\n      return newDiv;\n      }\n\n\n      // check for already existing lnlt class to not duplicate\n      var lnlt = $(el).find(&#39;.lnlt&#39;);\n\n      if(!lnlt.length) {\n      lnlt = addElement();\n\n      // grab the special div we generated in the beginning\n      // and put the mousmove output there\n\n      map.on(&#39;mousemove&#39;, function (e) {\n      if (e.originalEvent.ctrlKey) {\n      if (document.querySelector(&#39;.lnlt&#39;) === null) lnlt = addElement();\n      lnlt.text(\n                           &#39; lon: &#39; + (e.latlng.lng).toFixed(5) +\n                           &#39; | lat: &#39; + (e.latlng.lat).toFixed(5) +\n                           &#39; | zoom: &#39; + map.getZoom() +\n                           &#39; | x: &#39; + L.CRS.EPSG3857.project(e.latlng).x.toFixed(0) +\n                           &#39; | y: &#39; + L.CRS.EPSG3857.project(e.latlng).y.toFixed(0) +\n                           &#39; | epsg: 3857 &#39; +\n                           &#39; | proj4: +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs &#39;);\n      } else {\n      if (document.querySelector(&#39;.lnlt&#39;) === null) lnlt = addElement();\n      lnlt.text(\n                      &#39; lon: &#39; + (e.latlng.lng).toFixed(5) +\n                      &#39; | lat: &#39; + (e.latlng.lat).toFixed(5) +\n                      &#39; | zoom: &#39; + map.getZoom() + &#39; &#39;);\n      }\n      });\n\n      // remove the lnlt div when mouse leaves map\n      map.on(&#39;mouseout&#39;, function (e) {\n      var strip = document.querySelector(&#39;.lnlt&#39;);\n      if( strip !==null) strip.remove();\n      });\n\n      };\n\n      //$(el).keypress(67, function(e) {\n      map.on(&#39;preclick&#39;, function(e) {\n      if (e.originalEvent.ctrlKey) {\n      if (document.querySelector(&#39;.lnlt&#39;) === null) lnlt = addElement();\n      lnlt.text(\n                      &#39; lon: &#39; + (e.latlng.lng).toFixed(5) +\n                      &#39; | lat: &#39; + (e.latlng.lat).toFixed(5) +\n                      &#39; | zoom: &#39; + map.getZoom() + &#39; &#39;);\n      var txt = document.querySelector(&#39;.lnlt&#39;).textContent;\n      console.log(txt);\n      //txt.innerText.focus();\n      //txt.select();\n      setClipboardText(&#39;\&#34;&#39; + txt + &#39;\&#34;&#39;);\n      }\n      });\n\n      }\n      ).call(this.getMap(), el, x, data);\n}&#34;,&#34;data&#34;:null},{&#34;code&#34;:&#34;function(el, x, data) {\n  return (function(el,x,data){\n           var map = this;\n\n           map.on(&#39;keypress&#39;, function(e) {\n               console.log(e.originalEvent.code);\n               var key = e.originalEvent.code;\n               if (key === &#39;KeyE&#39;) {\n                   var bb = this.getBounds();\n                   var txt = JSON.stringify(bb);\n                   console.log(txt);\n\n                   setClipboardText(&#39;\\&#39;&#39; + txt + &#39;\\&#39;&#39;);\n               }\n           })\n        }).call(this.getMap(), el, x, data);\n}&#34;,&#34;data&#34;:null}]}}&lt;/script&gt;
+&lt;!-- &lt;center&gt; --&gt;
+&lt;!-- &lt;a href=&#34;#&#34;&gt;&lt;img src=&#34;https://user-images.githubusercontent.com/23284899/152376518-5e9d62d1-a87a-439a-b5ee-5a9a33ddea0e.png&#34; width=&#34;100%&#34;&gt;&lt;/a&gt; --&gt;
+&lt;!-- &lt;/center&gt; --&gt;
+&lt;/div&gt;
+&lt;div id=&#34;more-examples&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;2.6 More examples 📚&lt;/h3&gt;
+&lt;center&gt;
+&lt;a href=&#34;https://github.com/r-spatial/rgee/tree/examples&#34;&gt;&lt;img src=&#34;https://user-images.githubusercontent.com/23284899/152283689-c5a4c789-793a-40ac-b4b8-905007bd1764.png
+&#34; width=&#34;100%&#34;&gt;&lt;/a&gt;
+&lt;/center&gt;
+&lt;/div&gt;
+
+        
+      </description>
+    </item>
+    
+  </channel>
+</rss>

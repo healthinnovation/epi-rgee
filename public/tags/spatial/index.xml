@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>spatial on Epi &amp; rgee</title>
+    <link>https://epi-rgee.netlify.app/tags/spatial/</link>
+    <description>Recent content in spatial on Epi &amp; rgee</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <copyright>Copyright © 2022, Antony Barja; all rights reserved.</copyright>
+    <lastBuildDate>Thu, 15 Dec 2022 07:51:26 +0000</lastBuildDate><atom:link href="https://epi-rgee.netlify.app/tags/spatial/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>4. Applications in epidemiology</title>
+      <link>https://epi-rgee.netlify.app/post/04_aplication/</link>
+      <pubDate>Thu, 15 Dec 2022 07:51:26 +0000</pubDate>
+      
+      <guid>https://epi-rgee.netlify.app/post/04_aplication/</guid>
+      <description>
+        
+          
+
+
+&lt;p&gt;A set of examples of &lt;code&gt;rgee&lt;/code&gt; for the extraction and processing of remote sensing data applied to epidemiological studies is shown in the following table of contents.&lt;/p&gt;
+&lt;div id=&#34;table-of-contents&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Table of contents :&lt;/h3&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://epi-rgee.netlify.app/demos/01_continuous_data/&#34;&gt;Zonal statistics with continuous data&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://epi-rgee.netlify.app/demos/02_time_series/&#34;&gt;Extraction of a large time series of meteorological variables&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://epi-rgee.netlify.app/demos/03_discrete_data/&#34;&gt;Zonal statistics with discrete data&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://epi-rgee.netlify.app/demos/04_pca/&#34;&gt;An environmental index with a Principal Component Analysis&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+
+        
+      </description>
+    </item>
+    
+  </channel>
+</rss>

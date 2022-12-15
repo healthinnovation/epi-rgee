@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Demos on Epi &amp; rgee</title>
+    <link>https://epi-rgee.netlify.app/demos/</link>
+    <description>Recent content in Demos on Epi &amp; rgee</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <copyright>Copyright © 2022, Antony Barja; all rights reserved.</copyright>
+    <lastBuildDate>Thu, 15 Dec 2022 07:50:17 +0000</lastBuildDate><atom:link href="https://epi-rgee.netlify.app/demos/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>
