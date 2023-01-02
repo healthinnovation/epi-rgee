@@ -37,7 +37,7 @@ land variables over several decades at an enhanced resolution compared to ERA5, 
 
 
 #### 3.1 Requeriments
-```{r,message=FALSE,warning=FALSE}
+```{r,message=FALSE,warning=FALSE,eval=FALSE}
 library(rgee)
 library(tmap)
 library(raster)
@@ -46,8 +46,16 @@ library(mapview)
 ee_Initialize() # Initialize gee inside R with registered account
 ```
 
+```
+── rgee 1.1.5 ────────────────────────────────────────────────────── earthengine-api 0.1.334 ── 
+ ✔ user: not_defined
+ ✔ Initializing Google Earth Engine:  DONE!
+ ✔ Earth Engine account: users/ambarja 
+─────────────────────────────────────────────────────────────────────────────────────────────── 
+```
+
 #### 3.2 Processing data with rgee
-```{r}
+```{r,eval=FALSE}
 r_temp <- ee$ImageCollection$Dataset$ECMWF_ERA5_LAND_MONTHLY
 ee_temp <- r_temp$
   select("temperature_2m")$
@@ -57,7 +65,7 @@ ee_temp <- r_temp$
 ```
 
 #### 3.3 Simple visualization  
-```{r,out.width="100%"}
+```{r,eval=FALSE}
 viz_temp <- list(
   min = 5,
   max = 25,
@@ -68,6 +76,36 @@ temp <- Map$addLayer(ee_temp, visParams = viz_temp) +
 temp
 ```
 
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(terra)
+library(raster)
+library(leaflet)
+library(viridis)
+```
+
+```{r,message=FALSE,warning=FALSE,out.width="100%"}
+ee_temp <- raster("data/temp.tif")
+pal <- colorNumeric(palette = magma(n = 5,direction = -1), values(ee_temp),
+                    na.color = "transparent")
+leaflet() %>% 
+  addProviderTiles(provider = providers$CartoDB.Positron,group = "CartoDB.Positron") %>% 
+  addProviderTiles(provider = providers$OpenStreetMap ,group = "OpenStreetMap") %>%
+  addProviderTiles(provider = providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>%
+  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>%
+  addProviderTiles(provider = providers$OpenTopoMap,group = "OpenTopoMap") %>%
+  addRasterImage(ee_temp, colors = pal,group = "Tem[C°]") %>% 
+  addLegend(
+    pal = pal,
+    values = values(ee_temp),
+    title = "Tem[C°]",
+    position = "bottomright",
+    opacity = 1) %>% 
+  addLayersControl(
+    baseGroups = c("CartoDB.Positron","OpenStreetMap","CartoDB.DarkMatter","Esri.WorldImagery","OpenTopoMap"),
+    overlayGroups = "Tem[C°]",
+    position = "topleft")
+```
 
 #### 3.4 Define box to study area 
 ```{r, eval= FALSE}
