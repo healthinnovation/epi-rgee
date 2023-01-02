@@ -175,7 +175,7 @@ ee$String("Hello World from Earth Engine!")$getInfo()
 
 **Viewing elevation data (pipe integration)**
 
-```{r, eval = TRUE,out.width = "100%"}
+```{r, eval = FALSE}
 library(rgee)
 library(viridis)
 ee_Initialize()
@@ -194,6 +194,40 @@ ee$Image("CGIAR/SRTM90_V4") %>%
 <!-- <center> -->
 <!-- <a href="#"><img src="https://user-images.githubusercontent.com/23284899/152376518-5e9d62d1-a87a-439a-b5ee-5a9a33ddea0e.png" width="100%"></a> -->
 <!-- </center> -->
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(leaflet)
+library(raster)
+library(viridis)
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,out.width = "100%"}
+dem <- raster("data/dem.tif",)
+pal <- colorNumeric(
+  palette = rocket(n = 5,direction = -1),
+  values(dem),
+  na.color = "transparent"
+  )
+
+leaflet() %>% 
+  addProviderTiles(provider = providers$CartoDB.Positron,group = "CartoDB.Positron") %>%
+  addProviderTiles(provider = providers$OpenStreetMap ,group = "OpenStreetMap") %>%
+  addProviderTiles(provider = providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>%
+  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>%
+  addProviderTiles(provider = providers$OpenTopoMap,group = "OpenTopoMap") %>%
+  addRasterImage(dem, colors = pal,group = "Elevation") %>% 
+  addLegend(
+    pal = pal,
+    values = values(dem),
+    title = "Elevation",
+    position = "bottomright",
+    opacity = 1) %>% 
+  addLayersControl(
+    baseGroups = c("CartoDB.Positron","OpenStreetMap","CartoDB.DarkMatter","Esri.WorldImagery","OpenTopoMap"),
+    overlayGroups = "Elevation",
+    position = "topleft")
+```
+
 
 ### 2.6 More examples 📚
 <center>
