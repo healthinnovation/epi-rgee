@@ -6,55 +6,43 @@ tags: ["rspatial","tmap"]
 featured: no
 ---
 
-<center>
- <img src="https://user-images.githubusercontent.com/23284899/152370944-34183116-6abf-4b4f-b1d0-b65620bc614d.png" width="90%" heigth="80px">
-</center>
+<center><img src="https://user-images.githubusercontent.com/23284899/152370944-34183116-6abf-4b4f-b1d0-b65620bc614d.png" width="90%" heigth="80px"/></center>
 
-In recent years the R spatial community has had a big impact on big data, especially with the processing of spatial data,
-both in vector format (points, lines, polygons, etc.) and raster format (satellite images, drones, etc.).
+In recent years the R spatial community has had a big impact on big data, especially with the processing of spatial data, both in vector format (points, lines, polygons, etc.) and raster format (satellite images, drones, etc.).
 
-Nowadays, there are many packages within R spatially to work on a key aspect within spatial analysis,
-from the evaluation of a Moran test to cluster identification, geographic weighted regression, 
-pre and post processing of satellite images or drone images, among others; there is also a great 
-potential within spatial data visualizations, from simple static visualizations, to dynamic and interactive ones,
-including 3D visualizations. 
+Nowadays, there are many packages within R spatially to work on a key aspect within spatial analysis, from the evaluation of a Moran test to cluster identification, geographic weighted regression, pre and post processing of satellite images or drone images, among others; there is also a great potential within spatial data visualizations, from simple static visualizations, to dynamic and interactive ones, including 3D visualizations.
 
-However, there is a huge gap for processing large volumes of data without high computational costs, 
-and it is precisely in this aspect that the rgee package aims to work and be part of this ecosystem 
-to process large spatial datasets in an accessible and user-friendly way hand in hand 
-with the integration of the spatial universe of R packages.
+However, there is a huge gap for processing large volumes of data without high computational costs, and it is precisely in this aspect that the rgee package aims to work and be part of this ecosystem to process large spatial datasets in an accessible and user-friendly way hand in hand with the integration of the spatial universe of R packages.
 
-### Mapping the past temperature and the current vegetation index 
+### Mapping the past temperature and the current vegetation index
 
-For this example, we use the ERA5-Land dataset,  a reanalysis dataset providing a consistent view of the evolution of
-land variables over several decades at an enhanced resolution compared to ERA5, more information [click here.](https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY) together MOD13A1 V6 product provides a Vegetation Index, more information [click here.](https://developers.google.com/earth-engine/datasets/catalog/MODIS_006_MOD13A1) 
-
+For this example, we use the ERA5-Land dataset, a reanalysis dataset providing a consistent view of the evolution of land variables over several decades at an enhanced resolution compared to ERA5, more information [click here.](https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY) together MOD13A1 V6 product provides a Vegetation Index, more information [click here.](https://developers.google.com/earth-engine/datasets/catalog/MODIS_006_MOD13A1)
 
 ---
 <img src="https://user-images.githubusercontent.com/23284899/151858857-e98d6216-73be-4ffd-a95e-0b93fedbc0df.png" width="25px" align="center"><b> Information:</b>
-- For this demo you need `rgee`, `tmap`, `raster`, `viridis`, and  `mapview` packages previously installed.
+- For this demo you need `rgee`, `tmap`, `raster`, `viridis`,`cptcity` and  `mapview` packages previously installed.
 ---
 
-
 #### 3.1 Requeriments
+
 ```{r,message=FALSE,warning=FALSE,eval=FALSE}
 library(rgee)
 library(tmap)
 library(raster)
 library(viridis)
 library(mapview)
+library(cptcity)
 ee_Initialize() # Initialize gee inside R with registered account
 ```
 
-```
-── rgee 1.1.5 ────────────────────────────────────────────────────── earthengine-api 0.1.334 ── 
- ✔ user: not_defined
- ✔ Initializing Google Earth Engine:  DONE!
- ✔ Earth Engine account: users/ambarja 
-─────────────────────────────────────────────────────────────────────────────────────────────── 
-```
+    ── rgee 1.1.5 ────────────────────────────────────────────────────── earthengine-api 0.1.334 ── 
+     ✔ user: not_defined
+     ✔ Initializing Google Earth Engine:  DONE!
+     ✔ Earth Engine account: users/ambarja 
+    ─────────────────────────────────────────────────────────────────────────────────────────────── 
 
 #### 3.2 Processing data with rgee
+
 ```{r,eval=FALSE}
 r_temp <- ee$ImageCollection$Dataset$ECMWF_ERA5_LAND_MONTHLY
 ee_temp <- r_temp$
@@ -64,31 +52,36 @@ ee_temp <- r_temp$
   subtract(273.15)
 ```
 
-#### 3.3 Simple visualization  
+#### 3.3 Simple visualization
+
 ```{r,eval=FALSE}
 viz_temp <- list(
   min = 5,
   max = 25,
   palette = magma(n = 100)
   )
+
 temp <- Map$addLayer(ee_temp, visParams = viz_temp) + 
   Map$addLegend(visParams = viz_temp,name = "Tem[C°]",position = "bottomleft")
+
 temp
 ```
 
-
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
-library(terra)
 library(raster)
 library(leaflet)
+library(leaflet.extras2)
 library(viridis)
 ```
 
-```{r,message=FALSE,warning=FALSE,out.width="100%"}
+```{r,message=FALSE,warning=FALSE,out.width="100%",echo=FALSE}
 ee_temp <- raster("data/temp.tif")
-pal <- colorNumeric(palette = magma(n = 5,direction = -1), values(ee_temp),
-                    na.color = "transparent")
-leaflet() %>% 
+pal <- colorNumeric(
+  palette = magma(n = 5,direction = -1),
+  values(ee_temp),
+  na.color = NA
+  )
+temp <- leaflet() %>% 
   addProviderTiles(provider = providers$CartoDB.Positron,group = "CartoDB.Positron") %>% 
   addProviderTiles(provider = providers$OpenStreetMap ,group = "OpenStreetMap") %>%
   addProviderTiles(provider = providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>%
@@ -105,18 +98,21 @@ leaflet() %>%
     baseGroups = c("CartoDB.Positron","OpenStreetMap","CartoDB.DarkMatter","Esri.WorldImagery","OpenTopoMap"),
     overlayGroups = "Tem[C°]",
     position = "topleft")
+temp
 ```
 
-#### 3.4 Define box to study area 
+#### 3.4 Define box to study area
+
 ```{r, eval= FALSE}
 geometry <- ee$Geometry$Rectangle(
   coords = c(-180,-90,180,90),
   proj = "EPSG:4326",
   geodesic = FALSE
 )
-
 ```
+
 #### 3.5 Identifying min and max values of temperature
+
 ```{r, eval= FALSE}
 (minmax <- ee_temp$reduceRegion(
   reducer = ee$Reducer$minMax(),
@@ -125,15 +121,13 @@ geometry <- ee$Geometry$Rectangle(
   getInfo())
 ```
 
-```
-$temperature_2m_max
-[1] 29.68718
+    $temperature_2m_max
+    [1] 29.68718
+    $temperature_2m_min
+    [1] -53.14849
 
-$temperature_2m_min
-[1] -53.14849
-```
+#### 3.6 Generate a thumbnail image in a rasterlayer or stars format
 
-#### 3.6 Generate a thumbnail image in a rasterlayer or stars format  
 ```{r, eval= FALSE}
 world_temp <- ee_as_thumbnail(
   image = ee_temp,     # Image to export
@@ -145,6 +139,7 @@ world_temp <- ee_as_thumbnail(
 ```
 
 #### 3.7 Processing data for mapping with tmap
+
 ```{r, eval= FALSE}
 # Define a projection (EPSG:4326 - WGS 84)
 crs(world_temp) <- 4326
@@ -154,10 +149,8 @@ world_temp[] <- scales::rescale(
 ) 
 # Load world vector (available after load tmap)
 data("World") 
-
 # Define a Robin type projection 
 robin <- "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
-
 # Remove the temperature value of sea
 map <-  world_temp %>% 
   mask(World) 
@@ -166,47 +159,23 @@ map <-  world_temp %>%
 ### 3.8 Exploration raster data
 
 ```{r, eval=FALSE}
-mapview(map)
+tm_shape(map) +
+  tm_raster(palette = viridis(n = 100),style = "cont")
 ```
 
-
-```{r eval = TRUE, echo=FALSE,warning=FALSE,message=FALSE, out.width="100%"}
+```{r,eval = TRUE, echo=FALSE,warning=FALSE,message=FALSE, out.width="100%"}
 library(leaflet)
 library(raster)
+library(terra)
+library(tmap)
 library(cptcity)
-library(leaflet.extras2)
-library(leaflet.extras)
-library(tidyverse)
-map <- read_rds("data/map")
-pal <- colorNumeric(
-  palette = cpt(pal = "mpl_inferno"),
-  domain = values(map),na.color = "#c9c9c9")
-
-leaflet() %>% 
-  addProviderTiles(providers$CartoDB.Positron,group = "CartoDB.Positron") %>%
-  addProviderTiles(providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>%
-  addTiles(group = "OpenSreetMap") %>% 
-  addProviderTiles(providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>%
-  addProviderTiles(providers$OpenTopoMap,group = "OpenTopoMap") %>% 
-  addRasterImage(x = map,group = "map",colors = pal) %>% 
-   addLayersControl(
-     overlayGroups = c("map"), 
-     baseGroups = c(
-       "CartoDB.Positron",
-       "CartoDB.DarkMatter",
-       "OpenSreetMap",
-       "Esri.WorldImagery",
-       "OpenTopoMap"),
-     position = "topleft") %>% 
-   addLegend(pal =  pal ,
-             values = values(map),
-             opacity = 1,
-             title = "map",
-             position = "topright")
+map <- raster("data/map.tif")
+tmap_mode("view")
+tm_shape(map) + tm_raster(palette = viridis(n = 100),style = "cont")
 ```
 
-
 #### 3.9 Elaboration of the Temperature Map
+
 ```{r, eval= FALSE}
 temp_map <- map %>% 
   tm_shape(projection = robin,raster.warp = FALSE) +
@@ -221,18 +190,17 @@ temp_map <- map %>%
 temp_map
 ```
 
-<center>
- <img src="https://user-images.githubusercontent.com/23284899/156104502-9acd1ccc-ca55-4474-910f-c6848b921053.png" width="100%">
-</center>
+<center><img src="https://user-images.githubusercontent.com/23284899/156104502-9acd1ccc-ca55-4474-910f-c6848b921053.png" width="100%"/></center>
 
 #### 3.10 Export map in png format
+
 ```{r, eval= FALSE}
 tmap_save(temp_map,"temp_map.png",width = 6,height = 3)
 ```
 
 #### 3.11 Mapping of the current vegetation index
 
-```{r}
+```{r,eval=FALSE}
 # Processing data with rgee
 r_ndvi <- ee$ImageCollection$Dataset$MODIS_006_MYD13Q1
 ee_ndvi <- r_ndvi$
@@ -242,23 +210,71 @@ ee_ndvi <- r_ndvi$
   multiply(0.0001)
 ```
 
-#### 3.12 Simple visualization  
-```{r,out.width="100%"}
+#### 3.12 Simple visualization
+
+```{r,eval=FALSE}
 viz_ndvi <- list(
   min = -0.5 ,
   max = 0.87,
-  palette = viridis(n = 100)
+  palette = cpt(pal = "grass_ndvi")
   )
 ndvi <- Map$addLayer(ee_ndvi,visParams = viz_ndvi) + 
   Map$addLegend(visParams = viz_ndvi,name = "NDVI")
 ndvi
 ```
+
+
+
+```{r,out.width="100%",eval=TRUE,warning=FALSE,message=FALSE,echo=FALSE}
+ee_ndvi <- raster("data/ndvi.tif")
+pal_ndvi <- colorNumeric(
+  palette = cpt(pal = "grass_ndvi",n = 100),
+  values(ee_ndvi),
+  na.color = NA
+  )
+
+ndvi <- leaflet() %>% 
+  addProviderTiles(provider = providers$CartoDB.Positron,group = "CartoDB.Positron") %>% 
+  addProviderTiles(provider = providers$OpenStreetMap ,group = "OpenStreetMap") %>%
+  addProviderTiles(provider = providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>%
+  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>%
+  addProviderTiles(provider = providers$OpenTopoMap,group = "OpenTopoMap") %>%
+  addRasterImage(ee_ndvi, colors = pal_ndvi,group = "NDVI") %>% 
+  addLegend(
+    pal = pal_ndvi,
+    values = values(ee_ndvi),
+    title = "NDVI",
+    position = "bottomright",
+    opacity = 1) %>% 
+  addLayersControl(
+    baseGroups = c("CartoDB.Positron","OpenStreetMap","CartoDB.DarkMatter","Esri.WorldImagery","OpenTopoMap"),
+    overlayGroups = "NDVI",
+    position = "topleft")
+ndvi
+```
+
+
 ### 3.13 Comparison between global NDVI and global temperature
 
-```{r,out.width="100%",eval=FALSE}
+```{r,eval=FALSE}
 temp | ndvi
 ```
 
-<center>
- <img src="https://user-images.githubusercontent.com/23284899/156390954-3ae5d18e-b2c0-4d70-a80e-df87390b16b2.png" width="100%">
-</center>
+```{r,out.width="100%",message=FALSE,warning=FALSE,echo=FALSE}
+leaflet() %>%
+  addMapPane("left", zIndex = 0) %>%
+  addMapPane("right", zIndex = 0) %>% 
+  addTiles(group = "base", layerId = "baseid1", options = pathOptions(pane = "left")) %>%   
+  addTiles(group = "base", layerId = "baseid2", options = pathOptions(pane = "right")) %>% 
+  addRasterImage(ee_temp, colors = pal,options = leafletOptions(pane = "right"),group = "Temp[C°]") %>% 
+  addLegend(pal = pal,values = values(ee_temp),title = "Temp[C°]",position = "bottomright",opacity = 1) %>% 
+  addRasterImage(ee_ndvi, colors = pal_ndvi,options = leafletOptions(pane = "left"),group = "NDVI") %>%
+  addLegend(pal = pal_ndvi,values = values(ee_ndvi),title = "NDVI",position = "bottomleft",opacity = 1) %>% 
+  addLayersControl(
+    baseGroups = c("CartoDB.Positron","OpenStreetMap"),
+    overlayGroups = c("Temp[C°]","NDVI"),
+    position = "topleft") %>% 
+  addSidebyside(layerId = "sidecontrols",leftId = "baseid1",rightId = "baseid2") %>% 
+  setView(lng = -74.84, lat = -11.45, zoom = 2)
+```
+ 
