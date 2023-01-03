@@ -65,6 +65,7 @@ nldc <- ee$ImageCollection(nldc)$
   select("7_landcover")$
   rename("nldc")
 
+years <- c(2011, 2016) %>% ee$List()
 impervious <- years$
   map(ee_utils_pyfunc(function(x) {
     ee$ImageCollection("USGS/NLCD_RELEASES/2016_REL")$
@@ -81,6 +82,7 @@ imp <- ee$ImageCollection(impervious)$
   rename("imp")
 
 years <- c(2011, 2016) %>% ee$List()
+
 tree_cover <- years$
   map(ee_utils_pyfunc(function(x) {
     ee$ImageCollection("USGS/NLCD_RELEASES/2016_REL")$
@@ -160,9 +162,27 @@ Map$centerObject(sandiego)
 Map$addLayer(PCA,visParams = list(bands=c("pc1","pc2","pc3")))
 ```
 
-<center>
-   <img src="https://user-images.githubusercontent.com/23284899/154719983-f3eb638b-0b32-4c3b-bbd6-eccdd812850e.png" width="100%">
-</center>
+
+```{r,echo=FALSE,out.width="100%",message=FALSE,warning=FALSE}
+library(raster)
+library(leaflet)
+library(viridis)
+library(leafem)
+ee_pca <- stack("data/pca.tif")
+pca <- leaflet() %>% 
+  addProviderTiles(provider = providers$CartoDB.Positron,group = "CartoDB.Positron") %>% 
+  addProviderTiles(provider = providers$OpenStreetMap ,group = "OpenStreetMap") %>%
+  addProviderTiles(provider = providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>%
+  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>%
+  addProviderTiles(provider = providers$OpenTopoMap,group = "OpenTopoMap") %>%
+  addRasterRGB(ee_pca, 3,2,1, group = "PCA") %>% 
+  addLayersControl(
+    baseGroups = c("CartoDB.Positron","OpenStreetMap","CartoDB.DarkMatter","Esri.WorldImagery","OpenTopoMap"),
+    overlayGroups = "PCA",
+    position = "topleft") %>% 
+  setView(lng = ,-116.90,lat = 32.90,zoom = 9)
+pca
+```
 
 #### 4.6 Table of eingvectors
 ```{r, eval = FALSE}
@@ -274,6 +294,31 @@ viz <- list(
 Map$addLayer(index,visParams = viz) + 
   Map$addLegend(visParams = viz,name = "Environment index")
 ```
-<center>
-   <img src="https://user-images.githubusercontent.com/23284899/156098219-04ec7105-4e2b-461b-9159-855017d4681c.png" width="100%">
-</center>
+
+```{r,echo=FALSE,out.width="100%",message=FALSE,warning=FALSE}
+ee_index <- raster("data/index.tif")
+pal_index <- colorNumeric(
+  palette = viridis(n = 100),
+  domain = values(ee_index),
+  na.color = NA
+)
+ndvi <- leaflet() %>% 
+  addProviderTiles(provider = providers$CartoDB.Positron,group = "CartoDB.Positron") %>% 
+  addProviderTiles(provider = providers$OpenStreetMap ,group = "OpenStreetMap") %>%
+  addProviderTiles(provider = providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>%
+  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>%
+  addProviderTiles(provider = providers$OpenTopoMap,group = "OpenTopoMap") %>%
+  addRasterImage(ee_index, colors = pal_index,group = "Enviroment index") %>% 
+  addLegend(
+    pal = pal_index,
+    values = values(ee_index),
+    title = "Enviroment index",
+    position = "bottomright",
+    opacity = 1) %>% 
+  addLayersControl(
+    baseGroups = c("CartoDB.Positron","OpenStreetMap","CartoDB.DarkMatter","Esri.WorldImagery","OpenTopoMap"),
+    overlayGroups = "Enviroment index",
+    position = "topleft") %>% 
+  setView(lng = ,-116.90,lat = 32.90,zoom = 9)
+ndvi
+```
