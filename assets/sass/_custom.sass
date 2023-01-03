@@ -5,11 +5,6 @@ b, strong
   font-weight: 700
   font-style: normal
 
-pre
-  white-space: pre
-  overflow-y: auto
-  max-height: 70vh
-
 img
   margin: 0rem 0rem 0rem 0rem
 
@@ -24,3 +19,37 @@ em
 
 div#refs.references.csl-bib-body.hanging-indent > *
   padding: 0rem 0rem 0.8rem 0
+  
+.notices
+  border-top-width: 2rem
+  border-top-style: solid
+  color: #666
+  margin: 2rem 3rem 0 3rem
+  padding-bottom: .1px
+  padding-left: 1rem
+  padding-right: 1rem
+  .label
+    color: #fff
+    margin-top: -1.75rem
+    font-weight: bold
+    &::first-child::before
+      font-weight: 900
+      margin-left: -.35rem
+      margin-right: .35rem
+  &.info
+    border-color: var(--notice-info-border-color)
+    background: var(--notice-info-background)
+  &.warning
+    border-color: var(--notice-warning-border-color)
+    background: var(--notice-warning-background)
+  &.note
+    border-color: var(--notice-note-border-color)
+    background: var(--notice-note-background)
+  &.tip
+    border-color: var(--notice-tip-border-color)
+    background: var(--notice-tip-background)
+
+
+
+summary
+  text-decoration: underline
