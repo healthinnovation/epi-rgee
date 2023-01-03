@@ -309,4 +309,3 @@ p2 + v2
 ```
 
 <center><img src="https://user-images.githubusercontent.com/23284899/155409222-220b2417-9166-41b4-b731-244d934baae7.png" width="100%"></center>
-

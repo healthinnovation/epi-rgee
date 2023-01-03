@@ -228,7 +228,6 @@ leaflet() %>%
     position = "topleft")
 ```
 
-
 ### 2.6 More examples 📚
 <center>
 <a href="https://github.com/r-spatial/rgee/tree/examples"><img src="https://user-images.githubusercontent.com/23284899/152283689-c5a4c789-793a-40ac-b4b8-905007bd1764.png
