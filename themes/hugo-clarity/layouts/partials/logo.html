@@ -1,7 +1,7 @@
 {{- $t := site.Title -}}
 <a href='.' class="nav_brand nav_item{{ with .class }} {{ . }}{{ end }}" title="{{ $t }}">
   {{- with .logo }}
-  <img src="{{ absURL . }}" class="logo" alt="{{ $t }}">
+  <img src="{{ absURL . }}" class="logo" alt="{{ $t }}" width='160px'>
   {{- else -}}
     {{- $t -}}
   {{- end }}
